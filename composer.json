@@ -1,0 +1,32 @@
+{
+  "name": "retail-express/skylink-magento-2",
+  "description": "Synchronisation extension for a Magento 2 based website to Retail Express.",
+  "type": "magento2-module",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Ben Corlett",
+      "email": "ben@retailexpress.com.au"
+    },
+    {
+      "name": "Tariq Hafeez",
+      "email": "tariq@retailexpress.com.au"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "http://packages.skystores.com.au/"
+    }
+  ],
+  "require": {
+    "retail-express/skylink": "^1.0"
+  },
+  "require-dev": {
+    "illuminate/support": "^5.1",
+    "phpunit/phpunit": "^5.1",
+    "mockery/mockery": "^0.9.4",
+    "squizlabs/php_codesniffer": "^2.5",
+    "satooshi/php-coveralls": "^0.6.1"
+  }
+}

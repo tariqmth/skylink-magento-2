@@ -31,8 +31,8 @@ class Config
     /**
      * Get the V2 API URL as configured globally.
      *
-    * @return Url
-    */
+     * @return Url
+     */
     public function getV2ApiUrl()
     {
         return Url::fromNative((string) $this->scopeConfig->getValue('skylink/api/v2_url'));
@@ -41,8 +41,8 @@ class Config
     /**
      * Get the V2 API Client ID as configured globally.
      *
-    * @return StringLiteral
-    */
+     * @return StringLiteral
+     */
     public function getV2ApiClientId()
     {
         return Uuid::fromString((string) $this->scopeConfig->getValue('skylink/api/v2_client_id'));
@@ -51,8 +51,8 @@ class Config
     /**
      * Get the V2 API Username as configured globally.
      *
-    * @return StringLiteral
-    */
+     * @return StringLiteral
+     */
     public function getV2ApiUsername()
     {
         return new StringLiteral((string) $this->scopeConfig->getValue('skylink/api/v2_username'));
@@ -61,8 +61,8 @@ class Config
     /**
      * Get the V2 API Password as configured globally.
      *
-    * @return StringLiteral
-    */
+     * @return StringLiteral
+     */
     public function getV2ApiPassword()
     {
         return new StringLiteral((string) $this->scopeConfig->getValue('skylink/api/v2_password'));

@@ -146,7 +146,7 @@ class SkyLink
     }
 
     /**
-     * Determine if the current API version is the V2 API
+     * Determine if the current API version is the V2 API.
      *
      * @return bool
      */

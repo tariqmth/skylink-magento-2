@@ -11,26 +11,26 @@
                     <label>Version</label>
                     <source_model>RetailExpress\SkyLinkMagento2\Model\System\Config\Source\ApiVersion</source_model>
                 </field>
-                <field id="version_2_url" translate="label" type="text" sortOrder="200" showInDefault="1">
+                <field id="v2_url" translate="label" type="text" sortOrder="200" showInDefault="1">
                     <label>URL</label>
                     <comment><![CDATA[Your database url must begin with <code>https://</code>]]></comment>
                     <depends>
                         <field id="version">2</field>
                     </depends>
                 </field>
-                <field id="version_2_client_id" translate="label" type="text" sortOrder="300" showInDefault="1">
+                <field id="v2_client_id" translate="label" type="text" sortOrder="300" showInDefault="1">
                     <label>Client ID</label>
                     <depends>
                         <field id="version">2</field>
                     </depends>
                 </field>
-                <field id="version_2_username" translate="label" type="text" sortOrder="400" showInDefault="1">
+                <field id="v2_username" translate="label" type="text" sortOrder="400" showInDefault="1">
                     <label>Username</label>
                     <depends>
                         <field id="version">2</field>
                     </depends>
                 </field>
-                <field id="version_2_password" translate="label" type="password" sortOrder="500" showInDefault="1">
+                <field id="v2_password" translate="label" type="password" sortOrder="500" showInDefault="1">
                     <label>Password</label>
                     <depends>
                         <field id="version">2</field>

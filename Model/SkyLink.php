@@ -2,8 +2,6 @@
 
 namespace RetailExpress\SkyLinkMagento2\Model;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use ValueObjects\Number\Integer;
 use RetailExpress\SkyLink\Apis\V2 as V2Api;
 use RetailExpress\SkyLink\Catalogue\Attributes\V2AttributeRepository;
 use RetailExpress\SkyLink\Catalogue\Products\MatrixPolicyMapper;
@@ -12,146 +10,129 @@ use RetailExpress\SkyLink\Customers\V2CustomerRepository;
 use RetailExpress\SkyLink\Outlets\V2OutletRepository;
 use RetailExpress\SkyLink\Sales\Orders\V2OrderRepository;
 use RetailExpress\SkyLink\Sales\Payments\V2PaymentMethodRepository;
-use RetailExpress\SkyLink\ValueObjects\SalesChannelId;
 use RetailExpress\SkyLink\Vouchers\V2VoucherRepository;
+use ValueObjects\Number\Integer;
 
 /**
  * @todo Add DI - it isn't playing nicely with value objects so just hardcoding instead.
- * @todo This class is a factory class but also an accessor for config values, maybe this should be split?
  */
 class SkyLink
 {
-    private $scopeConfig;
+    private $config;
 
-    public function __construct(ScopeConfigInterface $scopeConfig)
+    public function __construct(Config $config)
     {
-        $this->scopeConfig = $scopeConfig;
+        $this->config = $config;
     }
 
     /**
-     * Return an instance of the appropriate Catalogue Attribute Repository according to store configuration.
+     * Get an instance of the appropriate Catalogue Attribute Repository according to store configuration.
      *
      * @return \RetailExpress\SkyLink\Catalogue\Attributes\AttributeRepository
      */
     public function createCatalogueAttributeRepository()
     {
-        return $this->onValidApiVersion(function (Integer $apiVersion) {
-            if ($apiVersion->sameValueAs(new Integer(2))) {
-                return new V2AttributeRepository($this->createV2Api());
-            }
-        });
+        $this->assertValidApiVersion();
+
+        if ($this->isV2Api()) {
+            return new V2AttributeRepository($this->createV2Api());
+        }
     }
 
     /**
-     * Return an instance of the appropriate Catalogue Product Repository according to store configuration.
+     * Get an instance of the appropriate Catalogue Product Repository according to store configuration.
      *
      * @return \RetailExpress\SkyLink\Catalogue\Attributes\AttributeRepository
      */
     public function createCatalogueProductRepository()
     {
-        return $this->onValidApiVersion(function (Integer $apiVersion) {
-            if ($apiVersion->sameValueAs(new Integer(2))) {
-                return new V2ProductRepository(new MatrixPolicyMapper(), $this->createV2Api());
-            }
-        });
+        $this->assertValidApiVersion();
+
+        if ($this->isV2Api()) {
+            return new V2ProductRepository(new MatrixPolicyMapper(), $this->createV2Api());
+        }
     }
 
     /**
-     * Return an instance of the appropriate Customer Repository according to store configuration.
+     * Get an instance of the appropriate Customer Repository according to store configuration.
      *
      * @return \RetailExpress\SkyLink\Catalogue\Attributes\AttributeRepository
      */
     public function createCustomerRepository()
     {
-        return $this->onValidApiVersion(function (Integer $apiVersion) {
-            if ($apiVersion->sameValueAs(new Integer(2))) {
-                return new V2CustomerRepository($this->createV2Api());
-            }
-        });
+        $this->assertValidApiVersion();
+
+        if ($this->isV2Api()) {
+            return new V2CustomerRepository($this->createV2Api());
+        }
     }
 
     /**
-     * Return an instance of the appropriate Outlet Repository according to store configuration.
+     * Get an instance of the appropriate Outlet Repository according to store configuration.
      *
      * @return \RetailExpress\SkyLink\Catalogue\Attributes\AttributeRepository
      */
     public function createOutletRepository()
     {
-        return $this->onValidApiVersion(function (Integer $apiVersion) {
-            if ($apiVersion->sameValueAs(new Integer(2))) {
-                return new V2OutletRepository($this->createV2Api());
-            }
-        });
+        $this->assertValidApiVersion();
+
+        if ($this->isV2Api()) {
+            return new V2OutletRepository($this->createV2Api());
+        }
     }
 
     /**
-     * Return an instance of the appropriate Sales Order Repository according to store configuration.
+     * Get an instance of the appropriate Sales Order Repository according to store configuration.
      *
      * @return \RetailExpress\SkyLink\Catalogue\Attributes\AttributeRepository
      */
     public function createSalesOrderRepository()
     {
-        return $this->onValidApiVersion(function (Integer $apiVersion) {
-            if ($apiVersion->sameValueAs(new Integer(2))) {
-                return new V2OrderRepository($this->createV2Api());
-            }
-        });
+        $this->assertValidApiVersion();
+
+        if ($this->isV2Api()) {
+            return new V2OrderRepository($this->createV2Api());
+        }
     }
 
     /**
-     * Return an instance of the appropriate Sales Payment Repository according to store configuration.
+     * Get an instance of the appropriate Sales Payment Repository according to store configuration.
      *
      * @return \RetailExpress\SkyLink\Catalogue\Attributes\AttributeRepository
      */
     public function createSalesPaymentMethodRepository()
     {
-        return $this->onValidApiVersion(function (Integer $apiVersion) {
-            if ($apiVersion->sameValueAs(new Integer(2))) {
-                return new V2PaymentMethodRepository($this->createV2Api());
-            }
-        });
+        $this->assertValidApiVersion();
+
+        if ($this->isV2Api()) {
+            return new V2PaymentMethodRepository($this->createV2Api());
+        }
     }
 
     /**
-     * Return an instance of the appropriate Voucher Repository according to store configuration.
+     * Get an instance of the appropriate Voucher Repository according to store configuration.
      *
      * @return \RetailExpress\SkyLink\Catalogue\Attributes\AttributeRepository
      */
     public function createVoucherRepository()
     {
-        return $this->onValidApiVersion(function (Integer $apiVersion) {
-            if ($apiVersion->sameValueAs(new Integer(2))) {
-                return new V2VoucherRepository($this->createV2Api());
-            }
-        });
-    }
+        $this->assertValidApiVersion();
 
-    /**
-     * Return an instance of the appropriate catalogue product repository according to store configuration.
-     *
-     * @return \RetailExpress\SkyLink\Catalogue\Attributes\AttributeRepository
-     */
-    public function getSalesChannelId()
-    {
-        return new SalesChannelId($this->scopeConfig->getValue('skylink/general/sales_channel_id'));
+        if ($this->isV2Api()) {
+            return new V2VoucherRepository($this->createV2Api());
+        }
     }
 
     /**
      * Assert a valid, supported API version is configured and run the provided callback against that API version.
      *
-     * @param callable $callback
-     *
      * @return mixed
      */
-    private function onValidApiVersion(callable $callback)
+    private function assertValidApiVersion()
     {
-        $apiVersion = $this->getApiVersion();
-
-        if (!$apiVersion->sameValueAs(new Integer(2))) {
-            throw new InvalidArgumentException('Only supported version of the Retail Express API is version 2.');
+        if (!$this->isV2Api()) {
+            throw new InvalidArgumentException('Only supported version of the Retail Express API is the V2 API.');
         }
-
-        return $callback($apiVersion);
     }
 
     /**
@@ -161,7 +142,17 @@ class SkyLink
      */
     private function getApiVersion()
     {
-        return new Integer($this->scopeConfig->getValue('skylink/api/version'));
+        return $this->config->getApiVersion();
+    }
+
+    /**
+     * Determine if the current API version is the V2 API
+     *
+     * @return bool
+     */
+    private function isV2Api()
+    {
+        return $this->config->getApiVersion()->sameValueAs(new Integer(2));
     }
 
     /**
@@ -171,27 +162,11 @@ class SkyLink
      */
     private function createV2Api()
     {
-        // Pull out configuration values, storing keys as well-formatted, English characters - these may be used later
-        $parametersWithLocalisedNames = [
-            'URL' => (string) $this->scopeConfig->getValue('skylink/api/version_2_url'),
-            'Client ID' => (string) $this->scopeConfig->getValue('skylink/api/version_2_client_id'),
-            'Username' => (string) $this->scopeConfig->getValue('skylink/api/version_2_username'),
-            'Password' => (string) $this->scopeConfig->getValue('skylink/api/version_2_password'),
-        ];
-
-        // Validate there is something entered for each configuration value, otherwise throw a custom exception
-        foreach ($parametersWithLocalisedNames as $localisedName => $parameter) {
-            if (strlen($parameter) === 0) {
-                throw new SkyLinkNotConfiguredException(__("SkyLink {$localisedName} is not configured."));
-            }
-        }
-
-        // Create our API object
-        return V2Api::fromNative(
-            $parametersWithLocalisedNames['URL'],
-            $parametersWithLocalisedNames['Client ID'],
-            $parametersWithLocalisedNames['Username'],
-            $parametersWithLocalisedNames['Password']
+        return new V2Api(
+            $this->config->getV2ApiUrl(),
+            $this->config->getV2ApiClientId(),
+            $this->config->getV2ApiUsername(),
+            $this->config->getV2ApiPassword()
         );
     }
 }

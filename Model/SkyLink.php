@@ -174,11 +174,27 @@ class SkyLink
      */
     private function createV2Api()
     {
+        // Pull out configuration values, storing keys as well-formatted, English characters - these may be used later
+        $parametersWithLocalisedNames = [
+            'URL' => (string) $this->scopeConfig->getValue('skylink/api/version_2_url'),
+            'Client ID' => (string) $this->scopeConfig->getValue('skylink/api/version_2_client_id'),
+            'Username' => (string) $this->scopeConfig->getValue('skylink/api/version_2_username'),
+            'Password' => (string) $this->scopeConfig->getValue('skylink/api/version_2_password'),
+        ];
+
+        // Validate there is something entered for each configuration value, otherwise throw a custom exception
+        foreach ($parametersWithLocalisedNames as $localisedName => $parameter) {
+            if (strlen($parameter) === 0) {
+                throw new SkyLinkNotConfiguredException(__("SkyLink {$localisedName} is not configured."));
+            }
+        }
+
+        // Create our API object
         return V2Api::fromNative(
-            $this->scopeConfig->getValue('skylink/api/version_2_url'),
-            $this->scopeConfig->getValue('skylink/api/version_2_client_id'),
-            $this->scopeConfig->getValue('skylink/api/version_2_username'),
-            $this->scopeConfig->getValue('skylink/api/version_2_password')
+            $parametersWithLocalisedNames['URL'],
+            $parametersWithLocalisedNames['Client ID'],
+            $parametersWithLocalisedNames['Username'],
+            $parametersWithLocalisedNames['Password']
         );
     }
 }

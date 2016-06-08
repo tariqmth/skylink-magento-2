@@ -2,7 +2,6 @@
 
 namespace RetailExpress\SkyLinkMagento2\Model;
 
-use RetailExpress\SkyLink\Apis\V2 as V2Api;
 use RetailExpress\SkyLink\Catalogue\Attributes\V2AttributeRepository;
 use RetailExpress\SkyLink\Catalogue\Products\MatrixPolicyMapper;
 use RetailExpress\SkyLink\Catalogue\Products\V2ProductRepository;
@@ -11,18 +10,17 @@ use RetailExpress\SkyLink\Outlets\V2OutletRepository;
 use RetailExpress\SkyLink\Sales\Orders\V2OrderRepository;
 use RetailExpress\SkyLink\Sales\Payments\V2PaymentMethodRepository;
 use RetailExpress\SkyLink\Vouchers\V2VoucherRepository;
-use ValueObjects\Number\Integer;
 
 /**
  * @todo Add DI - it isn't playing nicely with value objects so just hardcoding instead.
  */
-class SkyLink
+class RepositoryFactory
 {
-    private $config;
+    private $apiFactory;
 
-    public function __construct(Config $config)
+    public function __construct(ApiFactory $apiFactory)
     {
-        $this->config = $config;
+        $this->apiFactory = $apiFactory;
     }
 
     /**
@@ -32,10 +30,10 @@ class SkyLink
      */
     public function createCatalogueAttributeRepository()
     {
-        $this->assertValidApiVersion();
+        $this->apiFactory->assertValidApiVersion();
 
-        if ($this->isV2Api()) {
-            return new V2AttributeRepository($this->createV2Api());
+        if ($this->apiFactory->isV2Api()) {
+            return new V2AttributeRepository($this->apiFactory->createV2Api());
         }
     }
 
@@ -46,10 +44,13 @@ class SkyLink
      */
     public function createCatalogueProductRepository()
     {
-        $this->assertValidApiVersion();
+        $this->apiFactory->assertValidApiVersion();
 
-        if ($this->isV2Api()) {
-            return new V2ProductRepository(new MatrixPolicyMapper(), $this->createV2Api());
+        if ($this->apiFactory->isV2Api()) {
+            return new V2ProductRepository(
+                new MatrixPolicyMapper(),
+                $this->apiFactory->createV2Api()
+            );
         }
     }
 
@@ -60,10 +61,10 @@ class SkyLink
      */
     public function createCustomerRepository()
     {
-        $this->assertValidApiVersion();
+        $this->apiFactory->assertValidApiVersion();
 
-        if ($this->isV2Api()) {
-            return new V2CustomerRepository($this->createV2Api());
+        if ($this->apiFactory->isV2Api()) {
+            return new V2CustomerRepository($this->apiFactory->createV2Api());
         }
     }
 
@@ -74,10 +75,10 @@ class SkyLink
      */
     public function createOutletRepository()
     {
-        $this->assertValidApiVersion();
+        $this->apiFactory->assertValidApiVersion();
 
-        if ($this->isV2Api()) {
-            return new V2OutletRepository($this->createV2Api());
+        if ($this->apiFactory->isV2Api()) {
+            return new V2OutletRepository($this->apiFactory->createV2Api());
         }
     }
 
@@ -88,10 +89,10 @@ class SkyLink
      */
     public function createSalesOrderRepository()
     {
-        $this->assertValidApiVersion();
+        $this->apiFactory->assertValidApiVersion();
 
-        if ($this->isV2Api()) {
-            return new V2OrderRepository($this->createV2Api());
+        if ($this->apiFactory->isV2Api()) {
+            return new V2OrderRepository($this->apiFactory->createV2Api());
         }
     }
 
@@ -102,10 +103,10 @@ class SkyLink
      */
     public function createSalesPaymentMethodRepository()
     {
-        $this->assertValidApiVersion();
+        $this->apiFactory->assertValidApiVersion();
 
-        if ($this->isV2Api()) {
-            return new V2PaymentMethodRepository($this->createV2Api());
+        if ($this->apiFactory->isV2Api()) {
+            return new V2PaymentMethodRepository($this->apiFactory->createV2Api());
         }
     }
 
@@ -116,57 +117,10 @@ class SkyLink
      */
     public function createVoucherRepository()
     {
-        $this->assertValidApiVersion();
+        $this->apiFactory->assertValidApiVersion();
 
-        if ($this->isV2Api()) {
-            return new V2VoucherRepository($this->createV2Api());
+        if ($this->apiFactory->isV2Api()) {
+            return new V2VoucherRepository($this->apiFactory->createV2Api());
         }
-    }
-
-    /**
-     * Assert a valid, supported API version is configured and run the provided callback against that API version.
-     *
-     * @return mixed
-     */
-    private function assertValidApiVersion()
-    {
-        if (!$this->isV2Api()) {
-            throw new InvalidArgumentException('Only supported version of the Retail Express API is the V2 API.');
-        }
-    }
-
-    /**
-     * Get the API version as configured.
-     *
-     * @return int
-     */
-    private function getApiVersion()
-    {
-        return $this->config->getApiVersion();
-    }
-
-    /**
-     * Determine if the current API version is the V2 API.
-     *
-     * @return bool
-     */
-    private function isV2Api()
-    {
-        return $this->config->getApiVersion()->sameValueAs(new Integer(2));
-    }
-
-    /**
-     * Create a V2 API object that is used throughout V2 API repositories.
-     *
-     * @return V2Api
-     */
-    private function createV2Api()
-    {
-        return new V2Api(
-            $this->config->getV2ApiUrl(),
-            $this->config->getV2ApiClientId(),
-            $this->config->getV2ApiUsername(),
-            $this->config->getV2ApiPassword()
-        );
     }
 }

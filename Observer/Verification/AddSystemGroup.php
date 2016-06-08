@@ -9,7 +9,7 @@ use RetailExpress\SkyLinkMagento2\Model\Verification\Group;
 class AddSystemGroup implements ObserverInterface
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function execute(Observer $observer)
     {

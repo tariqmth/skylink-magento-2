@@ -5,7 +5,7 @@ namespace RetailExpress\SkyLinkMagento2\Model\Verification;
 interface Check
 {
     /**
-     * Get the group slug for the check
+     * Get the group slug for the check.
      *
      * @return GroupSlug
      */
@@ -14,19 +14,19 @@ interface Check
     /**
      * Get the sort order for the check within it's group.
      *
-     * @return \ValudObjects\Number\Integer
+     * @return \ValueObjects\Number\Integer
      */
     public function getSortOrder();
 
     /**
-     * Get a localised name of the given check
+     * Get a localised name of the given check.
      *
      * @return \Magento\Framework\Phrase
      */
     public function getLocalisedName();
 
     /**
-     * Tell if the check passses or not
+     * Tell if the check passses or not.
      *
      * @return bool
      */

@@ -9,7 +9,7 @@ trait VerificationCheckObserver
     private $checkFactory;
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function execute(Observer $observer)
     {

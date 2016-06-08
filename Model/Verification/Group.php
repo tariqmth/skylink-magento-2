@@ -42,7 +42,7 @@ class Group
     /**
      * Get the sort order.
      *
-     * @return Integer
+     * @return \ValueObjects\Number\Integer
      */
     public function getSortOrder()
     {

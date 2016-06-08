@@ -24,7 +24,7 @@ class CanConnectToApi implements Check
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getGroupSlug()
     {
@@ -32,7 +32,7 @@ class CanConnectToApi implements Check
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getSortOrder()
     {
@@ -40,7 +40,7 @@ class CanConnectToApi implements Check
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getLocalisedName()
     {
@@ -48,7 +48,7 @@ class CanConnectToApi implements Check
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function passes()
     {
@@ -72,7 +72,7 @@ class CanConnectToApi implements Check
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getLocalisedErrors()
     {

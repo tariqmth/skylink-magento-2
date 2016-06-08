@@ -20,8 +20,6 @@ class Verifier
 
     /**
      * Gather groups and checks.
-     *
-     * @return void
      */
     public function gather()
     {
@@ -32,8 +30,7 @@ class Verifier
     /**
      * Add a new group to the verifier.
      *
-     * @param  Group $group
-     * @return void
+     * @param Group $group
      */
     public function addGroup(Group $group)
     {
@@ -78,7 +75,8 @@ class Verifier
     /**
      * Determine if the verifier has a group with the given slug.
      *
-     * @param  GroupSlug $groupSlug
+     * @param GroupSlug $groupSlug
+     *
      * @return bool
      */
     public function hasGroupWithSlug(GroupSlug $groupSlug)
@@ -93,10 +91,9 @@ class Verifier
     }
 
     /**
-     * Add a check to the verifier to run
+     * Add a check to the verifier to run.
      *
-     * @param  Check $check
-     * @return void
+     * @param Check $check
      */
     public function addCheck(Check $check)
     {
@@ -122,7 +119,8 @@ class Verifier
     /**
      * Get All checks for the given group slug.
      *
-     * @param  GroupSlug $groupSlug
+     * @param GroupSlug $groupSlug
+     *
      * @return Check[]
      */
     public function getChecksForGroupWithSlug(GroupSlug $groupSlug)
@@ -137,7 +135,8 @@ class Verifier
     /**
      * Get all checks for the given group slug, in accordance with their sort order.
      *
-     * @param  GroupSlug $groupSlug
+     * @param GroupSlug $groupSlug
+     *
      * @return Check[]
      */
     public function getSortedChecksForGroupWithSlug(GroupSlug $groupSlug)
@@ -160,8 +159,6 @@ class Verifier
 
     /**
      * Gather all groups by dispatching an event whereby subscribers can add their own groups.
-     *
-     * @return void
      */
     private function gatherGroups()
     {
@@ -170,8 +167,6 @@ class Verifier
 
     /**
      * Gather all checks by dispatching an event whereby subscribers can add their own checks.
-     *
-     * @return void
      */
     private function gatherChecks()
     {

@@ -3,7 +3,6 @@
 namespace RetailExpress\SkyLinkMagento2\Model;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\ObjectManager\ConfigInterface as ObjectManagerConfigInterface;
 use ValueObjects\Number\Integer;
 use RetailExpress\SkyLink\Apis\V2 as V2Api;
 use RetailExpress\SkyLink\Catalogue\Attributes\V2AttributeRepository;
@@ -24,12 +23,9 @@ class SkyLink
 {
     private $scopeConfig;
 
-    private $instanceName;
-
-    public function __construct(ScopeConfigInterface $scopeConfig, $instanceName = SkyLink::class)
+    public function __construct(ScopeConfigInterface $scopeConfig)
     {
         $this->scopeConfig = $scopeConfig;
-        $this->instanceName = $instanceName;
     }
 
     /**
@@ -143,7 +139,8 @@ class SkyLink
     /**
      * Assert a valid, supported API version is configured and run the provided callback against that API version.
      *
-     * @param  callable $callback
+     * @param callable $callback
+     *
      * @return mixed
      */
     private function onValidApiVersion(callable $callback)
@@ -160,7 +157,7 @@ class SkyLink
     /**
      * Get the API version as configured.
      *
-     * @return Integer
+     * @return int
      */
     private function getApiVersion()
     {

@@ -9,11 +9,11 @@ use ValueObjects\Number\Integer;
 
 class CanConnectToApi implements Check
 {
+    use CachePasses;
+
     private $skyLinkConfig;
 
     private $skyLinkRepositoryFactory;
-
-    private $passes;
 
     private $localisedErrors = [];
 
@@ -52,7 +52,7 @@ class CanConnectToApi implements Check
      */
     public function passes()
     {
-        if (null === $this->passes) {
+        return $this->cachePasses(function () {
             try {
 
                 // To test connectivity, we'll just fetch outlets
@@ -61,14 +61,13 @@ class CanConnectToApi implements Check
                     ->createOutletRepository()
                     ->all($this->skyLinkConfig->getSalesChannelId());
 
-                $this->passes = true;
+                return true;
             } catch (ApiException $e) {
                 $this->localisedErrors[] = __($e->getMessage());
-                $this->passes = false;
-            }
-        }
 
-        return $this->passes;
+                return false;
+            }
+        });
     }
 
     /**

@@ -4,6 +4,7 @@ namespace RetailExpress\SkyLinkMagento2\Model\Verification;
 
 use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
 use OutOfBoundsException;
+use ValueObjects\ValueObjectInterface;
 
 class Verifier
 {
@@ -59,14 +60,7 @@ class Verifier
         $groups = $this->getGroups();
 
         usort($groups, function (Group $groupA, Group $groupB) {
-            $groupASortOrder = $groupA->getSortOrder();
-            $groupBSortOrder = $groupA->getSortOrder();
-
-            if ($groupASortOrder->sameValueAs($groupBSortOrder)) {
-                return 0;
-            }
-
-            return $groupASortOrder > $groupBSortOrder ? 1 : -1;
+            return $this->provideUsortResponseForSortable($groupA, $groupB);
         });
 
         return $groups;
@@ -144,14 +138,7 @@ class Verifier
         $checks = $this->getChecksForGroupWithSlug($groupSlug);
 
         usort($checks, function (Check $checkA, Check $checkB) {
-            $checkASortOrder = $checkA->getSortOrder();
-            $checkBSortOrder = $checkB->getSortOrder();
-
-            if ($checkASortOrder->sameValueAs($checkBSortOrder)) {
-                return 0;
-            }
-
-            return $checkASortOrder > $checkBSortOrder ? 1 : -1;
+            return $this->provideUsortResponseForSortable($checkA, $checkB);
         });
 
         return $checks;
@@ -171,5 +158,22 @@ class Verifier
     private function gatherChecks()
     {
         $this->eventManager->dispatch('skylink_verification_checks', ['verifier' => $this]);
+    }
+
+    /**
+     * Sort two value objects.
+     *
+     * @todo Abstract interfaces
+     */
+    private function provideUsortResponseForSortable(ValueObjectInterface $a, ValueObjectInterface $b)
+    {
+        $aSortOrder = $a->getSortOrder();
+        $bSortOrder = $b->getSortOrder();
+
+        if ($aSortOrder->sameValueAs($bSortOrder)) {
+            return 0;
+        }
+
+        return $aSortOrder > $bSortOrder ? 1 : -1;
     }
 }

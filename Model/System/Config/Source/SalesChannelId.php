@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLinkMagento2\Model\Config\Source;
+namespace RetailExpress\SkyLinkMagento2\Model\System\Config\Source;
 
 use Magento\Framework\Option\ArrayInterface;
 
@@ -14,7 +14,7 @@ class SalesChannelId implements ArrayInterface
         $options = [];
 
         foreach (range(1, 100) as $salesChannelId) {
-            $options[] = ['value' => $salesChannelId, 'lable' => __($salesChannelId)];
+            $options[] = ['value' => $salesChannelId, 'label' => __($salesChannelId)];
         }
 
         return $options;

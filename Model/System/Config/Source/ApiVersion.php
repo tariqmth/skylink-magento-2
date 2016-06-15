@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLinkMagento2\Model\Config\Source;
+namespace RetailExpress\SkyLinkMagento2\Model\System\Config\Source;
 
 use Magento\Framework\Option\ArrayInterface;
 

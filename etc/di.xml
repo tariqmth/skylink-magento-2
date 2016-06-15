@@ -1,10 +1,46 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Bernard\Producer">
+        <arguments>
+            <argument name="queues" xsi:type="object">Bernard\QueueFactory\PersistentFactory</argument>
+
+            <!-- @todo Integrate with Magento -->
+            <argument name="dispatcher" xsi:type="object">Symfony\Component\EventDispatcher\EventDispatcher</argument>
+        </arguments>
+    </type>
+    <type name="Bernard\QueueFactory\PersistentFactory">
+        <arguments>
+
+            <!-- @todo Integrate with Magento -->
+            <argument name="driver" xsi:type="object">Bernard\Driver\FlatFileDriver</argument>
+        </arguments>
+    </type>
+    <type name="Bernard\Driver\FlatFileDriver">
+        <arguments>
+            <argument name="baseDirectory" xsi:type="string">var/bernard</argument>
+        </arguments>
+    </type>
+    <type name="League\Tactician\CommandBus">
+        <arguments>
+            <argument name="middleware" xsi:type="array">
+                <item name="lockingMiddleware" xsi:type="object">League\Tactician\Plugins\LockingMiddleware</item>
+                <item name="queueMiddleware" xsi:type="object">League\Tactician\Bernard\QueueMiddleware</item>
+                <item name="commandHandlerMiddleware" xsi:type="object">League\Tactician\Handler\CommandHandlerMiddleware</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="League\Tactician\Handler\CommandHandlerMiddleware">
+        <arguments>
+            <argument name="commandNameExtractor" xsi:type="object">League\Tactician\Handler\CommandNameExtractor\ClassNameExtractor</argument>
+            <argument name="handlerLocator" xsi:type="object">RetailExpress\SkyLinkMagento2\Commands\Handler\Locator\SkyLinkLocator</argument>
+            <argument name="methodNameInflector" xsi:type="object">League\Tactician\Handler\MethodNameInflector\HandleInflector</argument>
+        </arguments>
+    </type>
+
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="skyLinkQueueListenCommand" xsi:type="object">RetailExpress\SkyLinkMagento2\Console\Command\QueueListenCommand</item>
-                <item name="skyLinkQueueWorkCommand" xsi:type="object">RetailExpress\SkyLinkMagento2\Console\Command\QueueWorkCommand</item>
+                <item name="skyLinkWipCommand" xsi:type="object">RetailExpress\SkyLinkMagento2\Console\Command\WipCommand</item>
             </argument>
         </arguments>
     </type>

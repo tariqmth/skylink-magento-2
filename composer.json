@@ -31,6 +31,7 @@
   },
   "require": {
     "php": ">=5.5.0",
+    "illuminate/queue": "^5.2",
     "magento/framework": "^100.0.5",
     "retail-express/skylink": "^1.0"
   },

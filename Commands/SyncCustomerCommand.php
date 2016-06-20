@@ -2,12 +2,14 @@
 
 namespace RetailExpress\SkyLinkMagento2\Commands;
 
-class SyncCustomerCommand
+use League\Tactician\Bernard\QueueableCommand;
+
+class SyncCustomerCommand implements QueueableCommand
 {
     public $retailExpressCustomerId;
 
-    public function __construct($retailExpressCustomerId)
+    public function getName()
     {
-        $this->retailExpressCustomerId = $retailExpressCustomerId;
+        return 'sync_customer';
     }
 }

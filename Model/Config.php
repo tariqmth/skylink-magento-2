@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLinkMagento2\Model;
+namespace RetailExpress\SkyLink\Model;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Ramsey\Uuid\Uuid;

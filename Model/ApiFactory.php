@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLinkMagento2\Model;
+namespace RetailExpress\SkyLink\Model;
 
 use RetailExpress\SkyLink\Apis\V2 as V2Api;
 use ValueObjects\Number\Integer;

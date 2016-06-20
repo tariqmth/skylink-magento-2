@@ -3,11 +3,11 @@
 
     <!-- Add groups to SkyLink verification component -->
     <event name="skylink_verification_groups">
-        <observer name="can_connect_to_api" instance="RetailExpress\SkyLinkMagento2\Observer\Verification\AddSystemGroup"/>
+        <observer name="can_connect_to_api" instance="RetailExpress\SkyLink\Observer\Verification\AddSystemGroup"/>
     </event>
 
     <!-- Add checks to SkyLink verification component -->
     <event name="skylink_verification_checks">
-        <observer name="can_connect_to_api" instance="RetailExpress\SkyLinkMagento2\Observer\Verification\CanConnectToApi"/>
+        <observer name="can_connect_to_api" instance="RetailExpress\SkyLink\Observer\Verification\CanConnectToApi"/>
     </event>
 </config>

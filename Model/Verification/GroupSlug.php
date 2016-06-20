@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLinkMagento2\Model\Verification;
+namespace RetailExpress\SkyLink\Model\Verification;
 
 use ValueObjects\StringLiteral\StringLiteral;
 

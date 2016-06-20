@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLinkMagento2\Model;
+namespace RetailExpress\SkyLink\Model;
 
 use RetailExpress\SkyLink\Catalogue\Attributes\V2AttributeRepository;
 use RetailExpress\SkyLink\Catalogue\Products\MatrixPolicyMapper;

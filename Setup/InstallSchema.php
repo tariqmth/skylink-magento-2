@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLinkMagento2\Setup;
+namespace RetailExpress\SkyLink\Setup;
 
 use Magento\Framework\DB\Ddl\Table as DdlTable;
 use Magento\Framework\Setup\InstallSchemaInterface;

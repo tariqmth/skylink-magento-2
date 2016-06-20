@@ -1,10 +1,10 @@
 <?php
 
-namespace RetailExpress\SkyLinkMagento2\Model\Verification;
+namespace RetailExpress\SkyLink\Model\Verification;
 
 use RetailExpress\SkyLink\Apis\ApiException;
-use RetailExpress\SkyLinkMagento2\Model\Config as SkyLinkConfig;
-use RetailExpress\SkyLinkMagento2\Model\RepositoryFactory as SkyLinkRepositoryFactory;
+use RetailExpress\SkyLink\Model\Config as SkyLinkConfig;
+use RetailExpress\SkyLink\Model\RepositoryFactory as SkyLinkRepositoryFactory;
 use ValueObjects\Number\Integer;
 
 class CanConnectToApi implements Check

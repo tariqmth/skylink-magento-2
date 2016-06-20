@@ -1,9 +1,9 @@
 <?php
 
-namespace RetailExpress\SkyLinkMagento2\Observer\Verification;
+namespace RetailExpress\SkyLink\Observer\Verification;
 
 use Magento\Framework\Event\ObserverInterface;
-use RetailExpress\SkyLinkMagento2\Model\Verification\CanConnectToApiFactory as CheckFactory;
+use RetailExpress\SkyLink\Model\Verification\CanConnectToApiFactory as CheckFactory;
 
 class CanConnectToApi implements ObserverInterface
 {

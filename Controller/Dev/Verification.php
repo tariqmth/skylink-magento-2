@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLinkMagento2\Controller\Dev;
+namespace RetailExpress\SkyLink\Controller\Dev;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;

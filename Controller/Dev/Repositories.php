@@ -1,10 +1,10 @@
 <?php
 
-namespace RetailExpress\SkyLinkMagento2\Controller\Dev;
+namespace RetailExpress\SkyLink\Controller\Dev;
 
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use RetailExpress\SkyLinkMagento2\Model\RepositoryFactory as SkyLinkRepositoryFactory;
+use RetailExpress\SkyLink\Model\RepositoryFactory as SkyLinkRepositoryFactory;
 
 class Repositories extends Action
 {

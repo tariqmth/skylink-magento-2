@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLinkMagento2\Commands;
+namespace RetailExpress\SkyLink\Commands;
 
 use League\Tactician\Bernard\QueueableCommand;
 

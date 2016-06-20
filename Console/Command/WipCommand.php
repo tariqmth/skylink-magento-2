@@ -1,10 +1,10 @@
 <?php
 
-namespace RetailExpress\SkyLinkMagento2\Console\Command;
+namespace RetailExpress\SkyLink\Console\Command;
 
 use Magento\Framework\ObjectManagerInterface;
 use RetailExpress\CommandBus\CommandBus;
-use RetailExpress\SkyLinkMagento2\Commands\SyncCustomerCommand;
+use RetailExpress\SkyLink\Commands\SyncCustomerCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

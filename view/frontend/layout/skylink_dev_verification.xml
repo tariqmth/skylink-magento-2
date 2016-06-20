@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd" layout="1column">
     <referenceBlock name="content">
-        <block template="skylink/dev/verification.phtml" class="RetailExpress\SkyLinkMagento2\Block\Dev\Verification" name="skylink_dev_verification"/>
+        <block template="skylink/dev/verification.phtml" class="RetailExpress\SkyLink\Block\Dev\Verification" name="skylink_dev_verification"/>
     </referenceBlock>
 </page>

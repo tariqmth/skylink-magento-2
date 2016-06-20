@@ -1,10 +1,10 @@
 <?php
 
-namespace RetailExpress\SkyLinkMagento2\Observer\Verification;
+namespace RetailExpress\SkyLink\Observer\Verification;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use RetailExpress\SkyLinkMagento2\Model\Verification\Group;
+use RetailExpress\SkyLink\Model\Verification\Group;
 
 class AddSystemGroup implements ObserverInterface
 {

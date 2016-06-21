@@ -1,11 +1,11 @@
 <?php
 
-namespace RetailExpress\SkyLinkMagento2\Block\Dev;
+namespace RetailExpress\SkyLink\Block\Dev;
 
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context as TemplateContext;
-use RetailExpress\SkyLinkMagento2\Model\Verification\GroupSlug;
-use RetailExpress\SkyLinkMagento2\Model\Verification\Verifier as SkyLinkVerifier;
+use RetailExpress\SkyLink\Model\Verification\GroupSlug;
+use RetailExpress\SkyLink\Model\Verification\Verifier as SkyLinkVerifier;
 
 class Verification extends Template
 {

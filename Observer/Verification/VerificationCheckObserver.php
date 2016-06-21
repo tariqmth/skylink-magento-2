@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLinkMagento2\Observer\Verification;
+namespace RetailExpress\SkyLink\Observer\Verification;
 
 use Magento\Framework\Event\Observer;
 

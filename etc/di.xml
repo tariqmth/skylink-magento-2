@@ -3,8 +3,7 @@
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="skyLinkQueueListenCommand" xsi:type="object">RetailExpress\SkyLinkMagento2\Console\Command\QueueListenCommand</item>
-                <item name="skyLinkQueueWorkCommand" xsi:type="object">RetailExpress\SkyLinkMagento2\Console\Command\QueueWorkCommand</item>
+                <item name="skyLinkWipCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\WipCommand</item>
             </argument>
         </arguments>
     </type>

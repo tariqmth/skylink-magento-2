@@ -34,6 +34,7 @@
     "league/tactician": "^1.0",
     "league/tactician-bernard": "^0.5.0",
     "magento/framework": "^100.0.5",
+    "retail-express/eds": "^1.0",
     "retail-express/skylink": "^1.0"
   },
   "extra": {

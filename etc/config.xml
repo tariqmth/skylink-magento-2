@@ -3,7 +3,6 @@
     <default>
         <skylink>
             <api>
-                <version>2</version>
                 <version_2_url>https://{{database}}.retailexpress.com.au/dotnet/admin/webservices/v2/webstore/service.asmx?wsdl</version_2_url>
             </api>
             <general>

@@ -2,6 +2,7 @@
 
 namespace RetailExpress\SkyLink\Setup;
 
+use Magento\Framework\DB\Adapter\AdapterInterface as DbAdapterInterface;
 use Magento\Framework\DB\Ddl\Table as DdlTable;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
@@ -10,63 +11,23 @@ use Magento\Framework\Setup\ModuleContextInterface;
 class InstallSchema implements InstallSchemaInterface
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function install(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $installer = $setup;
 
+        // Create EDS Change Sets table
+        $changeSetsTable = 'retail_express_skylink_eds_change_sets';
         $table = $setup
             ->getConnection()
-            ->newTable($installer->getTable('skylink_jobs'))
+            ->newTable($installer->getTable($changeSetsTable))
             ->addColumn(
-                'job_id',
-                DdlTable::TYPE_INTEGER,
-                null,
-                ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true],
-                'Job ID'
-            )
-            ->addColumn(
-                'queue',
+                'change_set_id',
                 DdlTable::TYPE_TEXT,
-                255,
-                ['nullable' => false],
-                'Queue'
-            )
-            ->addColumn(
-                'payload',
-                DdlTable::TYPE_TEXT,
-                '64k',
-                ['nullable' => false],
-                'Payload'
-            )
-            ->addColumn(
-                'attempts',
-                DdlTable::TYPE_INTEGER,
-                null,
-                ['unsigned' => true,  'nullable' => false, 'default' => 0],
-                'Attempts'
-            )
-            ->addColumn(
-                'reserved',
-                DdlTable::TYPE_BOOLEAN,
-                null,
-                ['nullable' => false, 'default' => 0],
-                'Reserved'
-            )
-            ->addColumn(
-                'reserved_at',
-                DdlTable::TYPE_TIMESTAMP,
-                null,
-                ['nullable' => true],
-                'Reserved At'
-            )
-            ->addColumn(
-                'available_at',
-                DdlTable::TYPE_TIMESTAMP,
-                null,
-                ['nullable' => true],
-                'Available At'
+                36,
+                ['nullable' => false, 'primary' => true],
+                'Change Set ID'
             )
             ->addColumn(
                 'created_at',
@@ -74,6 +35,61 @@ class InstallSchema implements InstallSchemaInterface
                 '150',
                 ['nullable' => false, 'default' => DdlTable::TIMESTAMP_INIT],
                 'Created At'
+            )
+            ->addColumn(
+                'processed_at',
+                DdlTable::TYPE_TIMESTAMP,
+                null,
+                ['nullable' => true],
+                'Processed At'
+            );
+
+        $installer->getConnection()->createTable($table);
+
+        // Create EDS Change Sets entity IDs
+        $changeSetEntityIdsTable = 'retail_express_skylink_eds_change_set_entity_ids';
+        $table = $setup
+            ->getConnection()
+            ->newTable($installer->getTable($changeSetEntityIdsTable))
+            ->addColumn(
+                'change_set_id',
+                DdlTable::TYPE_TEXT,
+                36,
+                ['nullable' => false],
+                'Change Set ID'
+            )
+            ->addColumn(
+                'entity_type',
+                DdlTable::TYPE_TEXT,
+                255,
+                ['nullable' => false],
+                'Entity Type'
+            )
+            ->addColumn(
+                'entity_id',
+                DdlTable::TYPE_TEXT,
+                255,
+                ['nullable' => false],
+                'Entity ID'
+            )
+            ->addColumn(
+                'processed_at',
+                DdlTable::TYPE_TIMESTAMP,
+                null,
+                ['nullable' => true],
+                'Processed At'
+            )
+            ->addIndex(
+                $installer->getIdxName($changeSetEntityIdsTable, ['change_set_id', 'entity_type', 'entity_id']),
+                ['change_set_id', 'entity_type', 'entity_id'],
+                ['type' => DbAdapterInterface::INDEX_TYPE_UNIQUE]
+            )
+            ->addForeignKey(
+                $installer->getFkName($changeSetEntityIdsTable, 'change_set_id', $changeSetsTable, 'change_set_id'),
+                'change_set_id',
+                $changeSetsTable,
+                'change_set_id',
+                DdlTable::ACTION_CASCADE
             );
 
         $installer->getConnection()->createTable($table);

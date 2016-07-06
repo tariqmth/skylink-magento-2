@@ -11,12 +11,8 @@ class SalesChannelId implements ArrayInterface
      */
     public function toOptionArray()
     {
-        $options = [];
-
-        foreach (range(1, 100) as $salesChannelId) {
-            $options[] = ['value' => $salesChannelId, 'label' => __($salesChannelId)];
-        }
-
-        return $options;
+        return array_map(function ($salesChannelId) {
+            return ['value' => $salesChannelId, 'label' => __($salesChannelId)];
+        }, range(1, 50));
     }
 }

@@ -8,7 +8,7 @@ use Magento\Customer\Api\Data\CustomerSearchResultsInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use PHPUnit_Framework_TestCase;
-use RetailExpress\SkyLink\Api\CustomerService;
+use RetailExpress\SkyLink\Api\Customers\CustomerService;
 use RetailExpress\SkyLink\Commands\Customers\SyncCustomerCommand;
 use RetailExpress\SkyLink\Commands\Customers\SyncCustomerHandler;
 use RetailExpress\SkyLink\Customers\Customer as SkyLinkCustomer;

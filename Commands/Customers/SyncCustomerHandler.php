@@ -3,8 +3,9 @@
 namespace RetailExpress\SkyLink\Commands\Customers;
 
 use Magento\Customer\Api\CustomerRepositoryInterface;
-use Magento\Framework\Api\FilterBuilder;
+use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use RetailExpress\SkyLink\Api\CustomerService;
 use RetailExpress\SkyLink\Customers\CustomerRepository as SkylinkCustomerRepository;
 use RetailExpress\SkyLink\Customers\Customer as SkyLinkCustomer;
 use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;
@@ -17,26 +18,30 @@ class SyncCustomerHandler
 
     private $searchCriteriaBuilder;
 
+    private $customerService;
+
     public function __construct(
         SkylinkCustomerRepository $skylinkCustomerRepository,
         CustomerRepositoryInterface $customerRepository,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        CustomerService $customerService
     ) {
         $this->skylinkCustomerRepository = $skylinkCustomerRepository;
         $this->customerRepository = $customerRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->customerService = $customerService;
     }
 
     public function handle(SyncCustomerCommand $command)
     {
         $retailExpressCustomer = $this->retrieveRetailExpressCustomer($command->retailExpressCustomerId);
 
-        $customer = $this->findCorrespondingCustomer($retailExpressCustomer);
+        $customer = $this->findExistingCustomer($retailExpressCustomer);
 
         if ($customer) {
-            // Existing customer, update
+            $this->updateCustomer($customer, $retailExpressCustomer);
         } else {
-            // New customer, register
+            $this->registerCustomer($retailExpressCustomer);
         }
     }
 
@@ -47,21 +52,34 @@ class SyncCustomerHandler
         return $this->skylinkCustomerRepository->find($retailExpressCustomerId);
     }
 
-    private function findCorrespondingCustomer(SkyLinkCustomer $retailExpressCustomer)
+    private function findExistingCustomer(SkyLinkCustomer $retailExpressCustomer)
     {
-        $this->searchCriteriaBuilder->addFilter('retail_express_customer_id', (string) $retailExpressCustomer->getId());
+        $retailExpressCustomerId = $retailExpressCustomer->getId();
+
+        $this->searchCriteriaBuilder->addFilter('retail_express_customer_id', (string) $retailExpressCustomerId);
 
         $searchCriteria = $this->searchCriteriaBuilder->create();
 
-        $results = $this->customerRepository->getList($searchCriteria);
+        $existingCustomers = $this->customerRepository->getList($searchCriteria);
 
-        if ($result->getTotalCount() > 1) {
-            // Throw exception because there appears to be more than one
-            // customer with the same Retail Express Customer ID
+        $existingCustomerMatches = $existingCustomers->getTotalCount();
+
+        if ($existingCustomerMatches > 1) {
+            throw TooManyCustomerMatchesException::withRetailExpressCustomerId($retailExpressCustomerId, $existingCustomerMatches);
         }
 
-        if ($result->getTotalCount() === 1) {
-            return $result->getItems()[0];
+        if ($existingCustomerMatches === 1) {
+            return $existingCustomers->getItems()[0];
         }
+    }
+
+    private function updateCustomer(CustomerInterface $customer, SkyLinkCustomer $retailExpressCustomer)
+    {
+        $this->customerService->updateCustomer($customer, $retailExpressCustomer);
+    }
+
+    private function registerCustomer(SkyLinkCustomer $retailExpressCustomer)
+    {
+        $this->customerService->registerCustomer($retailExpressCustomer);
     }
 }

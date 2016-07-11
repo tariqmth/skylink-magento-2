@@ -4,7 +4,7 @@
         <section id="skylink" translate="label" type="text" sortOrder="400" showInDefault="1" showInWebsite="1">
             <label>SkyLink</label>
             <tab>service</tab>
-            <resource>RetailExpress_SkyLink::system_config</resource>
+            <resource>RetailExpress_SkyLinkMagento2::system_config</resource>
             <group id="api" translate="label" type="text" sortOrder="100" showInDefault="1">
                 <field id="url" translate="label" type="text" sortOrder="200" showInDefault="1">
                     <label>URL</label>
@@ -24,7 +24,7 @@
                 <label>General Settings</label>
                 <field id="sales_channel_id" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1">
                     <label>Sales Channel ID</label>
-                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\SalesChannelId</source_model>
+                    <source_model>RetailExpress\SkyLink\Magento2\Model\System\Config\Source\SalesChannelId</source_model>
                 </field>
             </group>
         </section>

@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Test\Unit\Commands\Customers;
+namespace RetailExpress\SkyLink\Magento2\Test\Unit\Commands\Customers;
 
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
@@ -8,9 +8,9 @@ use Magento\Customer\Api\Data\CustomerSearchResultsInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SearchCriteriaInterface;
 use PHPUnit_Framework_TestCase;
-use RetailExpress\SkyLink\Api\Customers\CustomerService;
-use RetailExpress\SkyLink\Commands\Customers\SyncCustomerCommand;
-use RetailExpress\SkyLink\Commands\Customers\SyncCustomerHandler;
+use RetailExpress\SkyLink\Magento2\Api\Customers\CustomerService;
+use RetailExpress\SkyLink\Magento2\Commands\Customers\SyncCustomerCommand;
+use RetailExpress\SkyLink\Magento2\Commands\Customers\SyncCustomerHandler;
 use RetailExpress\SkyLink\Customers\Customer as SkyLinkCustomer;
 use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Customers\CustomerNotFoundException;
@@ -74,7 +74,7 @@ class SyncCustomerHandlerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException RetailExpress\SkyLink\Commands\Customers\TooManyCustomerMatchesException
+     * @expectedException RetailExpress\SkyLink\Magento2\Commands\Customers\TooManyCustomerMatchesException
      */
     public function testFindingExistingCustomerFailsIfThereIsMoreThanOneMatch()
     {

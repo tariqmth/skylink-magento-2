@@ -1,12 +1,12 @@
 <?php
 
-namespace RetailExpress\SkyLink\Test\Unit\Model\Customers;
+namespace RetailExpress\SkyLink\Magento2\Test\Unit\Model\Customers;
 
 use Magento\Customer\Api\Data\AddressInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Model\AddressFactory;
 use PHPUnit_Framework_TestCase;
-use RetailExpress\SkyLink\Model\Customers\CustomerAddressExtractor;
+use RetailExpress\SkyLink\Magento2\Model\Customers\CustomerAddressExtractor;
 
 class CustomerAddressExtractorTest extends PHPUnit_Framework_TestCase
 {

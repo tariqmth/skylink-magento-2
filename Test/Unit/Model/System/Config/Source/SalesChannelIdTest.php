@@ -1,9 +1,9 @@
 <?php
 
-namespace RetailExpress\SkyLink\Test\Unit\Model\System\Config\Source;
+namespace RetailExpress\SkyLink\Magento2\Test\Unit\Model\System\Config\Source;
 
 use PHPUnit_Framework_TestCase;
-use RetailExpress\SkyLink\Model\System\Config\Source\SalesChannelId;
+use RetailExpress\SkyLink\Magento2\Model\System\Config\Source\SalesChannelId;
 
 class SalesChannelIdTest extends PHPUnit_Framework_TestCase
 {

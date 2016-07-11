@@ -1,11 +1,11 @@
 <?php
 
-namespace RetailExpress\SkyLink\Api\Eds;
+namespace RetailExpress\SkyLink\Magento2\Api\Eds;
 
 use Magento\Framework\Exception\NoSuchEntityException;
 use RetailExpress\SkyLink\Eds\ChangeSet;
 use RetailExpress\SkyLink\Eds\ChangeSetId;
-use RetailExpress\SkyLink\Exceptions\Eds\NotAllEntitiesProcessedException;
+use RetailExpress\SkyLink\Magento2\Exceptions\Eds\NotAllEntitiesProcessedException;
 
 interface ChangeSetRepository
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace RetailExpress\SkyLink\Commands\Customers;
+namespace RetailExpress\SkyLink\Magento2\Commands\Customers;
 
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use RetailExpress\SkyLink\Api\Customers\CustomerService;
+use RetailExpress\SkyLink\Magento2\Api\Customers\CustomerService;
 use RetailExpress\SkyLink\Customers\CustomerRepository as SkylinkCustomerRepository;
 use RetailExpress\SkyLink\Customers\Customer as SkyLinkCustomer;
 use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;

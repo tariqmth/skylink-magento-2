@@ -4,6 +4,6 @@ use Magento\Framework\Component\ComponentRegistrar;
 
 ComponentRegistrar::register(
     ComponentRegistrar::MODULE,
-    'RetailExpress_SkyLink',
+    'RetailExpress_SkyLinkMagento2',
     __DIR__
 );

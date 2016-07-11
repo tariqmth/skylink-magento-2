@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Exceptions\Eds;
+namespace RetailExpress\SkyLink\Magento2\Exceptions\Eds;
 
 use Exception;
 use Magento\Framework\Exception\LocalizedException;

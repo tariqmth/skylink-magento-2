@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Commands\Customers;
+namespace RetailExpress\SkyLink\Magento2\Commands\Customers;
 
 use Magento\Framework\Exception\LocalizedException;
 use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;

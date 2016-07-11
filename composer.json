@@ -26,7 +26,7 @@
   "autoload": {
     "files": ["registration.php"],
     "psr-4": {
-      "RetailExpress\\SkyLink\\": ""
+      "RetailExpress\\SkyLink\\Magento2\\": ""
     }
   },
   "require": {

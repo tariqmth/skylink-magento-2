@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Model\ResourceModel\Eds;
+namespace RetailExpress\SkyLink\Magento2\Model\ResourceModel\Eds;
 
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 use RetailExpress\SkyLink\Eds\ChangeSet;

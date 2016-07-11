@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Model\Customers;
+namespace RetailExpress\SkyLink\Magento2\Model\Customers;
 
 use Magento\Customer\Api\Data\AddressInterface;
 use Magento\Customer\Api\Data\CustomerInterface;

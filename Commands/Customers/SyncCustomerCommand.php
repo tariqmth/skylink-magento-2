@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Commands\Customers;
+namespace RetailExpress\SkyLink\Magento2\Commands\Customers;
 
 class SyncCustomerCommand
 {

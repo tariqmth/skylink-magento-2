@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Setup;
+namespace RetailExpress\SkyLink\Magento2\Setup;
 
 use Magento\Customer\Setup\CustomerSetupFactory;
 use Magento\Framework\Setup\InstallDataInterface;

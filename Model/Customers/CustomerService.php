@@ -1,14 +1,14 @@
 <?php
 
-namespace RetailExpress\SkyLink\Model\Customers;
+namespace RetailExpress\SkyLink\Magento2\Model\Customers;
 
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\AddressInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Model\CustomerFactory;
-use RetailExpress\SkyLink\Api\Customers\CustomerMapper;
-use RetailExpress\SkyLink\Api\Customers\CustomerService as CustomerServiceInterface;
+use RetailExpress\SkyLink\Magento2\Api\Customers\CustomerMapper;
+use RetailExpress\SkyLink\Magento2\Api\Customers\CustomerService as CustomerServiceInterface;
 use RetailExpress\SkyLink\Customers\Customer as SkyLinkCustomer;
 
 class CustomerService implements CustomerServiceInterface

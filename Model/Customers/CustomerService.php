@@ -6,7 +6,6 @@ use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\AddressInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
-use Magento\Customer\Model\AddressFactory;
 use Magento\Customer\Model\CustomerFactory;
 use RetailExpress\SkyLink\Api\Customers\CustomerMapper;
 use RetailExpress\SkyLink\Api\Customers\CustomerService as CustomerServiceInterface;
@@ -69,7 +68,7 @@ class CustomerService implements CustomerServiceInterface
     /**
      * Extracts the Billing and Shipping Addresses from a customer.
      *
-     * @param  CustomerInterface  $customer
+     * @param CustomerInterface $customer
      *
      * @return AddressInterface[]
      */

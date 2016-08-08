@@ -15,6 +15,8 @@ class NotAllEntitiesProcessedException extends LocalizedException
      * @param  ChangeSetId
      *
      * @return NotAllEntitiesProcessedException
+     *
+     * @codeCoverageIgnore
      */
     public static function withChangeSetId(ChangeSetId $changeSetId)
     {

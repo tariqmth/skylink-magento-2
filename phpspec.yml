@@ -1,0 +1,15 @@
+bootstrap: spec/bootstrap.php
+
+suites:
+  default:
+    namespace: RetailExpress\SkyLink\Magento2
+    psr4_prefix: RetailExpress\SkyLink\Magento2
+    src_path: ./
+
+extensions:
+  - PhpSpec\Extension\CodeCoverageExtension
+
+code_coverage:
+  output: build/coverage
+  whitelist:
+    - ./

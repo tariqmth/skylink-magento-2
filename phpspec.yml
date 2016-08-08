@@ -4,7 +4,7 @@ suites:
   default:
     namespace: RetailExpress\SkyLink\Magento2
     psr4_prefix: RetailExpress\SkyLink\Magento2
-    src_path: ./
+    src_path: .
 
 extensions:
   - PhpSpec\Extension\CodeCoverageExtension
@@ -12,4 +12,9 @@ extensions:
 code_coverage:
   output: build/coverage
   whitelist:
-    - ./
+    - .
+  blacklist:
+    - spec
+    - Setup
+  blacklist_files:
+    - registration.php

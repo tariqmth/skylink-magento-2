@@ -7,7 +7,7 @@ interface SkyLinkAttributeCodeRepositoryInterface
     /**
      * Retrieve a list of all attribute codes available in SkyLink.
      *
-     * @return string[]
+     * @return \RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode[]
      */
     public function all();
 }

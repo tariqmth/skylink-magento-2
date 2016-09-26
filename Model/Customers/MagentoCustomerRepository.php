@@ -27,8 +27,8 @@ class MagentoCustomerRepository implements MagentoCustomerRepositoryInterface
     /**
      * Create a new Magento Customer Repository instance.
      *
-     * @param CustomerRepositoryInterface     $baseMagentoCustomerRepository
-     * @param SearchCriteriaBuilder           $searchCriteriaBuilder
+     * @param CustomerRepositoryInterface $baseMagentoCustomerRepository
+     * @param SearchCriteriaBuilder       $searchCriteriaBuilder
      */
     public function __construct(
         SearchCriteriaBuilder $searchCriteriaBuilder,

@@ -2,7 +2,6 @@
 
 namespace spec\RetailExpress\SkyLink\Magento2\Commands\Customers;
 
-use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
 use PhpSpec\ObjectBehavior;
 use RetailExpress\SkyLink\Customers\Customer as SkyLinkCustomer;

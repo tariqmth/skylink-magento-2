@@ -3,7 +3,6 @@
 namespace spec\RetailExpress\SkyLink\Magento2\Model\Products;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use RetailExpress\SkyLink\Catalogue\Attributes\Attribute;
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode;
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeOption;

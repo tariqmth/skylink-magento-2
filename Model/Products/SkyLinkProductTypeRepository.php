@@ -28,7 +28,7 @@ class SkyLinkProductTypeRepository implements SkyLinkProductTypeRepositoryInterf
      */
     public function getList()
     {
-        /** @var \RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode */
+        /* @var \RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode */
         $attributeCode = AttributeCode::get(AttributeCode::PRODUCT_TYPE);
 
         $attribute = $this->attributeRepository->find(

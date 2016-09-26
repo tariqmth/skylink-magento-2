@@ -3,7 +3,6 @@
 namespace RetailExpress\SkyLink\Magento2\Commands\Customers;
 
 use RetailExpress\SkyLink\Customers\CustomerRepository as SkylinkCustomerRepository;
-use RetailExpress\SkyLink\Customers\Customer as SkyLinkCustomer;
 use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Magento2\Api\Customers\MagentoCustomerRepositoryInterface;
 use RetailExpress\SkyLink\Magento2\Api\Customers\MagentoCustomerServiceInterface;
@@ -34,9 +33,9 @@ class SyncSkyLinkCustomerToMagentoCustomerHandler
     /**
      * Create a new Sync SkyLink Customer to Magento Customer Handler.
      *
-     * @param SkylinkCustomerRepository       $skyLinkCustomerRepository
-     * @param MagentoCustomerRepositoryInterface       $magentoCustomerRepository
-     * @param MagentoCustomerServiceInterface $magentoCustomerService
+     * @param SkylinkCustomerRepository          $skyLinkCustomerRepository
+     * @param MagentoCustomerRepositoryInterface $magentoCustomerRepository
+     * @param MagentoCustomerServiceInterface    $magentoCustomerService
      */
     public function __construct(
         SkylinkCustomerRepository $skyLinkCustomerRepository,

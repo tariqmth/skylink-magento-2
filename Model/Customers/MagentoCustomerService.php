@@ -4,7 +4,6 @@ namespace RetailExpress\SkyLink\Magento2\Model\Customers;
 
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
-use Magento\Customer\Api\Data\AddressInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Model\CustomerFactory;
 use Magento\Customer\Model\AddressFactory;

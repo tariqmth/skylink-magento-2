@@ -12,7 +12,6 @@ use RetailExpress\SkyLink\Customers\NewsletterSubscription as SkyLinkNewsletterS
 use RetailExpress\SkyLink\Customers\ShippingContact as SkyLinkShippingContact;
 use RetailExpress\SkyLink\Magento2\Model\Customers\MagentoCustomerMapper;
 
-
 class MagentoCustomerMapperSpec extends ObjectBehavior
 {
     public function it_is_initializable()

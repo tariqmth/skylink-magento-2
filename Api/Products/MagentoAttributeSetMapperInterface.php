@@ -22,7 +22,7 @@ interface MagentoAttributeSetMapperInterface
      * Get the Attribute Set used for the given product type. If there is no
      * mapping defined, "null" is returend.
      *
-     * @param  string $productType
+     * @param string $productType
      *
      * @return AttributeSetInterface|null
      */

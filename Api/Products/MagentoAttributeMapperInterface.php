@@ -21,7 +21,7 @@ interface MagentoAttributeMapperInterface
      * Get the Attribute used for the given SkyLink Attribute Code. If there is no
      * mapping defined, "null" is returend.
      *
-     * @param  string $skylinkAttributeCode
+     * @param string $skylinkAttributeCode
      *
      * @return AttributeInterface|null
      */

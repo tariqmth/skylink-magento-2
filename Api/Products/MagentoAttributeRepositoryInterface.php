@@ -15,5 +15,5 @@ interface MagentoAttributeRepositoryInterface
      *
      * @return AttributeInterface|null
      */
-    public function getAttributeForProductType(SkyLinkAttributeCode $skylinkAttributeCode);
+    public function getMagentoAttributeForSkyLinkAttributeCode(SkyLinkAttributeCode $skylinkAttributeCode);
 }

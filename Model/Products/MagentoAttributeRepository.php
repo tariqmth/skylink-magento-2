@@ -9,12 +9,7 @@ use RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode as SkyLinkAttribute
 
 class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
 {
-    /**
-     * Database connection.
-     *
-     * @var \Magento\Framework\DB\Adapter\AdapterInterface
-     */
-    private $connection;
+    use MagentoAttribute;
 
     /**
      * The base Magento Attribute Repository, used for fetching attributes based
@@ -25,7 +20,7 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
     private $baseMagentoAttributeRepository;
 
     /**
-     * Create a new Magento Driver for queues.
+     * Create a new Magento Attribute Repository.
      *
      * @param ResourceConnection                      $resourceConnection
      * @param BaseMagentoAttributeRepositoryInterface $baseMagentoAttributeRepository
@@ -51,7 +46,7 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
         $magentoAttributeCode = $this->connection->fetchOne(
             $this->connection
                 ->select()
-                ->from($this->getAttributesTable(), ['magento_attribute_code'])
+                ->from($this->getAttributesTable(), 'magento_attribute_code')
                 ->where('skylink_attribute_code = ?', $skylinkAttributeCode->getValue())
         );
 
@@ -60,10 +55,5 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
         }
 
         return $this->baseMagentoAttributeRepository->get('catalog_product', $magentoAttributeCode);
-    }
-
-    private function getAttributesTable()
-    {
-        return $this->connection->getTableName('retail_express_skylink_attributes');
     }
 }

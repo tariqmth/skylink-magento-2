@@ -1,11 +1,11 @@
 <?php
 
-namespace RetailExpress\SkyLink\Magento2\Model\Products;
+namespace RetailExpress\SkyLink\Model\Products;
 
 use Magento\Eav\Api\Data\AttributeInterface;
 use Magento\Framework\App\ResourceConnection;
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
-use RetailExpress\SkyLink\Magento2\Api\Products\MagentoAttributeServiceInterface;
+use RetailExpress\SkyLink\Api\Products\MagentoAttributeServiceInterface;
 
 class MagentoAttributeService
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace spec\RetailExpress\SkyLink\Magento2\Model\Products;
+namespace spec\RetailExpress\SkyLink\Model\Products;
 
 use PhpSpec\ObjectBehavior;
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode;
-use RetailExpress\SkyLink\Magento2\Model\Products\SkyLinkAttributeCodeRepository;
+use RetailExpress\SkyLink\Model\Products\SkyLinkAttributeCodeRepository;
 
 class SkyLinkAttributeCodeRepositorySpec extends ObjectBehavior
 {

@@ -2,8 +2,8 @@ bootstrap: spec/bootstrap.php
 
 suites:
   default:
-    namespace: RetailExpress\SkyLink\Magento2
-    psr4_prefix: RetailExpress\SkyLink\Magento2
+    namespace: RetailExpress\SkyLink
+    psr4_prefix: RetailExpress\SkyLink
     src_path: .
 
 extensions:
@@ -16,5 +16,6 @@ code_coverage:
   blacklist:
     - spec
     - Setup
+    - Test
   blacklist_files:
     - registration.php

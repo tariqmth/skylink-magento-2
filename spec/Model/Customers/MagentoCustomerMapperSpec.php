@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\RetailExpress\SkyLink\Magento2\Model\Customers;
+namespace spec\RetailExpress\SkyLink\Model\Customers;
 
 use Magento\Customer\Api\Data\AddressInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
@@ -10,7 +10,7 @@ use RetailExpress\SkyLink\Customers\Customer as SkyLinkCustomer;
 use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Customers\NewsletterSubscription as SkyLinkNewsletterSubscription;
 use RetailExpress\SkyLink\Customers\ShippingContact as SkyLinkShippingContact;
-use RetailExpress\SkyLink\Magento2\Model\Customers\MagentoCustomerMapper;
+use RetailExpress\SkyLink\Model\Customers\MagentoCustomerMapper;
 
 class MagentoCustomerMapperSpec extends ObjectBehavior
 {

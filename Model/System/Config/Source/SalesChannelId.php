@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Magento2\Model\System\Config\Source;
+namespace RetailExpress\SkyLink\Model\System\Config\Source;
 
 use Magento\Framework\Option\ArrayInterface;
 
@@ -13,6 +13,6 @@ class SalesChannelId implements ArrayInterface
     {
         return array_map(function ($salesChannelId) {
             return ['value' => $salesChannelId, 'label' => __($salesChannelId)];
-        }, range(1, 50));
+        }, range(1, 100));
     }
 }

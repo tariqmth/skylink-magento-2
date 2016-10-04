@@ -1,9 +1,9 @@
 <?php
 
-namespace RetailExpress\SkyLink\Magento2\Test\Unit\Exceptions\Eds;
+namespace RetailExpress\SkyLink\Test\Unit\Exceptions\Eds;
 
 use PHPUnit_Framework_TestCase;
-use RetailExpress\SkyLink\Magento2\Exceptions\Eds\NotAllEntitiesProcessedException;
+use RetailExpress\SkyLink\Exceptions\Eds\NotAllEntitiesProcessedException;
 use RetailExpress\SkyLink\Eds\ChangeSetId;
 
 class NotAllEntitiesProcessedExceptionTest extends PHPUnit_Framework_TestCase

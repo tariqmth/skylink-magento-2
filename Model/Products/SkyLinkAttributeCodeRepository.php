@@ -1,9 +1,9 @@
 <?php
 
-namespace RetailExpress\SkyLink\Magento2\Model\Products;
+namespace RetailExpress\SkyLink\Model\Products;
 
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode;
-use RetailExpress\SkyLink\Magento2\Api\Products\SkyLinkAttributeCodeRepositoryInterface;
+use RetailExpress\SkyLink\Api\Products\SkyLinkAttributeCodeRepositoryInterface;
 
 class SkyLinkAttributeCodeRepository implements SkyLinkAttributeCodeRepositoryInterface
 {

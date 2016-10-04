@@ -1,24 +1,26 @@
 <?php
 
-namespace RetailExpress\SkyLink\Magento2\Model\Products;
+namespace RetailExpress\SkyLink\Model\Products;
 
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode;
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeRepository;
-use RetailExpress\SkyLink\Magento2\Api\Products\SkyLinkProductTypeRepositoryInterface;
 use RetailExpress\SkyLink\ValueObjects\SalesChannelId;
+use RetailExpress\SkyLink\Model\Config;
+use RetailExpress\SkyLink\Api\Products\SkyLinkProductTypeRepositoryInterface;
+use RetailExpress\SkyLink\Api\RepositoryFactoryInterface;
 
 class SkyLinkProductTypeRepository implements SkyLinkProductTypeRepositoryInterface
 {
     private $attributeRepository;
 
-    private $salesChannelId;
+    private $config;
 
     public function __construct(
-        AttributeRepository $attributeRepository,
-        SalesChannelId $salesChannelId
+        RepositoryFactoryInterface $repositoryFactory,
+        Config $config
     ) {
-        $this->attributeRepository = $attributeRepository;
-        $this->salesChannelId = $salesChannelId;
+        $this->attributeRepository = $repositoryFactory->createCatalogueAttributeRepository();
+        $this->config = $config;
     }
 
     /**
@@ -33,7 +35,7 @@ class SkyLinkProductTypeRepository implements SkyLinkProductTypeRepositoryInterf
 
         $attribute = $this->attributeRepository->find(
             $attributeCode,
-            $this->salesChannelId
+            $this->config->getSalesChannelId()
         );
 
         return $attribute->getOptions();

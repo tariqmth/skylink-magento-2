@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\RetailExpress\SkyLink\Magento2\Model\Customers;
+namespace spec\RetailExpress\SkyLink\Model\Customers;
 
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
@@ -9,8 +9,8 @@ use Magento\Framework\Api\SearchCriteria;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use PhpSpec\ObjectBehavior;
 use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;
-use RetailExpress\SkyLink\Magento2\Exceptions\Customers\TooManyCustomerMatchesException;
-use RetailExpress\SkyLink\Magento2\Model\Customers\MagentoCustomerRepository;
+use RetailExpress\SkyLink\Exceptions\Customers\TooManyCustomerMatchesException;
+use RetailExpress\SkyLink\Model\Customers\MagentoCustomerRepository;
 
 class MagentoCustomerRepositorySpec extends ObjectBehavior
 {

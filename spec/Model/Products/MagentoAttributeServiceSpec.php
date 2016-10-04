@@ -1,11 +1,11 @@
 <?php
 
-namespace spec\RetailExpress\SkyLink\Magento2\Model\Products;
+namespace spec\RetailExpress\SkyLink\Model\Products;
 
 use Magento\Framework\App\ResourceConnection;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
-use RetailExpress\SkyLink\Magento2\Model\Products\MagentoAttributeService;
+use RetailExpress\SkyLink\Model\Products\MagentoAttributeService;
 
 class MagentoAttributeServiceSpec extends ObjectBehavior
 {

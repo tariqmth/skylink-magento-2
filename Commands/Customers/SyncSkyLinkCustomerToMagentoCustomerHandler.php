@@ -1,11 +1,11 @@
 <?php
 
-namespace RetailExpress\SkyLink\Magento2\Commands\Customers;
+namespace RetailExpress\SkyLink\Commands\Customers;
 
 use RetailExpress\SkyLink\Customers\CustomerRepository as SkylinkCustomerRepository;
 use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;
-use RetailExpress\SkyLink\Magento2\Api\Customers\MagentoCustomerRepositoryInterface;
-use RetailExpress\SkyLink\Magento2\Api\Customers\MagentoCustomerServiceInterface;
+use RetailExpress\SkyLink\Api\Customers\MagentoCustomerRepositoryInterface;
+use RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface;
 
 class SyncSkyLinkCustomerToMagentoCustomerHandler
 {

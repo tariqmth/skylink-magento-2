@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Magento2\Api\Eds;
+namespace RetailExpress\SkyLink\Api\Eds;
 
 use Magento\Framework\Exception\NoSuchEntityException;
 use RetailExpress\SkyLink\Eds\ChangeSet;

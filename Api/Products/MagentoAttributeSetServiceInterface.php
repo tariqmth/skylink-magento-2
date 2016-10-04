@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Magento2\Api\Products;
+namespace RetailExpress\SkyLink\Api\Products;
 
 use Magento\Eav\Api\Data\AttributeSetInterface;
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;

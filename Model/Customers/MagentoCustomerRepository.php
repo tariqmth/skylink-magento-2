@@ -1,12 +1,12 @@
 <?php
 
-namespace RetailExpress\SkyLink\Magento2\Model\Customers;
+namespace RetailExpress\SkyLink\Model\Customers;
 
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;
-use RetailExpress\SkyLink\Magento2\Api\Customers\MagentoCustomerRepositoryInterface;
-use RetailExpress\SkyLink\Magento2\Exceptions\Customers\TooManyCustomerMatchesException;
+use RetailExpress\SkyLink\Api\Customers\MagentoCustomerRepositoryInterface;
+use RetailExpress\SkyLink\Exceptions\Customers\TooManyCustomerMatchesException;
 
 class MagentoCustomerRepository implements MagentoCustomerRepositoryInterface
 {

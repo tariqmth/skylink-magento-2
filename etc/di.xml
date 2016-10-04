@@ -1,4 +1,7 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="RetailExpress\Eds\ChangeSetDeserialiser" type="RetailExpress\Eds\V2ChangeSetDeserialiser"/>
+    <preference for="RetailExpress\SkyLink\Api\Products\SkyLinkAttributeCodeRepositoryInterface" type="RetailExpress\SkyLink\Model\Products\SkyLinkAttributeCodeRepository"/>
+    <preference for="RetailExpress\SkyLink\Api\Products\SkyLinkProductTypeRepositoryInterface" type="RetailExpress\SkyLink\Model\Products\SkyLinkProductTypeRepository"/>
+    <preference for="RetailExpress\SkyLink\Api\RepositoryFactoryInterface" type="RetailExpress\SkyLink\Model\RepositoryFactory"/>
 </config>

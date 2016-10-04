@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\RetailExpress\SkyLink\Magento2\Commands\Customers;
+namespace spec\RetailExpress\SkyLink\Commands\Customers;
 
 use Magento\Customer\Api\Data\CustomerInterface;
 use PhpSpec\ObjectBehavior;
@@ -8,10 +8,10 @@ use RetailExpress\SkyLink\Customers\Customer as SkyLinkCustomer;
 use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Customers\CustomerNotFoundException;
 use RetailExpress\SkyLink\Customers\CustomerRepository as SkylinkCustomerRepository;
-use RetailExpress\SkyLink\Magento2\Api\Customers\MagentoCustomerRepositoryInterface;
-use RetailExpress\SkyLink\Magento2\Api\Customers\MagentoCustomerServiceInterface;
-use RetailExpress\SkyLink\Magento2\Commands\Customers\SyncSkyLinkCustomerToMagentoCustomerCommand;
-use RetailExpress\SkyLink\Magento2\Commands\Customers\SyncSkyLinkCustomerToMagentoCustomerHandler;
+use RetailExpress\SkyLink\Api\Customers\MagentoCustomerRepositoryInterface;
+use RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface;
+use RetailExpress\SkyLink\Commands\Customers\SyncSkyLinkCustomerToMagentoCustomerCommand;
+use RetailExpress\SkyLink\Commands\Customers\SyncSkyLinkCustomerToMagentoCustomerHandler;
 
 class SyncSkyLinkCustomerToMagentoCustomerHandlerSpec extends ObjectBehavior
 {

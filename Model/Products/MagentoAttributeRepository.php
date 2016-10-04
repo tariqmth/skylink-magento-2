@@ -1,10 +1,10 @@
 <?php
 
-namespace RetailExpress\SkyLink\Magento2\Model\Products;
+namespace RetailExpress\SkyLink\Model\Products;
 
 use Magento\Eav\Api\AttributeRepositoryInterface as BaseMagentoAttributeRepositoryInterface;
 use Magento\Framework\App\ResourceConnection;
-use RetailExpress\SkyLink\Magento2\Api\Products\MagentoAttributeRepositoryInterface;
+use RetailExpress\SkyLink\Api\Products\MagentoAttributeRepositoryInterface;
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 
 class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface

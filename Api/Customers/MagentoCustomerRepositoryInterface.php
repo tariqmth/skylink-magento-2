@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Magento2\Api\Customers;
+namespace RetailExpress\SkyLink\Api\Customers;
 
 use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;
 

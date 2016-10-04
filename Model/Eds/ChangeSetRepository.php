@@ -1,13 +1,13 @@
 <?php
 
-namespace RetailExpress\SkyLink\Magento2\Model\Eds;
+namespace RetailExpress\SkyLink\Model\Eds;
 
 use Magento\Framework\Exception\NoSuchEntityException;
-use RetailExpress\SkyLink\Magento2\Api\Eds\ChangeSetRepository as ChangeSetRepositoryInterface;
+use RetailExpress\SkyLink\Api\Eds\ChangeSetRepository as ChangeSetRepositoryInterface;
 use RetailExpress\SkyLink\Eds\ChangeSet;
 use RetailExpress\SkyLink\Eds\ChangeSetId;
-use RetailExpress\SkyLink\Magento2\Exceptions\Eds\NotAllEntitiesProcessedException;
-use RetailExpress\SkyLink\Magento2\Model\ResourceModel\Eds\ChangeSetResourceModel;
+use RetailExpress\SkyLink\Exceptions\Eds\NotAllEntitiesProcessedException;
+use RetailExpress\SkyLink\Model\ResourceModel\Eds\ChangeSetResourceModel;
 
 class ChangeSetRepository implements ChangeSetRepositoryInterface
 {

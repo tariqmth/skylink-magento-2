@@ -26,7 +26,7 @@
   "autoload": {
     "files": ["registration.php"],
     "psr-4": {
-      "RetailExpress\\SkyLink\\Magento2\\": ""
+      "RetailExpress\\SkyLink\\": ""
     }
   },
   "require": {
@@ -39,8 +39,7 @@
     "retail-express/skylink-eds": "^1.0"
   },
   "require-dev": {
-    "henrikbjorn/phpspec-code-coverage": "^2.0",
-    "phpspec/phpspec": "^2.5"
+    "henrikbjorn/phpspec-code-coverage": "^2.0"
   },
   "extra": {
     "branch-alias": {

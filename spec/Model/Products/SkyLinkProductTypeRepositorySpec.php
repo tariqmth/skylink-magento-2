@@ -1,13 +1,13 @@
 <?php
 
-namespace spec\RetailExpress\SkyLink\Magento2\Model\Products;
+namespace spec\RetailExpress\SkyLink\Model\Products;
 
 use PhpSpec\ObjectBehavior;
 use RetailExpress\SkyLink\Catalogue\Attributes\Attribute;
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode;
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeOption;
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeRepository;
-use RetailExpress\SkyLink\Magento2\Model\Products\SkyLinkProductTypeRepository;
+use RetailExpress\SkyLink\Model\Products\SkyLinkProductTypeRepository;
 use RetailExpress\SkyLink\ValueObjects\SalesChannelId;
 
 class SkyLinkProductTypeRepositorySpec extends ObjectBehavior

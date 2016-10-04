@@ -1,13 +1,13 @@
 <?php
 
-namespace RetailExpress\SkyLink\Magento2\Model\Customers;
+namespace RetailExpress\SkyLink\Model\Customers;
 
 use Magento\Customer\Api\Data\AddressInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
 use RetailExpress\SkyLink\Customers\BillingContact as SkyLinkBillingContact;
 use RetailExpress\SkyLink\Customers\Customer as SkyLinkCustomer;
 use RetailExpress\SkyLink\Customers\ShippingContact as SkyLinkShippingContact;
-use RetailExpress\SkyLink\Magento2\Api\Customers\MagentoCustomerMapperInterface;
+use RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface;
 
 class MagentoCustomerMapper implements MagentoCustomerMapperInterface
 {

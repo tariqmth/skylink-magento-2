@@ -1,9 +1,9 @@
 <?php
 
-namespace spec\RetailExpress\SkyLink\Magento2\Model\System\Config\Source;
+namespace spec\RetailExpress\SkyLink\Model\System\Config\Source;
 
 use PhpSpec\ObjectBehavior;
-use RetailExpress\SkyLink\Magento2\Model\System\Config\Source\SalesChannelId;
+use RetailExpress\SkyLink\Model\System\Config\Source\SalesChannelId;
 
 class SalesChannelIdSpec extends ObjectBehavior
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\RetailExpress\SkyLink\Magento2\Model\Customers;
+namespace spec\RetailExpress\SkyLink\Model\Customers;
 
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
@@ -10,8 +10,8 @@ use Magento\Customer\Model\CustomerFactory;
 use Magento\Customer\Model\AddressFactory;
 use PhpSpec\ObjectBehavior;
 use RetailExpress\SkyLink\Customers\Customer as SkyLinkCustomer;
-use RetailExpress\SkyLink\Magento2\Api\Customers\MagentoCustomerMapperInterface;
-use RetailExpress\SkyLink\Magento2\Model\Customers\MagentoCustomerService;
+use RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface;
+use RetailExpress\SkyLink\Model\Customers\MagentoCustomerService;
 
 class MagentoCustomerServiceSpec extends ObjectBehavior
 {

@@ -7,19 +7,19 @@ use RetailExpress\SkyLink\Catalogue\Attributes\AttributeRepository;
 use RetailExpress\SkyLink\ValueObjects\SalesChannelId;
 use RetailExpress\SkyLink\Model\Config;
 use RetailExpress\SkyLink\Api\Products\SkyLinkProductTypeRepositoryInterface;
-use RetailExpress\SkyLink\Api\RepositoryFactoryInterface;
+use RetailExpress\SkyLink\Catalogue\Attributes\AttributeRepositoryFactory;
 
 class SkyLinkProductTypeRepository implements SkyLinkProductTypeRepositoryInterface
 {
-    private $attributeRepository;
+    private $attributeRepositoryFactory;
 
     private $config;
 
     public function __construct(
-        RepositoryFactoryInterface $repositoryFactory,
+        AttributeRepositoryFactory $attributeRepositoryFactory,
         Config $config
     ) {
-        $this->attributeRepository = $repositoryFactory->createCatalogueAttributeRepository();
+        $this->attributeRepositoryFactory = $attributeRepositoryFactory;
         $this->config = $config;
     }
 
@@ -33,7 +33,10 @@ class SkyLinkProductTypeRepository implements SkyLinkProductTypeRepositoryInterf
         /* @var \RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode */
         $attributeCode = AttributeCode::get(AttributeCode::PRODUCT_TYPE);
 
-        $attribute = $this->attributeRepository->find(
+        /* @var \RetailExpress\SkyLink\Catalogue\Attributes\AttributeRepository */
+        $attributeRepository = $this->attributeRepositoryFactory->create();
+
+        $attribute = $attributeRepository->find(
             $attributeCode,
             $this->config->getSalesChannelId()
         );

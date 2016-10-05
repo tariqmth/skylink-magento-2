@@ -10,7 +10,7 @@ interface MagentoAttributeSetRepositoryInterface
      * Get the Attribute Set used for the given product type. If there is no
      * mapping defined, "null" is returend.
      *
-     * @param SkyLinkAttributeOption $productType
+     * @param SkyLinkAttributeOption $skyLinkProductType
      *
      * @return \Magento\Eav\Api\Data\AttributeSetInterface|null
      */

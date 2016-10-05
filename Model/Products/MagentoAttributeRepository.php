@@ -43,6 +43,8 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
      */
     public function getMagentoAttributeForSkyLinkAttributeCode(SkyLinkAttributeCode $skylinkAttributeCode)
     {
+        throw new \LogicException('Database schema has changed, need to query attributes using an Attribute ID, not a code.');
+
         $magentoAttributeCode = $this->connection->fetchOne(
             $this->connection
                 ->select()

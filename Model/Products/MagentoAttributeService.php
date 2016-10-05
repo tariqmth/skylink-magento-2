@@ -7,7 +7,7 @@ use Magento\Framework\App\ResourceConnection;
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 use RetailExpress\SkyLink\Api\Products\MagentoAttributeServiceInterface;
 
-class MagentoAttributeService
+class MagentoAttributeService implements MagentoAttributeServiceInterface
 {
     use MagentoAttribute;
 
@@ -34,14 +34,14 @@ class MagentoAttributeService
         if ($this->mappingExists($skylinkAttributeCode)) {
             $this->connection->update(
                 $this->getAttributesTable(),
-                ['magento_attribute' => $magentoAttribute->getAttributeCode()],
-                ['skylink_attribute_code = ? ', $skylinkAttributeCode->getValue()]
+                ['magento_attribute_id' => $magentoAttribute->getAttributeId()],
+                ['skylink_attribute_code = ? ' => $skylinkAttributeCode->getValue()]
             );
         } else {
             $this->connection->insert(
                 $this->getAttributesTable(),
                 [
-                    'magento_attribute' => $magentoAttribute->getAttributeCode(),
+                    'magento_attribute_id' => $magentoAttribute->getAttributeId(),
                     'skylink_attribute_code' => $skylinkAttributeCode->getValue(),
                 ]
             );

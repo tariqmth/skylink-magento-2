@@ -1,0 +1,39 @@
+<?php /** @var \RetailExpress\SkyLink\Block\Adminhtml\Setup\MagentoAttributeSet $block */ ?>
+<form action="<?php /* @escapeNotVerified */ echo $block->getSaveUrl() ?>" method="post">
+    <input name="form_key" type="hidden" value="<?php /* @escapeNotVerified */ echo $block->getFormKey() ?>" />
+    <table class="data-grid">
+        <thead>
+            <tr>
+                <th class="data-grid-th"><?=__('SkyLink Product Type')?></th>
+                <th class="data-grid-th"><?=__('Magento Attribute Set')?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php /** @var \RetailExpress\SkyLink\Catalogue\Attributes\AttributeOption $skyLinkProductType */ ?>
+            <?php foreach ($block->getSkyLinkProductTypes() as $skyLinkProductType): ?>
+                <tr>
+                    <td>
+                        <?=$block->escapeHtml($skyLinkProductType->getLabel())?>
+                    </td>
+                    <td>
+                        <?php /** @var \Magento\Eav\Api\Data\AttributeSetInterface $magentoAttributeSet */ ?>
+                        <select name="magento_attribute_set_mappings[<?php /* @escapeNotVerified */ echo $skyLinkProductType->getId() ?>]">
+                            <?php foreach ($block->getMagentoAttributeSets() as $magentoAttributeSet): ?>
+                                <option value="<?php /* @escapeNotVerified */ echo $magentoAttributeSet->getAttributeSetId() ?>">
+                                    <?=$block->escapeHtml($magentoAttributeSet->getAttributeSetName())?>
+                                </option>
+                            <?php endforeach ?>
+                        </select>
+                    </td>
+                </tr>
+            <?php endforeach ?>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">
+                    <button type="submit"><?=__('Save Mappings')?></button>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</form>

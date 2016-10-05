@@ -11,11 +11,11 @@ interface MagentoAttributeSetServiceInterface
      * Defines the Attribute Set used when SkyLink creates a new product in
      * Magento for the given SkyLink "product type".
      *
-     * @param AttributeSetInterface  $attributeSet
-     * @param SkyLinkAttributeOption $productType
+     * @param AttributeSetInterface  $magentoAttributeSet
+     * @param SkyLinkAttributeOption $skyLinkProductType
      */
     public function mapAttributeSetForProductType(
-        AttributeSetInterface $attributeSet,
-        SkyLinkAttributeOption $productType
+        AttributeSetInterface $magentoAttributeSet,
+        SkyLinkAttributeOption $skyLinkProductType
     );
 }

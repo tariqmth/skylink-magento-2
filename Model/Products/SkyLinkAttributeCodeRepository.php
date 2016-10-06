@@ -12,7 +12,7 @@ class SkyLinkAttributeCodeRepository implements SkyLinkAttributeCodeRepositoryIn
      *
      * @return \RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode[]
      */
-    public function all()
+    public function getList()
     {
         return array_values(array_map(function ($attributeCodeName) {
             return AttributeCode::get($attributeCodeName);

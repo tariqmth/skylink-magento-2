@@ -13,7 +13,7 @@ interface MagentoAttributeServiceInterface
      * @param AttributeInterface   $magentoAttribute
      * @param SkyLinkAttributeCode $skylinkAttributeCode
      */
-    public function mapAttributeForProductType(
+    public function mapMagentoAttributeForSkyLinkAttributeCode(
         AttributeInterface $magentoAttribute,
         SkyLinkAttributeCode $skylinkAttributeCode
     );

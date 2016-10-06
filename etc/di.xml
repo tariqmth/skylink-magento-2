@@ -4,6 +4,8 @@
 
     <preference for="RetailExpress\SkyLink\Api\ConfigInterface" type="RetailExpress\SkyLink\Model\Config"/>
 
+    <preference for="RetailExpress\SkyLink\Api\Products\MagentoAttributeRepositoryInterface" type="RetailExpress\SkyLink\Model\Products\MagentoAttributeRepository"/>
+    <preference for="RetailExpress\SkyLink\Api\Products\MagentoAttributeServiceInterface" type="RetailExpress\SkyLink\Model\Products\MagentoAttributeService"/>
     <preference for="RetailExpress\SkyLink\Api\Products\MagentoAttributeSetRepositoryInterface" type="RetailExpress\SkyLink\Model\Products\MagentoAttributeSetRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Products\MagentoAttributeSetServiceInterface" type="RetailExpress\SkyLink\Model\Products\MagentoAttributeSetService"/>
     <preference for="RetailExpress\SkyLink\Api\Products\SkyLinkAttributeCodeRepositoryInterface" type="RetailExpress\SkyLink\Model\Products\SkyLinkAttributeCodeRepository"/>

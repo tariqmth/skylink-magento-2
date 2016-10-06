@@ -2,7 +2,7 @@
 
 namespace RetailExpress\SkyLink\Model\Products;
 
-use Magento\Eav\Api\AttributeRepositoryInterface as BaseMagentoAttributeRepositoryInterface;
+use Magento\Catalog\Api\ProductAttributeRepositoryInterface;
 use Magento\Framework\App\ResourceConnection;
 use RetailExpress\SkyLink\Api\Products\MagentoAttributeRepositoryInterface;
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
@@ -12,25 +12,25 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
     use MagentoAttribute;
 
     /**
-     * The base Magento Attribute Repository, used for fetching attributes based
-     * on their attribute code stored by a mapping.
+     * The Magento Product Attribute Repository, used for fetching attributes
+     * based on their attribute code stored by a mapping.
      *
-     * @var BaseMagentoAttributeRepositoryInterface
+     * @var ProductAttributeRepositoryInterface
      */
-    private $baseMagentoAttributeRepository;
+    private $magentoProductAttributeRepository;
 
     /**
      * Create a new Magento Attribute Repository.
      *
-     * @param ResourceConnection                      $resourceConnection
-     * @param BaseMagentoAttributeRepositoryInterface $baseMagentoAttributeRepository
+     * @param ResourceConnection                  $resourceConnection
+     * @param ProductAttributeRepositoryInterface $magentoProductAttributeRepository
      */
     public function __construct(
         ResourceConnection $resourceConnection,
-        BaseMagentoAttributeRepositoryInterface $baseMagentoAttributeRepository
+        ProductAttributeRepositoryInterface $magentoProductAttributeRepository
     ) {
         $this->connection = $resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
-        $this->baseMagentoAttributeRepository = $baseMagentoAttributeRepository;
+        $this->magentoProductAttributeRepository = $magentoProductAttributeRepository;
     }
 
     /**
@@ -43,8 +43,6 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
      */
     public function getMagentoAttributeForSkyLinkAttributeCode(SkyLinkAttributeCode $skylinkAttributeCode)
     {
-        throw new \LogicException('Database schema has changed, need to query attributes using an Attribute ID, not a code.');
-
         $magentoAttributeCode = $this->connection->fetchOne(
             $this->connection
                 ->select()
@@ -56,6 +54,6 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
             return null;
         }
 
-        return $this->baseMagentoAttributeRepository->get('catalog_product', $magentoAttributeCode);
+        return $this->magentoProductAttributeRepository->get($magentoAttributeCode);
     }
 }

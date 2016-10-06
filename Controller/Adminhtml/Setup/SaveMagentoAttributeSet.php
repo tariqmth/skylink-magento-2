@@ -29,7 +29,7 @@ class SaveMagentoAttributeSet extends Action
     {
         $data = $this->getRequest()->getPostValue();
 
-        foreach ($data['magento_attribute_set_mappings'] as $skyLinkProductTypeId => $magentoAttributeSetId) {
+        array_walk($data['magento_attribute_set_mappings'], function ($magentoAttributeSetId, $skyLinkProductTypeId) {
 
             /** @var SkyLinkAttributeOption */
             $skyLinkProductType = SkyLinkAttributeOption::fromNative('product_type', (string) $skyLinkProductTypeId);
@@ -38,9 +38,9 @@ class SaveMagentoAttributeSet extends Action
             $magentoAttributeSet = $this->magentoAttributeSetRepository->get($magentoAttributeSetId);
 
             $this->magentoAttributeSetService->mapAttributeSetForProductType($magentoAttributeSet, $skyLinkProductType);
-        }
+        });
 
-        $this->messageManager->addSuccess(__('Successfully mapped Product Types to Attribute Sets.'));
+        $this->messageManager->addSuccess(__('Successfully mapped SkyLink Product Types to Magento Attribute Sets.'));
 
         $resultRedirect = $this->resultRedirectFactory->create();
         $resultRedirect->setPath('*/*/index');

@@ -9,5 +9,5 @@ interface SkyLinkAttributeCodeRepositoryInterface
      *
      * @return \RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode[]
      */
-    public function all();
+    public function getList();
 }

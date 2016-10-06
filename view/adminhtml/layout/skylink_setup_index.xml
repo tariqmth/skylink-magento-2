@@ -2,6 +2,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="content">
+            <block class="RetailExpress\SkyLink\Block\Adminhtml\Setup\MagentoAttribute" name="retail_express_skylink_setup_magento_attribute" template="setup/magento_attribute.phtml"/>
             <block class="RetailExpress\SkyLink\Block\Adminhtml\Setup\MagentoAttributeSet" name="retail_express_skylink_setup_magento_attribute_set" template="setup/magento_attribute_set.phtml"/>
         </referenceContainer>
     </body>

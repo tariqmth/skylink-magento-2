@@ -27,21 +27,21 @@ class MagentoAttributeService implements MagentoAttributeServiceInterface
      * @param AttributeInterface   $magentoAttribute
      * @param SkyLinkAttributeCode $skylinkAttributeCode
      */
-    public function mapAttributeForProductType(
+    public function mapMagentoAttributeForSkyLinkAttributeCode(
         AttributeInterface $magentoAttribute,
         SkyLinkAttributeCode $skylinkAttributeCode
     ) {
         if ($this->mappingExists($skylinkAttributeCode)) {
             $this->connection->update(
                 $this->getAttributesTable(),
-                ['magento_attribute_id' => $magentoAttribute->getAttributeId()],
+                ['magento_attribute_code' => $magentoAttribute->getAttributeCode()],
                 ['skylink_attribute_code = ? ' => $skylinkAttributeCode->getValue()]
             );
         } else {
             $this->connection->insert(
                 $this->getAttributesTable(),
                 [
-                    'magento_attribute_id' => $magentoAttribute->getAttributeId(),
+                    'magento_attribute_code' => $magentoAttribute->getAttributeCode(),
                     'skylink_attribute_code' => $skylinkAttributeCode->getValue(),
                 ]
             );

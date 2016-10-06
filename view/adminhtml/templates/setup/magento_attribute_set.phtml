@@ -4,6 +4,7 @@
 /** @var \Magento\Eav\Api\Data\AttributeSetInterface[] $magentoAttributeSets */
 $magentoAttributeSets = $block->getMagentoAttributeSets();
 ?>
+<h3><?=__('Map SkyLink Product Types to Magento Attribute Sets')?></h3>
 <form action="<?php /* @escapeNotVerified */ echo $block->getSaveUrl() ?>" method="post">
     <input name="form_key" type="hidden" value="<?php /* @escapeNotVerified */ echo $block->getFormKey() ?>" />
     <table class="data-grid">
@@ -27,6 +28,7 @@ $magentoAttributeSets = $block->getMagentoAttributeSets();
                     <td>
                         <?php /** @var \Magento\Eav\Api\Data\AttributeSetInterface $magentoAttributeSet */ ?>
                         <select name="magento_attribute_set_mappings[<?php /* @escapeNotVerified */ echo $skyLinkProductType->getId() ?>]">
+                            <?php /** @var \Magento\Eav\Api\Data\AttributeSetInterface $magentoAttributeSet */ ?>
                             <?php foreach ($magentoAttributeSets as $magentoAttributeSet): ?>
                                 <option
                                     value="<?php /* @escapeNotVerified */ echo $magentoAttributeSet->getAttributeSetId() ?>"

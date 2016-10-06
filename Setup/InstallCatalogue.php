@@ -26,18 +26,11 @@ trait InstallCatalogue
                 'SkyLink Attribute Code'
             )
             ->addColumn(
-                'magento_attribute_id',
-                DdlTable::TYPE_SMALLINT,
-                null,
-                ['nullable' => false, 'unsigned' => true],
-                'Magento Attribute ID'
-            )
-            ->addForeignKey(
-                $installer->getFkName($attributesTable, 'magento_attribute_id', 'eav_attribute', 'attribute_id'),
-                'magento_attribute_id',
-                'eav_attribute',
-                'attribute_id',
-                DdlTable::ACTION_CASCADE
+                'magento_attribute_code',
+                DdlTable::TYPE_VARCHAR,
+                255,
+                ['nullable' => false],
+                'Magento Attribute Code'
             );
 
         $installer->getConnection()->createTable($table);

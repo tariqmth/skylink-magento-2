@@ -4,10 +4,8 @@ namespace RetailExpress\SkyLink\Block\Adminhtml\Setup;
 
 use Magento\Catalog\Api\AttributeSetRepositoryInterface as BaseMagentoAttributeSetRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Api\SortOrderBuilder;
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context as TemplateContext;
-use Magento\Catalog\Model\Product;
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
 use RetailExpress\SkyLink\Api\Products\MagentoAttributeSetRepositoryInterface;
 use RetailExpress\SkyLink\Api\Products\SkyLinkProductTypeRepositoryInterface;
@@ -44,7 +42,6 @@ class MagentoAttributeSet extends Template
 
     public function getMagentoAttributeSets()
     {
-        $this->searchCriteriaBuilder->addSortOrder('name');
         $searchCriteria = $this->searchCriteriaBuilder->create();
 
         $searchResults = $this->baseMagentoAttributeSetRepository->getList($searchCriteria);

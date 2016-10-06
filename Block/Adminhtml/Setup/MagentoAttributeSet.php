@@ -2,30 +2,38 @@
 
 namespace RetailExpress\SkyLink\Block\Adminhtml\Setup;
 
-use Magento\Eav\Api\AttributeSetRepositoryInterface as MagentoAttributeSetRepositoryInterface;
+use Magento\Catalog\Api\AttributeSetRepositoryInterface as BaseMagentoAttributeSetRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Api\SortOrderBuilder;
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context as TemplateContext;
+use Magento\Catalog\Model\Product;
+use RetailExpress\SkyLink\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
+use RetailExpress\SkyLink\Api\Products\MagentoAttributeSetRepositoryInterface;
 use RetailExpress\SkyLink\Api\Products\SkyLinkProductTypeRepositoryInterface;
 
 class MagentoAttributeSet extends Template
 {
     private $skyLinkProductTypeRepository;
 
-    private $magentoAttributeSetRepository;
+    private $baseMagentoAttributeSetRepository;
+
+    private $magentoAtttributeSetRepository;
 
     private $searchCriteriaBuilder;
 
     public function __construct(
         TemplateContext $templateContext,
         SkyLinkProductTypeRepositoryInterface $skyLinkProductTypeRepository,
-        MagentoAttributeSetRepositoryInterface $magentoAttributeSetRepository,
+        BaseMagentoAttributeSetRepositoryInterface $baseMagentoAttributeSetRepository,
+        MagentoAttributeSetRepositoryInterface $magentoAtttributeSetRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
         parent::__construct($templateContext);
 
         $this->skyLinkProductTypeRepository = $skyLinkProductTypeRepository;
-        $this->magentoAttributeSetRepository = $magentoAttributeSetRepository;
+        $this->baseMagentoAttributeSetRepository = $baseMagentoAttributeSetRepository;
+        $this->magentoAtttributeSetRepository = $magentoAtttributeSetRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
@@ -36,11 +44,17 @@ class MagentoAttributeSet extends Template
 
     public function getMagentoAttributeSets()
     {
+        $this->searchCriteriaBuilder->addSortOrder('name');
         $searchCriteria = $this->searchCriteriaBuilder->create();
 
-        $searchResults = $this->magentoAttributeSetRepository->getList($searchCriteria);
+        $searchResults = $this->baseMagentoAttributeSetRepository->getList($searchCriteria);
 
         return $searchResults->getItems();
+    }
+
+    public function getAttributeSetForProductType(SkyLinkAttributeOption $productType)
+    {
+        return $this->magentoAtttributeSetRepository->getAttributeSetForProductType($productType);
     }
 
     public function getSaveUrl()

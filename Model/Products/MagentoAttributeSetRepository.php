@@ -40,14 +40,14 @@ class MagentoAttributeSetRepository implements MagentoAttributeSetRepositoryInte
         $magentoAttributeSetId = $this->connection->fetchOne(
             $this->connection
                 ->select()
-                ->from($this->getAttributesTable(), 'magento_attribute_set_id')
+                ->from($this->getAttributeSetsTable(), 'magento_attribute_set_id')
                 ->where('skylink_product_type_id = ?', $skyLinkProductType->getId())
         );
 
-        if (false === $magentoAttributeCode) {
+        if (false === $magentoAttributeSetId) {
             return null;
         }
 
-        return $this->baseMagentoAttributeSetRepository->get()
+        return $this->baseMagentoAttributeSetRepository->get($magentoAttributeSetId);
     }
 }

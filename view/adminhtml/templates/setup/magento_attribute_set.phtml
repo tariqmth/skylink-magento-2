@@ -1,4 +1,9 @@
 <?php /** @var \RetailExpress\SkyLink\Block\Adminhtml\Setup\MagentoAttributeSet $block */ ?>
+<?php
+
+/** @var \Magento\Eav\Api\Data\AttributeSetInterface[] $magentoAttributeSets */
+$magentoAttributeSets = $block->getMagentoAttributeSets();
+?>
 <form action="<?php /* @escapeNotVerified */ echo $block->getSaveUrl() ?>" method="post">
     <input name="form_key" type="hidden" value="<?php /* @escapeNotVerified */ echo $block->getFormKey() ?>" />
     <table class="data-grid">
@@ -11,6 +16,10 @@
         <tbody>
             <?php /** @var \RetailExpress\SkyLink\Catalogue\Attributes\AttributeOption $skyLinkProductType */ ?>
             <?php foreach ($block->getSkyLinkProductTypes() as $skyLinkProductType): ?>
+                <?php
+                /** @var \Magento\Eav\Api\Data\AttributeSetInterface|null $chosenAttributeSet */
+                $chosenAttributeSet = $block->getAttributeSetForProductType($skyLinkProductType);
+                ?>
                 <tr>
                     <td>
                         <?=$block->escapeHtml($skyLinkProductType->getLabel())?>
@@ -18,8 +27,13 @@
                     <td>
                         <?php /** @var \Magento\Eav\Api\Data\AttributeSetInterface $magentoAttributeSet */ ?>
                         <select name="magento_attribute_set_mappings[<?php /* @escapeNotVerified */ echo $skyLinkProductType->getId() ?>]">
-                            <?php foreach ($block->getMagentoAttributeSets() as $magentoAttributeSet): ?>
-                                <option value="<?php /* @escapeNotVerified */ echo $magentoAttributeSet->getAttributeSetId() ?>">
+                            <?php foreach ($magentoAttributeSets as $magentoAttributeSet): ?>
+                                <option
+                                    value="<?php /* @escapeNotVerified */ echo $magentoAttributeSet->getAttributeSetId() ?>"
+                                    <?php if ($chosenAttributeSet && $chosenAttributeSet->getAttributeSetId() == $magentoAttributeSet->getId()): ?>
+                                        selected
+                                    <?php endif ?>
+                                >
                                     <?=$block->escapeHtml($magentoAttributeSet->getAttributeSetName())?>
                                 </option>
                             <?php endforeach ?>

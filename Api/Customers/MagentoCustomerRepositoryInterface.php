@@ -7,11 +7,11 @@ use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;
 interface MagentoCustomerRepositoryInterface
 {
     /**
-     * Finds an existing Customer within Magento that matches the given SkyLink Customer.
+     * Finds an existing Customer within Magento that matches the given SkyLink Customer ID.
      *
-     * @param SkyLinkCustomer $skyLinkCustomer
+     * @param SkyLinkCustomerId $skyLinkCustomerId
      *
-     * @return CustomerInterface|null
+     * @return \Magento\Customer\Api\Data\CustomerInterface|null
      *
      * @throws TooManyCustomerMatchesException
      */

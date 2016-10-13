@@ -83,7 +83,7 @@ class MagentoCustomerRepositorySpec extends ObjectBehavior
     ) {
         $this
             ->searchCriteriaBuilder
-            ->addFilter('retail_express_customer_id', $this->skyLinkCustomerIdString)
+            ->addFilter('skylink_customer_id', $this->skyLinkCustomerIdString)
             ->shouldBeCalled();
 
         $this->searchCriteriaBuilder->create()->shouldBeCalled()->willReturn($searchCriteria);

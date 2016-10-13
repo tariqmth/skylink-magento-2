@@ -2,7 +2,7 @@
 
 namespace RetailExpress\SkyLink\Commands\Customers;
 
-use RetailExpress\SkyLink\Customers\CustomerRepository as SkylinkCustomerRepository;
+use RetailExpress\SkyLink\Customers\CustomerRepositoryFactory as SkylinkCustomerRepositoryFactory;
 use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerRepositoryInterface;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface;
@@ -10,11 +10,11 @@ use RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface;
 class SyncSkyLinkCustomerToMagentoCustomerHandler
 {
     /**
-     * SkyLink Customer Repository.
+     * SkyLink Customer Repository factory.
      *
      * @var SkyLinkCustomerRepository
      */
-    private $skyLinkCustomerRepository;
+    private $skyLinkCustomerRepositoryFactory;
 
     /**
      * Magento Customer Repository.
@@ -33,16 +33,16 @@ class SyncSkyLinkCustomerToMagentoCustomerHandler
     /**
      * Create a new Sync SkyLink Customer to Magento Customer Handler.
      *
-     * @param SkylinkCustomerRepository          $skyLinkCustomerRepository
+     * @param SkylinkCustomerRepositoryFactory   $skyLinkCustomerRepositoryFactory
      * @param MagentoCustomerRepositoryInterface $magentoCustomerRepository
      * @param MagentoCustomerServiceInterface    $magentoCustomerService
      */
     public function __construct(
-        SkylinkCustomerRepository $skyLinkCustomerRepository,
+        SkylinkCustomerRepositoryFactory $skyLinkCustomerRepositoryFactory,
         MagentoCustomerRepositoryInterface $magentoCustomerRepository,
         MagentoCustomerServiceInterface $magentoCustomerService
     ) {
-        $this->skyLinkCustomerRepository = $skyLinkCustomerRepository;
+        $this->skyLinkCustomerRepositoryFactory = $skyLinkCustomerRepositoryFactory;
         $this->magentoCustomerRepository = $magentoCustomerRepository;
         $this->magentoCustomerService = $magentoCustomerService;
     }
@@ -58,8 +58,11 @@ class SyncSkyLinkCustomerToMagentoCustomerHandler
     {
         $skyLinkCustomerId = new SkyLinkCustomerId($command->skyLinkCustomerId);
 
+        /** @var \RetailExpress\SkyLink\Customers\CustomerRepository $skyLinkCustomerRepository */
+        $skyLinkCustomerRepository = $this->skyLinkCustomerRepositoryFactory->create();
+
         // Find corresponding SkyLink and Magento Customers
-        $skyLinkCustomer = $this->skyLinkCustomerRepository->find($skyLinkCustomerId);
+        $skyLinkCustomer = $skyLinkCustomerRepository->find($skyLinkCustomerId);
         $magentoCustomer = $this->magentoCustomerRepository->findBySkyLinkCustomerId($skyLinkCustomerId);
 
         if (null !== $magentoCustomer) {

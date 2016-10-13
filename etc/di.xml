@@ -1,8 +1,14 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="RetailExpress\Eds\ChangeSetDeserialiser" type="RetailExpress\Eds\V2ChangeSetDeserialiser"/>
+    <preference for="RetailExpress\SkyLink\Eds\ChangeSetDeserialiser" type="RetailExpress\SkyLink\Eds\V2ChangeSetDeserialiser"/>
 
     <preference for="RetailExpress\SkyLink\Api\ConfigInterface" type="RetailExpress\SkyLink\Model\Config"/>
+
+    <preference for="RetailExpress\SkyLink\Api\Eds\ChangeSetRepositoryInterface" type="RetailExpress\SkyLink\Model\Eds\ChangeSetRepository"/>
+
+    <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerRepositoryInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerRepository"/>
+    <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerService"/>
+    <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerMapper"/>
 
     <preference for="RetailExpress\SkyLink\Api\Products\MagentoAttributeRepositoryInterface" type="RetailExpress\SkyLink\Model\Products\MagentoAttributeRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Products\MagentoAttributeServiceInterface" type="RetailExpress\SkyLink\Model\Products\MagentoAttributeService"/>

@@ -43,7 +43,7 @@ class MagentoCustomerRepository implements MagentoCustomerRepositoryInterface
      */
     public function findBySkyLinkCustomerId(SkyLinkCustomerId $skyLinkCustomerId)
     {
-        $this->searchCriteriaBuilder->addFilter('retail_express_customer_id', (string) $skyLinkCustomerId);
+        $this->searchCriteriaBuilder->addFilter('skylink_customer_id', (string) $skyLinkCustomerId);
 
         $searchCriteria = $this->searchCriteriaBuilder->create();
 

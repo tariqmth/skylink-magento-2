@@ -7,9 +7,9 @@ use Magento\Framework\DB\Ddl\Table as DdlTable;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 
-trait InstallCatalogue
+trait InstallCatalogueSchema
 {
-    private function installCatalogue(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    private function installCatalogueSchema(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $installer = $setup;
 

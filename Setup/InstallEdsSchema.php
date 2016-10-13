@@ -31,22 +31,15 @@ trait InstallEdsSchema
                 '150',
                 ['nullable' => false, 'default' => DdlTable::TIMESTAMP_INIT],
                 'Created At'
-            )
-            ->addColumn(
-                'processed_at',
-                DdlTable::TYPE_TIMESTAMP,
-                null,
-                ['nullable' => true],
-                'Processed At'
             );
 
         $installer->getConnection()->createTable($table);
 
         // Create EDS Change Sets entity IDs
-        $changeSetEntityIdsTable = 'retail_express_skylink_eds_change_set_entity_ids';
+        $changeSetEntitiesTable = 'retail_express_skylink_eds_change_set_entities';
         $table = $setup
             ->getConnection()
-            ->newTable($installer->getTable($changeSetEntityIdsTable))
+            ->newTable($installer->getTable($changeSetEntitiesTable))
             ->addColumn(
                 'change_set_id',
                 DdlTable::TYPE_TEXT,
@@ -76,12 +69,12 @@ trait InstallEdsSchema
                 'Processed At'
             )
             ->addIndex(
-                $installer->getIdxName($changeSetEntityIdsTable, ['change_set_id', 'entity_type', 'entity_id']),
+                $installer->getIdxName($changeSetEntitiesTable, ['change_set_id', 'entity_type', 'entity_id']),
                 ['change_set_id', 'entity_type', 'entity_id'],
                 ['type' => DbAdapterInterface::INDEX_TYPE_UNIQUE]
             )
             ->addForeignKey(
-                $installer->getFkName($changeSetEntityIdsTable, 'change_set_id', $changeSetsTable, 'change_set_id'),
+                $installer->getFkName($changeSetEntitiesTable, 'change_set_id', $changeSetsTable, 'change_set_id'),
                 'change_set_id',
                 $changeSetsTable,
                 'change_set_id',

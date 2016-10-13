@@ -11,7 +11,7 @@ use Magento\Framework\Setup\ModuleContextInterface;
 class InstallSchema implements InstallSchemaInterface
 {
     use InstallEdsSchema;
-    use InstallCatalogue;
+    use InstallCatalogueSchema;
 
     /**
      * {@inheritdoc}
@@ -21,6 +21,6 @@ class InstallSchema implements InstallSchemaInterface
         $installer = $setup;
 
         $this->installEdsSchema($setup, $context);
-        $this->InstallCatalogue($setup, $context);
+        $this->InstallCatalogueSchema($setup, $context);
     }
 }

@@ -15,12 +15,12 @@ class SkyLinkAttributeCodeRepositorySpec extends ObjectBehavior
 
     public function it_returns_an_array_with_numeric_keys()
     {
-        $this->all()->shouldBeArray();
-        $this->all()->shouldHaveKey(0);
+        $this->getList()->shouldBeArray();
+        $this->getList()->shouldHaveKey(0);
     }
 
     public function it_contains_attribute_codes()
     {
-        $this->all()[0]->shouldBeAnInstanceOf(AttributeCode::class);
+        $this->getList()[0]->shouldBeAnInstanceOf(AttributeCode::class);
     }
 }

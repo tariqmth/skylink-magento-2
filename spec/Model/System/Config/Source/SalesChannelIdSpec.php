@@ -14,7 +14,7 @@ class SalesChannelIdSpec extends ObjectBehavior
 
     public function it_should_have_fifty_options()
     {
-        $this->toOptionArray()->shouldHaveCount(50);
+        $this->toOptionArray()->shouldHaveCount(100);
     }
 
     public function its_first_option_should_be_one_not_zero()

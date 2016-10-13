@@ -2,6 +2,7 @@
 
 namespace spec\RetailExpress\SkyLink\Model\Products;
 
+use Magento\Catalog\Api\ProductAttributeRepositoryInterface;
 use Magento\Framework\App\ResourceConnection;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -11,11 +12,16 @@ class MagentoAttributeRepositorySpec extends ObjectBehavior
 {
     private $resourceConnection;
 
-    public function let(ResourceConnection $resourceConnection)
-    {
-        $this->resourceConnection = $resourceConnection;
+    private $magentoProductAttributeRepository;
 
-        $this->beConstructedWith($this->resourceConnection);
+    public function let(
+        ResourceConnection $resourceConnection,
+        ProductAttributeRepositoryInterface $magentoProductAttributeRepository
+    ) {
+        $this->resourceConnection = $resourceConnection;
+        $this->magentoProductAttributeRepository = $magentoProductAttributeRepository;
+
+        $this->beConstructedWith($this->resourceConnection, $this->magentoProductAttributeRepository);
     }
 
     public function it_is_initializable()

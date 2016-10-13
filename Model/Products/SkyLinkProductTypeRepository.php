@@ -5,7 +5,7 @@ namespace RetailExpress\SkyLink\Model\Products;
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode;
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeRepository;
 use RetailExpress\SkyLink\ValueObjects\SalesChannelId;
-use RetailExpress\SkyLink\Model\Config;
+use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Api\Products\SkyLinkProductTypeRepositoryInterface;
 use RetailExpress\SkyLink\Catalogue\Attributes\AttributeRepositoryFactory;
 
@@ -17,7 +17,7 @@ class SkyLinkProductTypeRepository implements SkyLinkProductTypeRepositoryInterf
 
     public function __construct(
         AttributeRepositoryFactory $attributeRepositoryFactory,
-        Config $config
+        ConfigInterface $config
     ) {
         $this->attributeRepositoryFactory = $attributeRepositoryFactory;
         $this->config = $config;

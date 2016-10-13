@@ -2,30 +2,18 @@
 
 namespace RetailExpress\SkyLink\Api\Eds;
 
-use RetailExpress\SkyLink\Eds\ChangeSetId;
+use RetailExpress\SkyLink\Eds\Entity as EdsEntity;
 
 interface ChangeSetServiceInterface
 {
     /**
-     * Process an Entity ID for a given Change Set with an ID provided.
+     * Process an Change Set Entity
      *
-     * @events skylink_eds_entity_was_processed
+     * @events retail_express_skylink_eds_entity_was_processed
      *
-     * @param ChangeSetId $changeSetId
-     * @param object      $entityId
+     * @param EdsEntity $edsEntity
      *
-     * @throws NoSuchEntityException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function processEntityId(ChangeSetId $changeSetId, $entityId);
-
-    /**
-     * Mark an entire Change Set as processed.
-     *
-     * @events skylink_eds_change_set_was_processed
-     *
-     * @param ChangeSetId $changeSetId
-     *
-     * @throws NotAllEntitiesProcessedException
-     */
-    public function process(ChangeSetId $changeSetId);
+    public function processEntity(EdsEntity $edsEntity);
 }

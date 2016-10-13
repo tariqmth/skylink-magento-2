@@ -4,7 +4,7 @@ namespace RetailExpress\SkyLink\Commands\Customers;
 
 use RetailExpress\CommandBus\Queues\QueueableCommand;
 
-class SyncSkyLinkCustomerToMagentoCustomerCommand /*implements QueueableCommand*/
+class SyncSkyLinkCustomerToMagentoCustomerCommand implements QueueableCommand
 {
     /**
      * The SkyLink Customer ID.

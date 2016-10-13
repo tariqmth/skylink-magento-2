@@ -85,7 +85,11 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
             ])
             ->setCity((string) $skyLinkContact->getAddress()->getCity())
             ->setPostcode((string) $skyLinkContact->getAddress()->getPostcode())
-            ->setCountryId((string) $skyLinkContact->getAddress()->getCountry()->getCode())
             ->setTelephone((string) $skyLinkContact->getPhoneNumber());
+
+        $country = $skyLinkContact->getAddress()->getCountry();
+        if (null !== $country) {
+            $magentoAddress->setCountryId((string) $country->getCode());
+        }
     }
 }

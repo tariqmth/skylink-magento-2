@@ -80,7 +80,8 @@ class ChangeSetRepository implements ChangeSetRepositoryInterface
         );
 
         array_walk($entitiesPayload, function (array $entityPayload) use (&$changeSet) {
-            $entity = Entity::fromNative(
+            $entity = Entity::fromNativeWithChangeSet(
+                $changeSet,
                 $entityPayload['entity_type'],
                 $entityPayload['entity_id'],
                 $entityPayload['processed_at']

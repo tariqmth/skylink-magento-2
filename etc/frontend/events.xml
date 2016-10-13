@@ -1,6 +1,19 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+
+    <!-- When an EDS Change Set is registered -->
     <event name="retail_express_skylink_eds_change_set_registered">
         <observer name="customers" instance="RetailExpress\SkyLink\Observer\Customers\WhenEdsChangeSetWasRegistered"/>
     </event>
+
+    <!-- When a SkyLink Customer was synced to a Magento Customer -->
+    <event name="retail_express_skylink_skylink_customer_was_synced_to_magento_customer">
+        <observer name="eds" instance="RetailExpress\SkyLink\Observer\Customers\WhenSkyLinkCustomerWasSyncedToMagentoCustomer"/>
+    </event>
+
+    <!-- When an EDS entity was processed -->
+    <event name="retail_express_skylink_eds_entity_was_processed">
+        <observer name="eds" instance="RetailExpress\SkyLink\Observer\Eds\WhenEdsEntityWasProcessed"/>
+    </event>
+
 </config>

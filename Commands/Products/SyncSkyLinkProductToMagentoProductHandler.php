@@ -3,7 +3,7 @@
 namespace RetailExpress\SkyLink\Commands\Products;
 
 use RetailExpress\SkyLink\Api\Products\MagentoProductRepositoryInterface;
-use RetailExpress\SkyLink\Api\Products\MagentoProductService;
+use RetailExpress\SkyLink\Api\Products\MagentoProductServiceInterface;
 use RetailExpress\SkyLink\Api\Products\MagentoConfigurableProductServiceInterface;
 use RetailExpress\SkyLink\Catalogue\Products\Matrix as SkyLinkProductMatrix;
 use RetailExpress\SkyLink\Catalogue\Products\Product as SkyLinkProduct;
@@ -24,7 +24,7 @@ class SyncSkyLinkProductToMagentoProductHandler
     public function __construct(
         SkyLinkProductRepository $skyLinkProductRepository,
         MagentoProductRepositoryInterface $magentoProductRepository,
-        MagentoProductService $magentoProductService,
+        MagentoProductServiceInterface $magentoProductService,
         MagentoConfigurableProductServiceInterface $configurableProductService
     ) {
         $this->skyLinkProductRepository = $skyLinkProductRepository;

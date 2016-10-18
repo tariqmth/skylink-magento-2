@@ -11,6 +11,8 @@ interface MagentoCustomerServiceInterface
      * Register a new Magento Customer from the given SkyLink Customer.
      *
      * @param SkyLinkCustomer $skyLinkCustomer
+     *
+     * @return CustomerInterface
      */
     public function registerMagentoCustomer(SkyLinkCustomer $skyLinkCustomer);
 

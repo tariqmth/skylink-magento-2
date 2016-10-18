@@ -52,6 +52,8 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
         $this->magentoCustomerMapper->mapMagentoCustomer($magentoCustomer, $skyLinkCustomer);
 
         $this->magentoAccountManagement->createAccount($magentoCustomer);
+
+        return $magentoCustomer;
     }
 
     /**

@@ -73,7 +73,7 @@ class SyncSkyLinkCustomerToMagentoCustomerHandler
         if (null !== $magentoCustomer) {
             $this->magentoCustomerService->updateMagentoCustomer($magentoCustomer, $skyLinkCustomer);
         } else {
-            $this->magentoCustomerService->registerMagentoCustomer($skyLinkCustomer);
+            $magentoCustomer = $this->magentoCustomerService->registerMagentoCustomer($skyLinkCustomer);
         }
 
         $this->eventManager->dispatch(

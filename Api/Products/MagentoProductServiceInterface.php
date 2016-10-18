@@ -5,7 +5,7 @@ namespace RetailExpress\SkyLink\Api\Products;
 use Magento\Catalog\Api\Data\ProductInterface;
 use RetailExpress\SkyLink\Catalogue\Products\Product as SkyLinkProduct;
 
-interface MagentoProductService
+interface MagentoProductServiceInterface
 {
     /**
      * Create a new Magento Product based on the given SkyLink Product

@@ -8,6 +8,8 @@ class ApiVersion implements ArrayInterface
 {
     /**
      * {@inheritdoc}
+     *
+     * @codeCoverageIgnore
      */
     public function toOptionArray()
     {

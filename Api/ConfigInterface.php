@@ -21,7 +21,7 @@ interface ConfigInterface
     /**
      * Get the V2 API Client ID as configured globally.
      *
-     * @return \ValueObjects\StringLiteral\StringLiteral
+     * @return \ValueObjects\Identity\UUID
      */
     public function getV2ApiClientId();
 

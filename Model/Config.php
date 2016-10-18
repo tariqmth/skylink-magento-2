@@ -3,9 +3,9 @@
 namespace RetailExpress\SkyLink\Model;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Ramsey\Uuid\Uuid;
 use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\ValueObjects\SalesChannelId;
+use ValueObjects\Identity\UUID as Uuid;
 use ValueObjects\Number\Integer;
 use ValueObjects\StringLiteral\StringLiteral;
 use ValueObjects\Web\Url;
@@ -42,11 +42,11 @@ class Config implements ConfigInterface
     /**
      * Get the V2 API Client ID as configured globally.
      *
-     * @return \ValueObjects\StringLiteral\StringLiteral
+     * @return Uuid
      */
     public function getV2ApiClientId()
     {
-        return Uuid::fromString((string) $this->scopeConfig->getValue('skylink/api/version_2_client_id'));
+        return Uuid::fromNative((string) $this->scopeConfig->getValue('skylink/api/version_2_client_id'));
     }
 
     /**

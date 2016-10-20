@@ -13,7 +13,7 @@ interface MagentoProductRepositoryInterface
      *
      * @return \Magento\Catalog\Api\Data\ProductInterface|null
      *
-     * @throws TooManyProductMatchesException
+     * @throws \RetailExpress\SkyLink\Exceptions\Products\TooManyProductMatchesException
      */
     public function findSimpleProductBySkyLinkProductId(SkyLinkProductId $skyLinkProductId);
 

@@ -44,11 +44,9 @@ class MagentoCustomerRepository implements MagentoCustomerRepositoryInterface
     public function findBySkyLinkCustomerId(SkyLinkCustomerId $skyLinkCustomerId)
     {
         $this->searchCriteriaBuilder->addFilter('skylink_customer_id', (string) $skyLinkCustomerId);
-
         $searchCriteria = $this->searchCriteriaBuilder->create();
 
         $existingCustomers = $this->baseMagentoCustomerRepository->getList($searchCriteria);
-
         $existingCustomerMatches = $existingCustomers->getTotalCount();
 
         if ($existingCustomerMatches > 1) {

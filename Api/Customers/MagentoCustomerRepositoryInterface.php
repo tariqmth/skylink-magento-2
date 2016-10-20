@@ -13,7 +13,7 @@ interface MagentoCustomerRepositoryInterface
      *
      * @return \Magento\Customer\Api\Data\CustomerInterface|null
      *
-     * @throws TooManyCustomerMatchesException
+     * @throws \RetailExpress\SkyLink\Exceptions\Customers\TooManyCustomerMatchesException
      */
     public function findBySkyLinkCustomerId(SkyLinkCustomerId $skyLinkCustomerId);
 }

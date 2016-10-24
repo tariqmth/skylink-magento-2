@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\ValueObjects;
+namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
 use OutOfRangeException;
 use ValueObjects\Number\Real;

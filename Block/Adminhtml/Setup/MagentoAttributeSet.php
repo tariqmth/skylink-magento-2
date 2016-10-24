@@ -6,9 +6,9 @@ use Magento\Catalog\Api\AttributeSetRepositoryInterface as BaseMagentoAttributeS
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context as TemplateContext;
-use RetailExpress\SkyLink\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
-use RetailExpress\SkyLink\Api\Products\MagentoAttributeSetRepositoryInterface;
-use RetailExpress\SkyLink\Api\Products\SkyLinkProductTypeRepositoryInterface;
+use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
+use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetRepositoryInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Attributes\SkyLinkProductTypeRepositoryInterface;
 
 class MagentoAttributeSet extends Template
 {

@@ -7,7 +7,7 @@ use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\AddressInterfaceFactory;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Api\Data\CustomerInterfaceFactory;
-use RetailExpress\SkyLink\Customers\Customer as SkyLinkCustomer;
+use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface;
 

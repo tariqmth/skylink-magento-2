@@ -11,10 +11,10 @@
     <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerService"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerMapper"/>
 
-    <preference for="RetailExpress\SkyLink\Api\Products\MagentoAttributeRepositoryInterface" type="RetailExpress\SkyLink\Model\Products\MagentoAttributeRepository"/>
-    <preference for="RetailExpress\SkyLink\Api\Products\MagentoAttributeServiceInterface" type="RetailExpress\SkyLink\Model\Products\MagentoAttributeService"/>
-    <preference for="RetailExpress\SkyLink\Api\Products\MagentoAttributeSetRepositoryInterface" type="RetailExpress\SkyLink\Model\Products\MagentoAttributeSetRepository"/>
-    <preference for="RetailExpress\SkyLink\Api\Products\MagentoAttributeSetServiceInterface" type="RetailExpress\SkyLink\Model\Products\MagentoAttributeSetService"/>
-    <preference for="RetailExpress\SkyLink\Api\Products\SkyLinkAttributeCodeRepositoryInterface" type="RetailExpress\SkyLink\Model\Products\SkyLinkAttributeCodeRepository"/>
-    <preference for="RetailExpress\SkyLink\Api\Products\SkyLinkProductTypeRepositoryInterface" type="RetailExpress\SkyLink\Model\Products\SkyLinkProductTypeRepository"/>
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeRepository"/>
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeService"/>
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeSetRepository"/>
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeSetService"/>
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\SkyLinkAttributeCodeRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\SkyLinkAttributeCodeRepository"/>
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\SkyLinkProductTypeRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\SkyLinkProductTypeRepository"/>
 </config>

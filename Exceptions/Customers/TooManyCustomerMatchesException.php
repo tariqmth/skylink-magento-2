@@ -3,7 +3,7 @@
 namespace RetailExpress\SkyLink\Exceptions\Customers;
 
 use Magento\Framework\Exception\LocalizedException;
-use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;
+use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 
 class TooManyCustomerMatchesException extends LocalizedException
 {

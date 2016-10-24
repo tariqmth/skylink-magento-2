@@ -3,7 +3,7 @@
 namespace RetailExpress\SkyLink\Exceptions\Products;
 
 use Magento\Framework\Exception\LocalizedException;
-use RetailExpress\SkyLink\Catalogue\Products\ProductId as SkyLinkProductId;
+use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
 
 class TooManyProductMatchesException extends LocalizedException
 {

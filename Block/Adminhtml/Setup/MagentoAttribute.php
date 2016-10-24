@@ -7,9 +7,9 @@ use Magento\Backend\Block\Template\Context as TemplateContext;
 use Magento\Catalog\Api\ProductAttributeRepositoryInterface as BaseMagentoProductAttributeRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Api\SortOrderBuilder;
-use RetailExpress\SkyLink\Api\Products\MagentoAttributeRepositoryInterface;
-use RetailExpress\SkyLink\Api\Products\SkyLinkAttributeCodeRepositoryInterface;
-use RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
+use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Attributes\SkyLinkAttributeCodeRepositoryInterface;
+use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 
 class MagentoAttribute extends Template
 {

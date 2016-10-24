@@ -5,8 +5,8 @@ namespace RetailExpress\SkyLink\Controller\Adminhtml\Setup;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Catalog\Api\ProductAttributeRepositoryInterface;
-use RetailExpress\SkyLink\Api\Products\MagentoAttributeServiceInterface;
-use RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
+use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeServiceInterface;
+use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 
 class SaveMagentoAttribute extends Action
 {

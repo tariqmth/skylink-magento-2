@@ -2,7 +2,7 @@
 
 namespace RetailExpress\SkyLink\Api\Customers;
 
-use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;
+use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 
 interface MagentoCustomerRepositoryInterface
 {

@@ -6,7 +6,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use RetailExpress\SkyLink\Api\Eds\ChangeSetRepositoryInterface;
 use RetailExpress\SkyLink\Api\Eds\ChangeSetServiceInterface;
-use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;
+use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Eds\ChangeSetId;
 use RetailExpress\SkyLink\Eds\Entity as EdsEntity;
 use RetailExpress\SkyLink\Eds\EntityType as EdsEntityType;

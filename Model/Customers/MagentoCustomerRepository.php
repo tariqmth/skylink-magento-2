@@ -4,7 +4,7 @@ namespace RetailExpress\SkyLink\Model\Customers;
 
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;
+use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerRepositoryInterface;
 use RetailExpress\SkyLink\Exceptions\Customers\TooManyCustomerMatchesException;
 

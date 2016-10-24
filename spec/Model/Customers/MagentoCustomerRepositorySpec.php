@@ -8,7 +8,7 @@ use Magento\Customer\Api\Data\CustomerSearchResultsInterface;
 use Magento\Framework\Api\SearchCriteria;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use PhpSpec\ObjectBehavior;
-use RetailExpress\SkyLink\Customers\CustomerId as SkyLinkCustomerId;
+use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Exceptions\Customers\TooManyCustomerMatchesException;
 use RetailExpress\SkyLink\Model\Customers\MagentoCustomerRepository;
 

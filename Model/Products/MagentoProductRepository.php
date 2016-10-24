@@ -43,7 +43,7 @@ class MagentoProductRepository implements MagentoProductRepositoryInterface
         $this->searchCriteriaBuilder->addFilter('skylink_product_id', (string) $skyLinkProductId);
         $searchCriteria = $this->searchCriteriaBuilder->create();
 
-        $existingProducts = $this->baseMagentoProductRepository->getList($searchCriteria)
+        $existingProducts = $this->baseMagentoProductRepository->getList($searchCriteria);
         $existingProductMatches = $existingProducts->getTotalCount();
 
         if ($existingProductMatches > 1) {

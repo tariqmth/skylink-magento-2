@@ -4,9 +4,9 @@ namespace RetailExpress\SkyLink\Model\Customers;
 
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Customer\Api\Data\AddressInterfaceFactory;
 use Magento\Customer\Api\Data\CustomerInterface;
-use Magento\Customer\Model\Data\CustomerFactory;
-use Magento\Customer\Model\Data\AddressFactory;
+use Magento\Customer\Api\Data\CustomerInterfaceFactory;
 use RetailExpress\SkyLink\Customers\Customer as SkyLinkCustomer;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface;
@@ -26,8 +26,8 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
     public function __construct(
         AccountManagementInterface $magentoAccountManagement,
         CustomerRepositoryInterface $magentoCustomerRepository,
-        CustomerFactory $magentoCustomerFactory,
-        AddressFactory $magentoAddressFactory,
+        CustomerInterfaceFactory $magentoCustomerFactory,
+        AddressInterfaceFactory $magentoAddressFactory,
         MagentoCustomerMapperInterface $magentoCustomerMapper
     ) {
         $this->magentoAccountManagement = $magentoAccountManagement;

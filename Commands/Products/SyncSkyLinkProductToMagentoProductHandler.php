@@ -2,7 +2,8 @@
 
 namespace RetailExpress\SkyLink\Commands\Products;
 
-use RetailExpress\SkyLink\Api\Products\MagentoProductRepositoryInterface;
+use RetailExpress\SkyLink\Api\Products\MagentoConfigurableProductRepositoryInterface;
+use RetailExpress\SkyLink\Api\Products\MagentoSimpleProductRepositoryInterface;
 use RetailExpress\SkyLink\Api\Products\MagentoProductServiceInterface;
 use RetailExpress\SkyLink\Api\Products\MagentoConfigurableProductServiceInterface;
 use RetailExpress\SkyLink\Catalogue\Products\Matrix as SkyLinkProductMatrix;
@@ -15,7 +16,9 @@ class SyncSkyLinkProductToMagentoProductHandler
 {
     private $skyLinkProductRepository;
 
-    private $magentoProductRepository;
+    private $magentoSimpleProductRepository;
+
+    private $magentoConfigurableProductRepository;
 
     private $magentoProductService;
 
@@ -23,12 +26,14 @@ class SyncSkyLinkProductToMagentoProductHandler
 
     public function __construct(
         SkyLinkProductRepository $skyLinkProductRepository,
-        MagentoProductRepositoryInterface $magentoProductRepository,
+        MagentoSimpleProductRepositoryInterface $magentoSimpleProductRepository,
+        MagentoConfigurableProductRepositoryInterface $magentoConfigurableProductRepository,
         MagentoProductServiceInterface $magentoProductService,
         MagentoConfigurableProductServiceInterface $configurableProductService
     ) {
         $this->skyLinkProductRepository = $skyLinkProductRepository;
-        $this->magentoProductRepository = $magentoProductRepository;
+        $this->magentoSimpleProductRepository = $magentoSimpleProductRepository;
+        $this->magentoConfigurableProductRepository = $magentoConfigurableProductRepository;
         $this->magentoProductService = $magentoProductService;
         $this->configurableProductService = $configurableProductService;
     }
@@ -56,7 +61,7 @@ class SyncSkyLinkProductToMagentoProductHandler
 
     private function syncSkyLinkIndividualProduct(SkyLinkProduct $skyLinkProduct)
     {
-        $magentoProduct = $this->magentoProductRepository->findSimpleProductBySkyLinkProductId($skyLinkProduct->getId());
+        $magentoProduct = $this->magentoSimpleProductRepository->findProductBySkyLinkProductId($skyLinkProduct->getId());
 
         if (null !== $magentoProduct) {
             $this->magentoProductService->updateMagentoProduct($magentoProduct, $skyLinkProduct);
@@ -74,11 +79,16 @@ class SyncSkyLinkProductToMagentoProductHandler
             return $this->syncSkyLinkIndividualProduct($skyLinkProduct);
         }, $skyLinkProductMatrix->getProducts());
 
-        // Now, we'll find an existing configurable product based on the SkyLink Product IDs in our matrix, which
-        // as a resul tof the previous synchronisation, we now know represent products existing in Magento.
-        $magentoConfigurableProduct = $this->magentoProductRepository->findConfigurableProductBySkyLinkProductIds(array_map(function (SkyLinkProduct $skyLinkProduct) {
+        // Strip out the IDs from the product matrix
+        $skyLinkProductMatrixIds = array_map(function (SkyLinkProduct $skyLinkProduct) {
             return $product->getId();
-        }, $skyLinkProductMatrix->getProducts()));
+        }, $skyLinkProductMatrix->getProducts());
+
+        // Now, we'll find an existing configurable product based on the SkyLink Product IDs in our matrix, which
+        // as a result tof the previous synchronisation, we now know represent products existing in Magento.
+        $magentoConfigurableProduct = $this
+            ->magentoConfigurableProductRepository
+            ->findProductBySkyLinkProductIds($skyLinkProductMatrixIds);
 
         if (null !== $magentoConfigurableProduct) {
             $this->magentoProductService->updateMagentoProduct($magentoProduct, $skyLinkProductMatrix);

@@ -15,20 +15,16 @@ class MagentoProductRepository implements MagentoProductRepositoryInterface
 {
     private $baseMagentoProductRepository;
 
-    private $searchCriteriaBuilder;
-
     private $magentoProductLinkRepository;
 
     private $productConfig;
 
     public function __construct(
         ProductRepositoryInterface $baseMagentoProductRepository,
-        SearchCriteriaBuilder $searchCriteriaBuilder,
         MagentoProductLinkRepositoryInterface $magentoProductLinkRepository,
         ProductConfigInterface $productConfig
     ) {
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
-        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->magentoProductLinkRepository = $magentoProductLinkRepository;
         $this->productConfig = $productConfig;
     }
@@ -36,29 +32,7 @@ class MagentoProductRepository implements MagentoProductRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function findSimpleProductBySkyLinkProductId(SkyLinkProductId $skyLinkProductId)
-    {
-        // Search simple products by the given SkyLink Product ID
-        $this->searchCriteriaBuilder->addFilter('type_id', ProductType::TYPE_SIMPLE);
-        $this->searchCriteriaBuilder->addFilter('skylink_product_id', (string) $skyLinkProductId);
-        $searchCriteria = $this->searchCriteriaBuilder->create();
-
-        $existingProducts = $this->baseMagentoProductRepository->getList($searchCriteria);
-        $existingProductMatches = $existingProducts->getTotalCount();
-
-        if ($existingProductMatches > 1) {
-            throw TooManyProductMatchesException::withSkyLinkProductId($skyLinkProductId, $existingProductMatches);
-        }
-
-        if ($existingProductMatches === 1) {
-            return $existingProducts->getItems()[0];
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function findConfigurableProductBySkyLinkProductIds(array $skyLinkProductIds)
+    public function findProductBySkyLinkProductIds(array $skyLinkProductIds)
     {
         // Grab our simple products
         $childrenProducts = array_map(function (SkyLinkProductId $skyLinkProductId) {

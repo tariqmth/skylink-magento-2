@@ -54,7 +54,7 @@ class MagentoCustomerRepository implements MagentoCustomerRepositoryInterface
         }
 
         if ($existingCustomerMatches === 1) {
-            return $existingCustomers->getItems()[0];
+            return current($existingCustomers->getItems());
         }
     }
 }

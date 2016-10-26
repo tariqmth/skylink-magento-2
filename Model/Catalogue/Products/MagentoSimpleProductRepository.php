@@ -42,7 +42,7 @@ class MagentoSimpleProductRepository implements MagentoSimpleProductRepositoryIn
         }
 
         if ($existingProductMatches === 1) {
-            return $existingProducts->getItems()[0];
+            return current($existingProducts->getItems());
         }
     }
 }

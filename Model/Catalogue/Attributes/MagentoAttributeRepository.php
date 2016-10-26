@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Model\Products;
+namespace RetailExpress\SkyLink\Model\Catalogue\Attributes;
 
 use Magento\Catalog\Api\ProductAttributeRepositoryInterface;
 use Magento\Framework\App\ResourceConnection;

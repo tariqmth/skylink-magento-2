@@ -1,8 +1,9 @@
 <?php
 
-namespace RetailExpress\SkyLink\Model\Products;
+namespace RetailExpress\SkyLink\Model\Catalogue\Attributes;
 
 use Magento\Catalog\Api\AttributeSetRepositoryInterface as BaseAttributeSetRepositoryInterface;
+use Magento\Catalog\Model\ProductFactory as MagentoProductFactory;
 use Magento\Framework\App\ResourceConnection;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetRepositoryInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
@@ -13,6 +14,8 @@ class MagentoAttributeSetRepository implements MagentoAttributeSetRepositoryInte
 
     private $baseMagentoAttributeSetRepository;
 
+    private $magentoProductFactory;
+
     /**
      * Create a new Magento Attribute Service.
      *
@@ -20,20 +23,17 @@ class MagentoAttributeSetRepository implements MagentoAttributeSetRepositoryInte
      */
     public function __construct(
         ResourceConnection $resourceConnection,
-        BaseAttributeSetRepositoryInterface $baseMagentoAttributeSetRepository
+        BaseAttributeSetRepositoryInterface $baseMagentoAttributeSetRepository,
+        MagentoProductFactory $magentoProductFactory
     ) {
         $this->connection = $resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
 
         $this->baseMagentoAttributeSetRepository = $baseMagentoAttributeSetRepository;
+        $this->magentoProductFactory = $magentoProductFactory;
     }
 
     /**
-     * Get the Attribute Set used for the given product type. If there is no
-     * mapping defined, "null" is returend.
-     *
-     * @param SkyLinkAttributeOption $skyLinkProductType
-     *
-     * @return \Magento\Eav\Api\Data\AttributeSetInterface|null
+     * {@inheritdoc}
      */
     public function getAttributeSetForProductType(SkyLinkAttributeOption $skyLinkProductType)
     {
@@ -45,7 +45,10 @@ class MagentoAttributeSetRepository implements MagentoAttributeSetRepositoryInte
         );
 
         if (false === $magentoAttributeSetId) {
-            return null;
+
+            /** @var \Magento\Catalog\Model\Product $magentoProduct **/
+            $magentoProduct = $this->magentoProductFactory->create();
+            $magentoAttributeSetId = $magentoProduct->getDefaultAttributeSetId();
         }
 
         return $this->baseMagentoAttributeSetRepository->get($magentoAttributeSetId);

@@ -2,11 +2,13 @@
 
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\Data\ProductInterfaceFactory;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product\Type as ProductType;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface;
+use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 
 class MagentoSimpleProductService implements MagentoSimpleProductServiceInterface
 {
@@ -31,9 +33,10 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
      */
     public function createMagentoProduct(SkyLinkProduct $skyLinkProduct)
     {
-        $magentoProduct = $this->createMagentoProduct();
+        $magentoProduct = $this->magentoProductFactory->create();
+        $magentoProduct->setTypeId(ProductType::TYPE_SIMPLE);
 
-        $this->mapAndSave($magentoProduct);
+        $this->mapAndSave($magentoProduct, $skyLinkProduct);
 
         return $magentoProduct;
     }
@@ -43,20 +46,12 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
      */
     public function updateMagentoProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
     {
-        $this->mapAndSave($magentoProduct);
-    }
-
-    private function createMagentoProduct()
-    {
-        $magentoProduct = $this->magentoProductFactory->create();
-        $magentoProduct->setTypeId(ProductType::TYPE_SIMPLE);
-
-        return $magentoProduct;
+        $this->mapAndSave($magentoProduct, $skyLinkProduct);
     }
 
     private function mapAndSave(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
     {
-        $this->magentoProductMapper->map($magentoProduct, $skyLinkProduct);
+        $this->magentoProductMapper->mapMagentoProduct($magentoProduct, $skyLinkProduct);
         $this->baseMagentoProductRepository->save($magentoProduct);
     }
 }

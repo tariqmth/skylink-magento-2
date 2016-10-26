@@ -25,6 +25,7 @@
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\SkyLinkProductTypeRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\SkyLinkProductTypeRepository"/>
 
     <!-- Catalogue product implementations -->
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoProductMapper"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSimpleProductRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSimpleProductService"/>
 

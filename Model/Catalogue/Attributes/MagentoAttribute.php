@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Model\Products;
+namespace RetailExpress\SkyLink\Model\Catalogue\Attributes;
 
 trait MagentoAttribute
 {

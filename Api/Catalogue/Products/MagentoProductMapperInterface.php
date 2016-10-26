@@ -15,4 +15,3 @@ interface MagentoProductMapperInterface
      */
     public function mapMagentoProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct);
 }
-`

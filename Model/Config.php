@@ -4,7 +4,7 @@ namespace RetailExpress\SkyLink\Model;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use RetailExpress\SkyLink\Api\ConfigInterface;
-use RetailExpress\SkyLink\ValueObjects\SalesChannelId;
+use RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId;
 use ValueObjects\Identity\UUID as Uuid;
 use ValueObjects\Number\Integer;
 use ValueObjects\StringLiteral\StringLiteral;

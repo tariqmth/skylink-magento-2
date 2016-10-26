@@ -7,18 +7,20 @@ use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product;
 interface SkyLinkProductToMagentoProductSyncerInterface
 {
     /**
-     * Determine if the syncer accepts the given product to sync.
+     * Determine if the syncer accepts the given SkyLink Product to sync.
      *
-     * @param Product $product
+     * @param Product $skyLinkProduct
      *
      * @return bool
      */
-    public function accepts(Product $product);
+    public function accepts(Product $skyLinkProduct);
 
     /**
-     * Perform the actual sync of the given product.
+     * Perform the actual sync of the given SkyLink Product.
      *
-     * @param Product $product
+     * @param Product $skyLinkProduct
+     *
+     * @return \Magento\Catalog\Api\Data\ProductInterface
      */
-    public function sync(Product $product);
+    public function sync(Product $skyLinkProduct);
 }

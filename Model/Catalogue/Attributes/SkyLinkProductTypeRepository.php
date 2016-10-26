@@ -30,10 +30,10 @@ class SkyLinkProductTypeRepository implements SkyLinkProductTypeRepositoryInterf
      */
     public function getList()
     {
-        /* @var \RetailExpress\SkyLink\Catalogue\Attributes\AttributeCode */
+        /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode */
         $attributeCode = AttributeCode::get(AttributeCode::PRODUCT_TYPE);
 
-        /* @var \RetailExpress\SkyLink\Catalogue\Attributes\AttributeRepository */
+        /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeRepository */
         $attributeRepository = $this->attributeRepositoryFactory->create();
 
         $attribute = $attributeRepository->find(

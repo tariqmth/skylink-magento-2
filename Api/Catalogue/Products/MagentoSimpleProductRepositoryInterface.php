@@ -15,5 +15,5 @@ interface MagentoSimpleProductRepositoryInterface
      *
      * @throws \RetailExpress\SkyLink\Exceptions\Products\TooManyProductMatchesException
      */
-    public function findProductBySkyLinkProductId(SkyLinkProductId $skyLinkProductId);
+    public function findBySkyLinkProductId(SkyLinkProductId $skyLinkProductId);
 }

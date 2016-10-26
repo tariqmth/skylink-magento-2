@@ -1,20 +1,40 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- @todo move this to a factory pattern potentially? -->
     <preference for="RetailExpress\SkyLink\Eds\ChangeSetDeserialiser" type="RetailExpress\SkyLink\Eds\V2ChangeSetDeserialiser"/>
 
+    <!-- Config implementations -->
     <preference for="RetailExpress\SkyLink\Api\ConfigInterface" type="RetailExpress\SkyLink\Model\Config"/>
 
+    <!-- EDS implementations -->
     <preference for="RetailExpress\SkyLink\Api\Eds\ChangeSetRepositoryInterface" type="RetailExpress\SkyLink\Model\Eds\ChangeSetRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Eds\ChangeSetServiceInterface" type="RetailExpress\SkyLink\Model\Eds\ChangeSetService"/>
 
+    <!-- Customer implementations -->
     <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerRepositoryInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerService"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerMapper"/>
 
+    <!-- Catalogue attribute implementations -->
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeService"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeSetRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeSetService"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\SkyLinkAttributeCodeRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\SkyLinkAttributeCodeRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\SkyLinkProductTypeRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\SkyLinkProductTypeRepository"/>
+
+    <!-- Catalogue product implementations -->
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSimpleProductRepository"/>
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSimpleProductService"/>
+
+    <!-- Setup product syncers -->
+    <type name="RetailExpress\SkyLink\Commands\Catalogue\Products\SyncSkyLinkProductToMagentoProductHandler">
+        <arguments>
+            <argument name="syncers" xsi:type="array">
+                <item name="simple" xsi:type="object">RetailExpress\SkyLink\Model\Catalogue\Products\SkyLinkSimpleProductToMagentoSimpleProductSyncer</item>
+            </argument>
+        </arguments>
+    </type>
+
 </config>

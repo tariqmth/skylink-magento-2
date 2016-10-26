@@ -5,12 +5,14 @@ namespace RetailExpress\SkyLink\Api\Catalogue\Products;
 use Magento\Catalog\Api\Data\ProductInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 
-interface MagentoProductServiceInterface
+interface MagentoSimpleProductServiceInterface
 {
     /**
      * Create a new Magento Product based on the given SkyLink Product
      *
      * @param SkyLinkProduct $skyLinkProduct
+     *
+     * @return ProductInterface
      */
     public function createMagentoProduct(SkyLinkProduct $skyLinkProduct);
 

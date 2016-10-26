@@ -31,6 +31,11 @@ class SyncSkyLinkCustomerToMagentoCustomerHandler
      */
     private $magentoCustomerService;
 
+    /**
+     * Event Manager instance.
+     *
+     * @var EventManagerInterface
+     */
     private $eventManager;
 
     /**
@@ -39,6 +44,7 @@ class SyncSkyLinkCustomerToMagentoCustomerHandler
      * @param SkylinkCustomerRepositoryFactory   $skyLinkCustomerRepositoryFactory
      * @param MagentoCustomerRepositoryInterface $magentoCustomerRepository
      * @param MagentoCustomerServiceInterface    $magentoCustomerService
+     * @param EventManagerInterface              $eventManager
      */
     public function __construct(
         SkylinkCustomerRepositoryFactory $skyLinkCustomerRepositoryFactory,
@@ -63,7 +69,7 @@ class SyncSkyLinkCustomerToMagentoCustomerHandler
     {
         $skyLinkCustomerId = new SkyLinkCustomerId($command->skyLinkCustomerId);
 
-        /** @var \RetailExpress\SkyLink\Customers\CustomerRepository $skyLinkCustomerRepository */
+        /** @var \RetailExpress\SkyLink\Sdk\Customers\CustomerRepository $skyLinkCustomerRepository */
         $skyLinkCustomerRepository = $this->skyLinkCustomerRepositoryFactory->create();
 
         // Find corresponding SkyLink and Magento Customers

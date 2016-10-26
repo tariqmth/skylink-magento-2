@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\Sdk\SkyLink\Apis;
+namespace RetailExpress\SkyLink\Sdk\Apis;
 
 use RetailExpress\SkyLink\Api\ConfigInterface;
 

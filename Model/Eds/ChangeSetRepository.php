@@ -30,14 +30,14 @@ class ChangeSetRepository implements ChangeSetRepositoryInterface
     public function save(ChangeSet $changeSet)
     {
         if ($this->changeSetExists($changeSet->getId())) {
-            throw new \RuntimeException("@todo, move method to the service and call it register(), as Change Sets cannot be persisted once registered.");
+            throw new \RuntimeException('@todo, move method to the service and call it register(), as Change Sets cannot be persisted once registered.');
         }
 
         // Save the Change Set
         $this->connection->insert(
             $this->getChangeSetsTable(),
             [
-                'change_set_id' => $changeSet->getId()
+                'change_set_id' => $changeSet->getId(),
             ]
         );
 

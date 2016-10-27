@@ -86,14 +86,13 @@ class MagentoAttributeOptionRepository extends MagentoAttributeOptionRepositoryI
             ->magentoAttributeRepository
             ->getMagentoAttributeForSkyLinkAttributeCode($skyLinkAttributeCode); // @todo "null" check?
 
-        /** @var \Magento\Eav\Api\Data\AttributeOptionInterface[] $magentoAttributeOptions **/
+        /* @var \Magento\Eav\Api\Data\AttributeOptionInterface[] $magentoAttributeOptions */
         $magentoAttributeOptions = $this->magentoAttributeOptionManagement->getList(
             ProductAttributeInterface::ENTITY_TYPE_CODE,
             $magentoAttributeCode
         );
 
         foreach ($magentoAttributeOptions as $magentoAttributeOption) {
-
             if ($magentoAttributeOptionId == $this->getIdFromMagentoAttributeOption($magentoAttributeOption)) {
                 goto success;
             }

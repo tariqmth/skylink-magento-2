@@ -27,7 +27,7 @@ class WhenSkyLinkCustomerWasSyncedToMagentoCustomer implements ObserverInterface
 
     public function execute(Observer $observer)
     {
-        /** @var \RetailExpress\SkyLink\Commands\Customers\SyncSkyLinkCustomerToMagentoCustomerCommand $command **/
+        /* @var \RetailExpress\SkyLink\Commands\Customers\SyncSkyLinkCustomerToMagentoCustomerCommand $command */
         $command = $observer->getData('command');
 
         // Only continue if we're dealing with a command that was triggered by EDS

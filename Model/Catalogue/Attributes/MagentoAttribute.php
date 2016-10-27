@@ -20,7 +20,7 @@ trait MagentoAttribute
 
     /**
      * @todo The ID is not exposed in the interface, this needs to change somehow. This
-     * should nearly always work, but it's not the best way of going about it.
+     * should nearly always work, but it's not the best way of going about it
      */
     private function getIdFromMagentoAttributeOption(AttributeOptionInterface $magentoAttributeOption)
     {

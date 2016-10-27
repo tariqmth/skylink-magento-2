@@ -46,7 +46,7 @@ class MagentoAttributeSetRepository implements MagentoAttributeSetRepositoryInte
 
         if (false === $magentoAttributeSetId) {
 
-            /** @var \Magento\Catalog\Model\Product $magentoProduct **/
+            /* @var \Magento\Catalog\Model\Product $magentoProduct */
             $magentoProduct = $this->magentoProductFactory->create();
             $magentoAttributeSetId = $magentoProduct->getDefaultAttributeSetId();
         }

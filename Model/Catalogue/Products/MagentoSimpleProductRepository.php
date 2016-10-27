@@ -5,7 +5,6 @@ namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Framework\Api\SearchCriteriaBuilder;
-use RetailExpress\SkyLink\Api\Catalogue\Products\ConfigInterface as ProductConfigInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
 use RetailExpress\SkyLink\Exceptions\Products\TooManyProductMatchesException;

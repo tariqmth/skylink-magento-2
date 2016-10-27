@@ -4,7 +4,6 @@ namespace spec\RetailExpress\SkyLink\Model;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use RetailExpress\SkyLink\Model\Config;
 use RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId;
 use ValueObjects\Identity\UUID as Uuid;

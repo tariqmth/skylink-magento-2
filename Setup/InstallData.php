@@ -32,7 +32,7 @@ class InstallData implements InstallDataInterface
     {
         // https://github.com/magento/magento2/issues/1238#issuecomment-105034397
 
-        /** @var \Magento\Eav\Setup\EavSetup $eavSetup **/
+        /* @var \Magento\Eav\Setup\EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
 
         // $this->addSkyLinkCustomerIdToCustomers($eavSetup);

@@ -6,12 +6,11 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Api\SearchCriteria;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductLinkRepositoryInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
 use RetailExpress\SkyLink\Model\Products\MagentoSimpleProductRepository;
 
-class MagentoProductRepositorySpec extends ObjectBehavior
+class MagentoSimpleProductRepositorySpec extends ObjectBehavior
 {
     private $baseMagentoProductRepository;
 
@@ -45,6 +44,5 @@ class MagentoProductRepositorySpec extends ObjectBehavior
         SearchCriteria $searchCriteria,
         SkyLinkProductId $skyLinkProductId
     ) {
-
     }
 }

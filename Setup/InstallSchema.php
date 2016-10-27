@@ -2,8 +2,6 @@
 
 namespace RetailExpress\SkyLink\Setup;
 
-use Magento\Framework\DB\Adapter\AdapterInterface as DbAdapterInterface;
-use Magento\Framework\DB\Ddl\Table as DdlTable;
 use Magento\Framework\Setup\InstallSchemaInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\ModuleContextInterface;

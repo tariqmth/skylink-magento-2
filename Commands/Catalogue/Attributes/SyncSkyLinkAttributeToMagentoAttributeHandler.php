@@ -47,7 +47,7 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
 
     public function handle(SyncSkyLinkAttributeToMagentoAttributeCommand $command)
     {
-        /** @var \RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeRepository **/
+        /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeRepository **/
         $attributeRepository = $this->attributeRepositoryFactory->create();
 
         // Grab our attribute

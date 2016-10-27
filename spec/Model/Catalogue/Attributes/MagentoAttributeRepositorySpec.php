@@ -8,7 +8,6 @@ use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Adapter\AdapterInterface as ConnectionAdaptorInterface;
 use Magento\Framework\DB\Select as DbSelect;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 use RetailExpress\SkyLink\Model\Products\MagentoAttributeRepository;
 

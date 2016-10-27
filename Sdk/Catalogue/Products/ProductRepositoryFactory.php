@@ -30,7 +30,7 @@ class ProductRepositoryFactory
     {
         $this->assertV2Api($this->config->getApiVersion());
 
-        /** @var MatrixPolicyMapper $matrixPolicyMapper **/
+        /* @var MatrixPolicyMapper $matrixPolicyMapper */
         $matrixPolicyMapper = $this->matrixPolicyMapperFactory->create();
 
         return new V2ProductRepository($matrixPolicyMapper, $this->v2ApiFactory->create());

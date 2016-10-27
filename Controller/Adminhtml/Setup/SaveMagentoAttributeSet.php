@@ -31,10 +31,10 @@ class SaveMagentoAttributeSet extends Action
 
         array_walk($data['magento_attribute_set_mappings'], function ($magentoAttributeSetId, $skyLinkProductTypeId) {
 
-            /** @var SkyLinkAttributeOption */
+            /* @var SkyLinkAttributeOption */
             $skyLinkProductType = SkyLinkAttributeOption::fromNative('product_type', (string) $skyLinkProductTypeId);
 
-            /** @var \Magento\Eav\Api\Data\AttributeSetInterface */
+            /* @var \Magento\Eav\Api\Data\AttributeSetInterface */
             $magentoAttributeSet = $this->magentoAttributeSetRepository->get($magentoAttributeSetId);
 
             $this->magentoAttributeSetService->mapAttributeSetForProductType($magentoAttributeSet, $skyLinkProductType);

@@ -18,7 +18,7 @@ class SaveMagentoAttribute extends Action
         Context $context,
         ProductAttributeRepositoryInterface $magentoProductAttributeRepository,
         MagentoAttributeServiceInterface $magentoAttributeService
-    ){
+    ) {
         parent::__construct($context);
 
         $this->magentoProductAttributeRepository = $magentoProductAttributeRepository;
@@ -34,7 +34,7 @@ class SaveMagentoAttribute extends Action
             /** @var \Magento\Catalog\Api\Data\ProductAttributeInterface $magentoAttribute */
             $magentoAttribute = $this->magentoProductAttributeRepository->get($magentoAttributeCode);
 
-            /** @var SkyLinkAttributeCode */
+            /* @var SkyLinkAttributeCode */
             $skyLinkAttributeCode = SkyLinkAttributeCode::get($skyLinkAttributeCodeString);
 
             $this->magentoAttributeService->mapMagentoAttributeForSkyLinkAttributeCode($magentoAttribute, $skyLinkAttributeCode);

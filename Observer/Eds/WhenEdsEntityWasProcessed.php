@@ -23,7 +23,7 @@ class WhenEdsEntityWasProcessed implements ObserverInterface
 
     public function execute(Observer $observer)
     {
-        /** @var \RetailExpress\SkyLink\Eds\ChangeSetService $changeSetService **/
+        /* @var \RetailExpress\SkyLink\Eds\ChangeSetService $changeSetService */
         $changeSetService = $this->changeSetServiceFactory->create();
 
         // @todo do we need to reload the Change Set? Would it ever be outdated

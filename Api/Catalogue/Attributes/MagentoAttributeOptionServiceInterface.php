@@ -3,7 +3,6 @@
 namespace RetailExpress\SkyLink\Api\Catalogue\Attributes;
 
 use Magento\Eav\Api\Data\AttributeOptionInterface;
-use Magento\Framework\App\ResourceConnection;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
 
 interface MagentoAttributeOptionServiceInterface

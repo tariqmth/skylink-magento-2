@@ -8,7 +8,6 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use RetailExpress\SkyLink\Api\Eds\ChangeSetServiceInterface;
 use RetailExpress\SkyLink\Eds\Entity as EdsEntity;
-use RetailExpress\SkyLink\Exceptions\Eds\NotAllEntitiesProcessedException;
 
 class ChangeSetService implements ChangeSetServiceInterface
 {

@@ -54,10 +54,10 @@ class SyncSkyLinkProductToMagentoProductHandler
         $skyLinkProductId = new SkyLinkProductId($command->skyLinkProductId);
         $salesChannelId = new SalesChannelId($command->salesChannelId);
 
-        /** @var \RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductRepository $skyLinkProductRepository */
+        /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductRepository $skyLinkProductRepository */
         $skyLinkProductRepository = $this->skyLinkProductRepositoryFactory->create();
 
-        /** @var \RetailExpress\SkyLink\Sdk\Catalogue\Products\Product $skyLinkProduct **/
+        /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Products\Product $skyLinkProduct */
         $skyLinkProduct = $skyLinkProductRepository->find($skyLinkProductId, $salesChannelId);
 
         foreach ($this->syncers as $syncer) {

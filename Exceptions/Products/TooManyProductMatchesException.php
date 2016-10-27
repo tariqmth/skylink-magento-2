@@ -11,7 +11,7 @@ class TooManyProductMatchesException extends LocalizedException
      * Create an new Exception with the given SkyLink Product ID and a numerical number of matches.
      *
      * @param SkyLinkProductId $skyLinkProductId
-     * @param int               $matches
+     * @param int              $matches
      *
      * @return TooManyProductMatchesException
      *

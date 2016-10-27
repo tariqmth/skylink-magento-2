@@ -31,7 +31,6 @@ class WhenEdsChangeSetWasRegistered implements ObserverInterface
 
         // Build commands
         $commands = array_filter(array_map(function (Entity $entity) {
-
             if ($entity->getType()->sameValueAs(EntityType::get('customer'))) {
                 return $this->createSyncSkyLinkCustomerToMagentoCustomerCommand($entity);
             }
@@ -39,7 +38,6 @@ class WhenEdsChangeSetWasRegistered implements ObserverInterface
             if ($entity->getType()->sameValueAs(EntityType::get('product'))) {
                 return $this->createSyncSkyLinkProductToMagentoProductCommand($entity);
             }
-
         }, $changeSet->getEntities()));
 
         // Loop through and execute our commands
@@ -53,6 +51,7 @@ class WhenEdsChangeSetWasRegistered implements ObserverInterface
     {
         $command = new SyncSkyLinkCustomerToMagentoCustomerCommand();
         $command->skyLinkCustomerId = $entity->getId()->toNative();
+
         return $command;
     }
 
@@ -61,6 +60,7 @@ class WhenEdsChangeSetWasRegistered implements ObserverInterface
         $command = new SyncSkyLinkProductToMagentoProductCommand();
         $command->skyLinkProductId = $entity->getId()->toNative();
         $command->salesChannelId = $this->config->getSalesChannelId()->toNative();
+
         return $command;
     }
 }

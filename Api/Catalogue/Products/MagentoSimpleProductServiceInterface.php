@@ -8,7 +8,7 @@ use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 interface MagentoSimpleProductServiceInterface
 {
     /**
-     * Create a new Magento Product based on the given SkyLink Product
+     * Create a new Magento Product based on the given SkyLink Product.
      *
      * @param SkyLinkProduct $skyLinkProduct
      *

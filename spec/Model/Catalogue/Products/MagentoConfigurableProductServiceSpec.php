@@ -2,10 +2,8 @@
 
 namespace spec\RetailExpress\SkyLink\Model\Products;
 
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\ConfigurableProduct\Api\LinkManagementInterface;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use RetailExpress\SkyLink\Model\Products\MagentoConfigurableProductService;
 
 class MagentoConfigurableProductServiceSpec extends ObjectBehavior

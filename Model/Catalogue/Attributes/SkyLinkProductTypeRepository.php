@@ -3,8 +3,6 @@
 namespace RetailExpress\SkyLink\Model\Catalogue\Attributes;
 
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode;
-use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeRepository;
-use RetailExpress\SkyLink\ValueObjects\SalesChannelId;
 use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\SkyLinkProductTypeRepositoryInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeRepositoryFactory;

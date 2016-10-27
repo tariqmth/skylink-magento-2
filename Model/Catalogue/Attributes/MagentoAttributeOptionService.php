@@ -46,7 +46,7 @@ class MagentoAttributeOptionService extends MagentoAttributeOptionServiceInterfa
                 [
                     'skylink_attribute_code' => $skyLinkAttributeCode,
                     'skylink_attribute_option_id' => $skyLinkAttributeOption->getId(),
-                    'magento_attribute_option_id' => $this->getIdFromMagentoAttributeOption($magentoAttributeOption)
+                    'magento_attribute_option_id' => $this->getIdFromMagentoAttributeOption($magentoAttributeOption),
                 ]
             );
         }

@@ -47,7 +47,7 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
             $this->connection
                 ->select()
                 ->from($this->getAttributesTable(), 'magento_attribute_code')
-                ->where('skylink_attribute_code = ?', $skylinkAttributeCode->getValue())
+                ->where('skylink_attribute_code = ?', $skylinkAttributeCode->getValue()) // @todo can we remove getValue()?
         );
 
         if (false === $magentoAttributeCode) {

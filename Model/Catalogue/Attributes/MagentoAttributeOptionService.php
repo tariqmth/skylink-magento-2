@@ -1,10 +1,13 @@
 <?php
 
+namespace RetailExpress\SkyLink\Model\Catalogue\Attributes;
+
 use Magento\Eav\Api\Data\AttributeOptionInterface;
+use Magento\Framework\App\ResourceConnection;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionServiceInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
 
-class MagentoAttributeOptionService extends MagentoAttributeOptionServiceInterface
+class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInterface
 {
     use MagentoAttributeOption;
 

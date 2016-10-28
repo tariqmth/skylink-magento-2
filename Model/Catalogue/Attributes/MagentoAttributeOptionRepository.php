@@ -11,7 +11,7 @@ use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInt
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
 
-class MagentoAttributeOptionRepository extends MagentoAttributeOptionRepositoryInterface
+class MagentoAttributeOptionRepository implements MagentoAttributeOptionRepositoryInterface
 {
     use MagentoAttributeOption;
 

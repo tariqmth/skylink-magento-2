@@ -45,9 +45,15 @@ class MagentoAttribute extends Template
         return $this->skyLinkAttributeCodeRepository->getList();
     }
 
+    /**
+     * @todo move to specific repository?
+     */
     public function getMagentoAttributes()
     {
-        // $this->searchCriteriaBuilder->addFilter('frontend_input', ['text', 'textarea', 'select', 'multiselect', 'boolean'], 'in');
+        $this->searchCriteriaBuilder->addFilter('frontend_input', 'select');
+        $this->searchCriteriaBuilder->addFilter('is_user_defined', true);
+        $this->searchCriteriaBuilder->addFilter('is_global', true);
+        $this->searchCriteriaBuilder->addFilter('is_visible', true);
         $this->searchCriteriaBuilder->addFilter('frontend_label', null, 'neq');
 
         $nameSortOrder = $this->sortOrderBuilder->setField('frontend_label')->setAscendingDirection()->create();

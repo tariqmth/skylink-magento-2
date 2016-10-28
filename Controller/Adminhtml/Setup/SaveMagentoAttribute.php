@@ -4,40 +4,33 @@ namespace RetailExpress\SkyLink\Controller\Adminhtml\Setup;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
-use Magento\Catalog\Api\ProductAttributeRepositoryInterface;
-use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeServiceInterface;
-use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
+use RetailExpress\CommandBus\Api\CommandBusInterface;
+use RetailExpress\SkyLink\Commands\Catalogue\Attributes\SyncSkyLinkAttributeToMagentoAttributeCommand;
 
 class SaveMagentoAttribute extends Action
 {
-    private $magentoProductAttributeRepository;
-
-    private $magentoAttributeService;
+    private $commandBus;
 
     public function __construct(
         Context $context,
-        ProductAttributeRepositoryInterface $magentoProductAttributeRepository,
-        MagentoAttributeServiceInterface $magentoAttributeService
+        CommandBusInterface $commandBus
     ) {
         parent::__construct($context);
 
-        $this->magentoProductAttributeRepository = $magentoProductAttributeRepository;
-        $this->magentoAttributeService = $magentoAttributeService;
+        $this->commandBus = $commandBus;
     }
 
     public function execute()
     {
         $data = $this->getRequest()->getPostValue();
 
-        array_walk($data['magento_attribute_mappings'], function ($magentoAttributeCode, $skyLinkAttributeCodeString) {
+        array_walk($data['magento_attribute_mappings'], function ($magentoAttributeCode, $skyLinkAttributeCode) {
 
-            /** @var \Magento\Catalog\Api\Data\ProductAttributeInterface $magentoAttribute */
-            $magentoAttribute = $this->magentoProductAttributeRepository->get($magentoAttributeCode);
+            $command = new SyncSkyLinkAttributeToMagentoAttributeCommand();
+            $command->magentoAttributeCode = $magentoAttributeCode;
+            $command->skyLinkAttributeCode = $skyLinkAttributeCode;
 
-            /* @var SkyLinkAttributeCode */
-            $skyLinkAttributeCode = SkyLinkAttributeCode::get($skyLinkAttributeCodeString);
-
-            $this->magentoAttributeService->mapMagentoAttributeForSkyLinkAttributeCode($magentoAttribute, $skyLinkAttributeCode);
+            $this->commandBus->handle($command);
         });
 
         $this->messageManager->addSuccess(__('Successfully mapped SkyLink Attributes to Magento Attributes.'));

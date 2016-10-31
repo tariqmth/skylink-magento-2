@@ -2,6 +2,7 @@
 
 namespace RetailExpress\SkyLink\Api\Catalogue\Attributes;
 
+use Magento\Catalog\Api\Data\ProductAttributeInterface;
 use Magento\Eav\Api\Data\AttributeOptionInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
 
@@ -20,14 +21,16 @@ interface MagentoAttributeOptionServiceInterface
     );
 
     /**
-     * Removes the definition of the Magento Attribute Option
-     * that represents the given SkyLink Attribute Option.
+     * Create and add a Magento Attribute Option to suffice the given SkyLink
+     * Attribute Option, returning the Magento Attribute Option aftewards.
      *
-     * @param AttributeOptionInterface $magentoAttributeOption
-     * @param SkyLinkAttributeOption   $skyLinkAttributeOption
+     * @param ProductAttributeInterface $magentoAttribute
+     * @param SkyLinkAttributeOption    $skyLinkAttributeOption
+     *
+     * @return AttributeOptionInterface
      */
-    public function forgetMagentoAttributeOptionForSkyLinkAttributeOption(
-        AttributeOptionInterface $magentoAttributeOption,
+    public function createMagentoAttributeOptionForSkyLinkAttributeOption(
+        ProductAttributeInterface $magentoAttribute,
         SkyLinkAttributeOption $skyLinkAttributeOption
     );
 }

@@ -39,7 +39,7 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
      *
      * @param SkyLinkAttributeCode $skylinkAttributeCode
      *
-     * @return AttributeInterface|null
+     * @return Magento\Catalog\Api\Data\ProductAttributeInterface|null
      */
     public function getMagentoAttributeForSkyLinkAttributeCode(SkyLinkAttributeCode $skylinkAttributeCode)
     {

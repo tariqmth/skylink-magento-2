@@ -31,21 +31,21 @@ class MagentoAttributeService implements MagentoAttributeServiceInterface
         AttributeInterface $magentoAttribute,
         SkyLinkAttributeCode $skylinkAttributeCode
     ) {
+        // We will remove the attribute mapping which in turn removes all the option mappings
         if ($this->mappingExists($skylinkAttributeCode)) {
-            $this->connection->update(
+            $this->connection->delete(
                 $this->getAttributesTable(),
-                ['magento_attribute_code' => $magentoAttribute->getAttributeCode()],
                 ['skylink_attribute_code = ? ' => $skylinkAttributeCode->getValue()]
             );
-        } else {
-            $this->connection->insert(
-                $this->getAttributesTable(),
-                [
-                    'magento_attribute_code' => $magentoAttribute->getAttributeCode(),
-                    'skylink_attribute_code' => $skylinkAttributeCode->getValue(),
-                ]
-            );
         }
+
+        $this->connection->insert(
+            $this->getAttributesTable(),
+            [
+                'magento_attribute_code' => $magentoAttribute->getAttributeCode(),
+                'skylink_attribute_code' => $skylinkAttributeCode->getValue(),
+            ]
+        );
     }
 
     private function mappingExists(SkyLinkAttributeCode $skylinkAttributeCode)

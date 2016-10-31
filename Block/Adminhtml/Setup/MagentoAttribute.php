@@ -51,10 +51,7 @@ class MagentoAttribute extends Template
     public function getMagentoAttributes()
     {
         $this->searchCriteriaBuilder->addFilter('frontend_input', 'select');
-        $this->searchCriteriaBuilder->addFilter('is_user_defined', true);
         $this->searchCriteriaBuilder->addFilter('is_global', true);
-        $this->searchCriteriaBuilder->addFilter('is_visible', true);
-        $this->searchCriteriaBuilder->addFilter('frontend_label', null, 'neq');
 
         $nameSortOrder = $this->sortOrderBuilder->setField('frontend_label')->setAscendingDirection()->create();
         $this->searchCriteriaBuilder->addSortOrder($nameSortOrder);

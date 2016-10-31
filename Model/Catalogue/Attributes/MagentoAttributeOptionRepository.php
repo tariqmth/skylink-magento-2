@@ -4,6 +4,7 @@ namespace RetailExpress\SkyLink\Model\Catalogue\Attributes;
 
 use Magento\Catalog\Api\Data\ProductAttributeInterface;
 use Magento\Eav\Api\AttributeOptionManagementInterface;
+use Magento\Eav\Api\Data\AttributeOptionInterface;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Exception\NoSuchEntityException;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionRepositoryInterface;
@@ -14,13 +15,6 @@ use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAtt
 class MagentoAttributeOptionRepository implements MagentoAttributeOptionRepositoryInterface
 {
     use MagentoAttributeOption;
-
-    /**
-     * The Magento Attribute Option Managmeent instance.
-     *
-     * @var AttributeOptionManagementInterface
-     */
-    private $magentoAttributeOptionManagement;
 
     /**
      * The Magento Attribute Repository instance.
@@ -49,8 +43,9 @@ class MagentoAttributeOptionRepository implements MagentoAttributeOptionReposito
     /**
      * {@inheritdoc}
      */
-    public function getMagentoAttributeOptionForSkyLinkAttributeOption(SkyLinkAttributeOption $skyLinkAttributeOption)
-    {
+    public function getMappedMagentoAttributeOptionForSkyLinkAttributeOption(
+        SkyLinkAttributeOption $skyLinkAttributeOption
+    ) {
         $skyLinkAttributeCode = $skyLinkAttributeOption->getAttribute()->getCode();
 
         $magentoAttributeOptionId = $this->connection->fetchOne(
@@ -65,43 +60,99 @@ class MagentoAttributeOptionRepository implements MagentoAttributeOptionReposito
             return null;
         }
 
-        $magentoAttributeOption = $this->extractMagentoAttributeOptionById(
+        $magentoAttributeOption = $this->findMatchingMagentoAttributeOption(
             $skyLinkAttributeCode,
-            $magentoAttributeOptionId
+            function (AttributeOptionInterface $magentoAttributeOption) use ($magentoAttributeOptionId) {
+                return $magentoAttributeOptionId == $this->getIdFromMagentoAttributeOption($magentoAttributeOption);
+            }
         );
 
-        // If we had a mapping in existence but the attribute option does not,
+        // If we had a mapping but the attribute option does not exist for this mapping,
         // something's wrong with the DB, so we should pick it up here.
         if (null === $magentoAttributeOption) {
             throw new NoSuchEntityException(__(
-                'Expected to find an attribute option #%magentoAttributeOptionId for attribute "%magentoAttributeCode".',
-                compact($magentoAttributeOptionId, $magentoAttributeCode)
+                'SkyLink attribute "%skyLinkAttributeCode" has mapping for Option #%skyLinkAttributeOption to Magento Attribute Option #%magentoAttributeOptionId, but no such Magento Attribute Option exists.',
+                compact('skyLinkAttributeCode', 'skyLinkAttributeOption', 'magentoAttributeOptionId')
             ));
         }
     }
 
-    private function extractMagentoAttributeOptionById(SkyLinkAttributeCode $skyLinkAttributeCode, $magentoAttributeOptionId)
-    {
-        $magentoAttributeCode = $this
-            ->magentoAttributeRepository
-            ->getMagentoAttributeForSkyLinkAttributeCode($skyLinkAttributeCode); // @todo "null" check?
+    /**
+     * {@inheritdoc}
+     */
+    public function getPossibleMagentoAttributeOptionForSkyLinkAttributeOption(
+        SkyLinkAttributeOption $skyLinkAttributeOption
+    ) {
+        $skyLinkAttributeCode = $skyLinkAttributeOption->getAttribute()->getCode();
 
-        /* @var \Magento\Eav\Api\Data\AttributeOptionInterface[] $magentoAttributeOptions */
-        $magentoAttributeOptions = $this->magentoAttributeOptionManagement->getList(
-            ProductAttributeInterface::ENTITY_TYPE_CODE,
-            $magentoAttributeCode
+        return $this->findMatchingMagentoAttributeOption(
+            $skyLinkAttributeCode,
+            function (AttributeOptionInterface $magentoAttributeOption) use ($skyLinkAttributeOption) {
+                return $skyLinkAttributeOption->getLabel() == $magentoAttributeOption->getLabel();
+            }
         );
+    }
+
+    public function getLastAddedMagentoAttributeOption(SkyLinkAttributeCode $skyLinkAttributeCode)
+    {
+        /* @var AttributeOptionInterface[] $magentoAttributeOptions */
+        $magentoAttributeOptions = $this->getMagentoAttributeOptions($skyLinkAttributeCode);
+
+        usort($magentoAttributeOptions, function (AttributeOptionInterface $option1, AttributeOptionInterface $option2) {
+            $option1Id = $this->getIdFromMagentoAttributeOption($option1);
+            $option2Id = $this->getIdFromMagentoAttributeOption($option1);
+
+            if ($option1Id == $option2Id) {
+                return 0;
+            }
+
+            return (int) $option1Id > (int) $option2Id ? 1 : -1; // @todo should we be casting here?
+        });
+
+        return end($magentoAttributeOptions);
+    }
+
+    /**
+     * Returns the first matching attribute option that pass a given test.
+     *
+     * @param SkyLinkAttributeCode $skyLinkAttributeCode
+     * @param callable             $callback
+     * @param bool                 $findFirst            If set to "false", it will find the last match, not the first
+     *
+     * @return \[]
+     */
+    private function findMatchingMagentoAttributeOption(SkyLinkAttributeCode $skyLinkAttributeCode, callable $callback, $findFirst = true)
+    {
+        /* @var AttributeOptionInterface[] $magentoAttributeOptions */
+        $magentoAttributeOptions = $this->getMagentoAttributeOptions($skyLinkAttributeCode);
+
+        if (false === $findFirst) {
+            $magentoAttributeOptions = array_reverse($magentoAttributeOptions);
+        }
 
         foreach ($magentoAttributeOptions as $magentoAttributeOption) {
-            if ($magentoAttributeOptionId == $this->getIdFromMagentoAttributeOption($magentoAttributeOption)) {
-                goto success;
+            if (true === $callback($magentoAttributeOption)) {
+                return $magentoAttributeOption;
             }
         }
 
         return null;
+    }
 
-        success:
+    private function getMagentoAttributeOptions(SkyLinkAttributeCode $skyLinkAttributeCode)
+    {
+        /* @var \Magento\Catalog\Api\Data\ProductAttributeInterface $magentoAttribute */
+        $magentoAttribute = $this
+            ->magentoAttributeRepository
+            ->getMagentoAttributeForSkyLinkAttributeCode($skyLinkAttributeCode);
 
-        return $magentoAttributeOption;
+        if (null === $magentoAttribute) {
+            // @todo should we throw an exception here?
+        }
+
+        return $this->magentoAttributeOptionManagement->getItems(
+            ProductAttributeInterface::ENTITY_TYPE_CODE,
+            $magentoAttribute->getAttributeCode()
+        );
     }
 }

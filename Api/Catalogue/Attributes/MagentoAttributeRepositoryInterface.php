@@ -2,7 +2,6 @@
 
 namespace RetailExpress\SkyLink\Api\Catalogue\Attributes;
 
-use Magento\Eav\Api\Data\AttributeInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 
 interface MagentoAttributeRepositoryInterface
@@ -13,7 +12,7 @@ interface MagentoAttributeRepositoryInterface
      *
      * @param SkyLinkAttributeCode $skylinkAttributeCode
      *
-     * @return AttributeInterface|null
+     * @return Magento\Catalog\Api\Data\ProductAttributeInterface|null
      */
     public function getMagentoAttributeForSkyLinkAttributeCode(SkyLinkAttributeCode $skylinkAttributeCode);
 }

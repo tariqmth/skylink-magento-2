@@ -10,6 +10,7 @@ use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
+use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 
 class InstallData implements InstallDataInterface
 {
@@ -36,7 +37,8 @@ class InstallData implements InstallDataInterface
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
 
         // $this->addSkyLinkCustomerIdToCustomers($eavSetup);
-        $this->addSkyLinkProductIdsToProducts($eavSetup);
+        // $this->addSkyLinkProductIdsToProducts($eavSetup);
+        $this->addSkyLinkAttributeCodesToProducts($eavSetup);
     }
 
     private function addSkyLinkCustomerIdToCustomers(EavSetup $eavSetup)
@@ -45,11 +47,8 @@ class InstallData implements InstallDataInterface
             Customer::ENTITY,
             'skylink_customer_id',
             [
-                // @todo optimise arguments (such as "type", "backend")
                 'label' => 'SkyLink Customer ID',
                 'required' => false,
-                'system' => false,
-                'position' => 100,
             ]
         );
 
@@ -62,18 +61,39 @@ class InstallData implements InstallDataInterface
 
     private function addSkyLinkProductIdsToProducts(EavSetup $eavSetup)
     {
+        $attributeCode = 'skylink_product_id';
+
         $eavSetup->addAttribute(
             Product::ENTITY,
-            'skylink_product_id',
+            $attributeCode,
             [
-                // @todo optimise arguments (such as "type", "backend")
                 'label' => 'SkyLink Product ID',
                 'required' => false,
-                'system' => true,
-                'position' => 100,
             ]
         );
 
+        $this->addAttributeToDefaultGroupInAllSets($eavSetup, $attributeCode);
+    }
+
+    private function addSkyLinkAttributeCodesToProducts(EavSetup $eavSetup)
+    {
+        array_map(function ($skyLinkAttributeCodeString) use ($eavSetup) {
+            $skyLinkAttributeCode = SkyLinkAttributeCode::get($skyLinkAttributeCodeString);
+
+            $eavSetup->addAttribute(
+                Product::ENTITY,
+                $skyLinkAttributeCode->getValue(),
+                [
+                    'label' => $skyLinkAttributeCode->getLabel(),
+                    'required' => false,
+
+                ]
+            );
+        }, SkyLinkAttributeCode::getPredefined());
+    }
+
+    private function addAttributeToDefaultGroupInAllSets(EavSetup $eavSetup, $attributeCode)
+    {
         foreach ($eavSetup->getAllAttributeSetIds() as $attributeSetId) {
             $eavSetup->addAttributeToGroup(
                 Product::ENTITY,

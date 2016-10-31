@@ -11,5 +11,16 @@ interface MagentoAttributeOptionRepositoryInterface
      *
      * @return \Magento\Eav\Api\Data\AttributeOptionInterface|null
      */
-    public function getMagentoAttributeOptionForSkyLinkAttributeOption(SkyLinkAttributeOption $skyLinkAttributeOption);
+    public function getMappedMagentoAttributeOptionForSkyLinkAttributeOption(
+        SkyLinkAttributeOption $skyLinkAttributeOption
+    );
+
+    /**
+     * Get a pottible Magento Attribute Option for the given SkyLink Attribute Option.
+     *
+     * @return \Magento\Eav\Api\Data\AttributeOptionInterface|null
+     */
+    public function getPossibleMagentoAttributeOptionForSkyLinkAttributeOption(
+        SkyLinkAttributeOption $skyLinkAttributeOption
+    );
 }

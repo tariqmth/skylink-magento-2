@@ -2,7 +2,10 @@
 
 namespace RetailExpress\SkyLink\Model\Catalogue\Attributes;
 
+use Magento\Catalog\Api\Data\ProductAttributeInterface;
+use Magento\Eav\Api\AttributeOptionManagementInterface;
 use Magento\Eav\Api\Data\AttributeOptionInterface;
+use Magento\Eav\Api\Data\AttributeOptionInterfaceFactory;
 use Magento\Framework\App\ResourceConnection;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionServiceInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
@@ -11,33 +14,42 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
 {
     use MagentoAttributeOption;
 
+    private $magentoAttributeOptionFactory;
+
+    private $magentoAttributeOptionRepository;
+
     /**
      * Create a new Magento Attribute Option Service.
      *
-     * @param ResourceConnection $resourceConnection
+     * @param ResourceConnection                 $resourceConnection
+     * @param AttributeOptionManagementInterface $magentoAttributeOptionManagement
      */
-    public function __construct(ResourceConnection $resourceConnection)
-    {
+    public function __construct(
+        ResourceConnection $resourceConnection,
+        AttributeOptionManagementInterface $magentoAttributeOptionManagement,
+        AttributeOptionInterfaceFactory $magentoAttributeOptionFactory,
+        MagentoAttributeOptionRepository $magentoAttributeOptionRepository
+    ) {
         $this->connection = $resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
+        $this->magentoAttributeOptionManagement = $magentoAttributeOptionManagement;
+        $this->magentoAttributeOptionFactory = $magentoAttributeOptionFactory;
+        $this->magentoAttributeOptionRepository = $magentoAttributeOptionRepository;
     }
 
     /**
-     * Defines the Magento Attribute Option that represents the given
-     * SkyLink Attribute Option.
-     *
-     * @param AttributeOptionInterface $magentoAttributeOption
-     * @param SkyLinkAttributeOption   $skyLinkAttributeOption
+     * {@inheritdoc}
      */
     public function mapMagentoAttributeOptionForSkyLinkAttributeOption(
         AttributeOptionInterface $magentoAttributeOption,
         SkyLinkAttributeOption $skyLinkAttributeOption
     ) {
         $skyLinkAttributeCode = $skyLinkAttributeOption->getAttribute()->getCode();
+        $magentoAttributeOptionId = $this->getIdFromMagentoAttributeOption($magentoAttributeOption);
 
         if ($this->mappingExists($skyLinkAttributeOption)) {
             $this->connection->update(
                 $this->getAttributeOptionsTable(),
-                ['magento_attribute_option_id' => $this->getIdFromMagentoAttributeOption($magentoAttributeOption)],
+                ['magento_attribute_option_id' => $magentoAttributeOptionId],
                 [
                     'skylink_attribute_code = ?' => $skyLinkAttributeCode,
                     'skylink_attribute_option_id = ?' => $skyLinkAttributeOption->getId(),
@@ -49,33 +61,30 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
                 [
                     'skylink_attribute_code' => $skyLinkAttributeCode,
                     'skylink_attribute_option_id' => $skyLinkAttributeOption->getId(),
-                    'magento_attribute_option_id' => $this->getIdFromMagentoAttributeOption($magentoAttributeOption),
+                    'magento_attribute_option_id' => $magentoAttributeOptionId,
                 ]
             );
         }
     }
 
     /**
-     * Removes the definition of the Magento Attribute Option
-     * that represents the given SkyLink Attribute Option.
-     *
-     * @param AttributeOptionInterface $magentoAttributeOption
-     * @param SkyLinkAttributeOption   $skyLinkAttributeOption
+     * {@inheritdoc}
      */
-    public function forgetMagentoAttributeOptionForSkyLinkAttributeOption(
-        AttributeOptionInterface $magentoAttributeOption,
+    public function createMagentoAttributeOptionForSkyLinkAttributeOption(
+        ProductAttributeInterface $magentoAttribute,
         SkyLinkAttributeOption $skyLinkAttributeOption
     ) {
-        if (!$this->mappingExists($skyLinkAttributeOption)) {
-            return null; // @todo should we throw an exception? Probably
-        }
+        $magentoAttributeOption = $this->magentoAttributeOptionFactory->create();
+        $magentoAttributeOption->setLabel($skyLinkAttributeOption->getLabel());
 
-        $this->connection->delete(
-            $this->getAttributeOptionsTable(),
-            [
-                'skylink_attribute_code = ?' => $skyLinkAttributeOption->getAttribute()->getCode(),
-                'skylink_attribute_option_id = ?' => $skyLinkAttributeOption->getId(),
-            ]
+        $this->magentoAttributeOptionManagement->add(
+            ProductAttributeInterface::ENTITY_TYPE_CODE,
+            $magentoAttribute->getAttributeCode(),
+            $magentoAttributeOption
+        );
+
+        return $this->magentoAttributeOptionRepository->getLastAddedMagentoAttributeOption(
+            $skyLinkAttributeOption->getAttribute()->getCode()
         );
     }
 

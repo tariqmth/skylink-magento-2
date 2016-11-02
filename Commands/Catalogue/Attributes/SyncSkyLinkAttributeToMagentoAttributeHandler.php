@@ -60,6 +60,7 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
             SkyLinkAttributeCode::get($command->skyLinkAttributeCode),
             $this->config->getSalesChannelId()
         );
+
         $skyLinkAttributeCode = $skyLinkAttribute->getCode();
 
         // Get the Magento attribute instance
@@ -77,18 +78,22 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
         ProductAttributeInterface $magentoAttributeToMap,
         SkyLinkAttribute $skyLinkAttribute
     ) {
+        $skyLinkAttributeCode = $skyLinkAttribute->getCode();
+
         // Check if we're dealing with the same attribute or not. If we aren't, we'll map to the new one
         /* @var ProductAttributeInterface $alreadyMappedMagentoAttribute */
         $alreadyMappedMagentoAttribute = $this
             ->magentoAttributeRepository
-            ->getMagentoAttributeForSkyLinkAttributeCode($skyLinkAttribute->getCode());
+            ->getMagentoAttributeForSkyLinkAttributeCode($skyLinkAttributeCode);
 
-        if ($alreadyMappedMagentoAttribute->getCode() !== $magentoAttributeToMap->getCode()) {
+        if (null === $alreadyMappedMagentoAttribute ||
+            $alreadyMappedMagentoAttribute->getCode() !== $magentoAttributeToMap->getCode()
+        ) {
 
             // Map to the new attribute, which removes all old previous mappings
             $this
                 ->magentoAttributeService
-                ->mapMagentoAttributeForSkyLinkAttributeCode($magentoAttributeToMap, $skyLinkAttribute);
+                ->mapMagentoAttributeForSkyLinkAttributeCode($magentoAttributeToMap, $skyLinkAttributeCode);
         }
     }
 

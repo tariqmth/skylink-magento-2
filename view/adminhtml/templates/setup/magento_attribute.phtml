@@ -22,8 +22,8 @@ $magentoAttributes = $block->getMagentoAttributes();
             <?php foreach ($skyLinkAttributeCodes as $skyLinkAttributeCode): ?>
                 <?php
 
-                /** @var \Magento\Eav\Api\Data\AttributeInterface|null $chosenAttribute */
-                $chosenAttribute = $block->getMagentoAttributeForSkyLinkAttributeCode($skyLinkAttributeCode);
+                /** @var \Magento\Eav\Api\Data\AttributeInterface|null $selectedAttribute */
+                $selectedAttribute = $block->getMagentoAttributeForSkyLinkAttributeCode($skyLinkAttributeCode);
                 ?>
                 <tr>
                     <td>
@@ -35,7 +35,7 @@ $magentoAttributes = $block->getMagentoAttributes();
                             <?php foreach ($magentoAttributes as $magentoAttribute): ?>
                                 <option
                                     value="<?php /* @escapeNotVerified */ echo $magentoAttribute->getAttributeCode() ?>"
-                                    <?php if (null !== $chosenAttribute && $chosenAttribute->getAttributeCode() === $magentoAttribute->getAttributeCode()): ?>
+                                    <?php if ($selectedAttribute->getAttributeCode() === $magentoAttribute->getAttributeCode()): ?>
                                         selected
                                     <?php endif ?>
                                 >

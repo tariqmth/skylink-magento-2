@@ -28,10 +28,9 @@ class SaveMagentoAttribute extends Action
 
             $command = new SyncSkyLinkAttributeToMagentoAttributeCommand();
             $command->magentoAttributeCode = $magentoAttributeCode;
-            $command->skyLinkAttributeCode = $skyLinkAttributeCode;
+            $command->skyLinkAttributeCode =  $skyLinkAttributeCode;
 
             $this->commandBus->handle($command);
-            die('done!');
         });
 
         $this->messageManager->addSuccess(__('Successfully mapped SkyLink Attributes to Magento Attributes.'));

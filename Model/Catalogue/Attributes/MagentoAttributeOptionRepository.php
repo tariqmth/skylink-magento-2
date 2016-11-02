@@ -93,25 +93,6 @@ class MagentoAttributeOptionRepository implements MagentoAttributeOptionReposito
         );
     }
 
-    public function getLastAddedMagentoAttributeOption(SkyLinkAttributeCode $skyLinkAttributeCode)
-    {
-        /* @var AttributeOptionInterface[] $magentoAttributeOptions */
-        $magentoAttributeOptions = $this->getMagentoAttributeOptions($skyLinkAttributeCode);
-
-        usort($magentoAttributeOptions, function (AttributeOptionInterface $option1, AttributeOptionInterface $option2) {
-            $option1Id = $this->getIdFromMagentoAttributeOption($option1);
-            $option2Id = $this->getIdFromMagentoAttributeOption($option1);
-
-            if ($option1Id == $option2Id) {
-                return 0;
-            }
-
-            return (int) $option1Id > (int) $option2Id ? 1 : -1; // @todo should we be casting here?
-        });
-
-        return end($magentoAttributeOptions);
-    }
-
     /**
      * Returns the first matching attribute option that pass a given test.
      *
@@ -119,7 +100,7 @@ class MagentoAttributeOptionRepository implements MagentoAttributeOptionReposito
      * @param callable             $callback
      * @param bool                 $findFirst            If set to "false", it will find the last match, not the first
      *
-     * @return \[]
+     * @return AttributeOptionInterface|null
      */
     private function findMatchingMagentoAttributeOption(SkyLinkAttributeCode $skyLinkAttributeCode, callable $callback, $findFirst = true)
     {

@@ -20,26 +20,50 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
     private $magentoProductAttributeRepository;
 
     /**
+     * Chosen Attribute Mappings
+     *
+     * @var array
+     */
+    private $attributeMappings;
+
+    /**
+     * Return an array of attribute mapping overrides whereby we use a different
+     * attribute code within Magento to represent a SkyLink Attribute Code.
+     *
+     * @return array
+     */
+    private static function getDefaultAttributeMappingOverrides()
+    {
+        return [
+            'brand' => 'manufacturer',
+            'colour' => 'color',
+        ];
+    }
+
+    /**
      * Create a new Magento Attribute Repository.
      *
      * @param ResourceConnection                  $resourceConnection
      * @param ProductAttributeRepositoryInterface $magentoProductAttributeRepository
+     * @param array|null                          $attributeMappings
      */
     public function __construct(
         ResourceConnection $resourceConnection,
-        ProductAttributeRepositoryInterface $magentoProductAttributeRepository
+        ProductAttributeRepositoryInterface $magentoProductAttributeRepository,
+        array $attributeMappings = null
     ) {
         $this->connection = $resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
         $this->magentoProductAttributeRepository = $magentoProductAttributeRepository;
+
+        if (null === $attributeMappings) {
+            $attributeMappings = $this->getDefaultAttributeMappings();
+        }
+
+        $this->attributeMappings = $attributeMappings;
     }
 
     /**
-     * Get the Attribute used for the given SkyLink Attribute Code. If there is no
-     * mapping defined, "null" is returend.
-     *
-     * @param SkyLinkAttributeCode $skylinkAttributeCode
-     *
-     * @return Magento\Catalog\Api\Data\ProductAttributeInterface|null
+     * {@inheritdoc}
      */
     public function getMagentoAttributeForSkyLinkAttributeCode(SkyLinkAttributeCode $skylinkAttributeCode)
     {
@@ -55,5 +79,34 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
         }
 
         return $this->magentoProductAttributeRepository->get($magentoAttributeCode);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getDefaultMagentoAttributeForSkyLinkAttributeCode(SkyLinkAttributeCode $skylinkAttributeCode)
+    {
+        $magentoAttributeCode = $this->attributeMappings[$skylinkAttributeCode->getValue()];
+
+        return $this->magentoProductAttributeRepository->get($magentoAttributeCode);
+    }
+
+    /**
+     * Get the default attribute mappings by merging in all valid SkyLink Attribute Codes with
+     * predetermined mapping overrides.
+     *
+     * @return array Key => Value of SkyLink Attribute Code => Magento Attribute Code
+     */
+    private function getDefaultAttributeMappings()
+    {
+        $skylinkAttributeCodeStrings = SkyLinkAttributeCode::getConstants();
+
+        // Set keys / values to be the same
+        $defaultMappings = array_combine($skylinkAttributeCodeStrings, $skylinkAttributeCodeStrings);
+
+        // Override with mapping overrides
+        $defaultMappings = array_merge($defaultMappings, self::getDefaultAttributeMappingOverrides());
+
+        return $defaultMappings;
     }
 }

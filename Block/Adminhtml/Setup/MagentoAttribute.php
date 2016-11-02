@@ -51,7 +51,7 @@ class MagentoAttribute extends Template
     public function getMagentoAttributes()
     {
         $this->searchCriteriaBuilder->addFilter('frontend_input', 'select');
-        $this->searchCriteriaBuilder->addFilter('is_global', true);
+        $this->searchCriteriaBuilder->addFilter('is_global', 1);
 
         $nameSortOrder = $this->sortOrderBuilder->setField('frontend_label')->setAscendingDirection()->create();
         $this->searchCriteriaBuilder->addSortOrder($nameSortOrder);
@@ -65,7 +65,17 @@ class MagentoAttribute extends Template
 
     public function getMagentoAttributeForSkyLinkAttributeCode(SkyLinkAttributeCode $skylinkAttributeCode)
     {
-        return $this->magentoAttributeRepository->getMagentoAttributeForSkyLinkAttributeCode($skylinkAttributeCode);
+        $magentoAttribute = $this
+            ->magentoAttributeRepository
+            ->getMagentoAttributeForSkyLinkAttributeCode($skylinkAttributeCode);
+
+        if (null !== $magentoAttribute) {
+            return $magentoAttribute;
+        }
+
+        return $this
+            ->magentoAttributeRepository
+            ->getDefaultMagentoAttributeForSkyLinkAttributeCode($skylinkAttributeCode);
     }
 
     public function getSaveUrl()

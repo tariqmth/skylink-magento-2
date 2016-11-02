@@ -31,14 +31,13 @@ class InstallData implements InstallDataInterface
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
-        // https://github.com/magento/magento2/issues/1238#issuecomment-105034397
-
         /* @var \Magento\Eav\Setup\EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
 
         // $this->addSkyLinkCustomerIdToCustomers($eavSetup);
         // $this->addSkyLinkProductIdsToProducts($eavSetup);
-        $this->addSkyLinkAttributeCodesToProducts($eavSetup);
+        // $this->addSkyLinkAttributeCodesToProducts($eavSetup);
+        $this->addManufacturerToAttributeSets($eavSetup);
     }
 
     private function addSkyLinkCustomerIdToCustomers(EavSetup $eavSetup)
@@ -80,16 +79,35 @@ class InstallData implements InstallDataInterface
         array_map(function ($skyLinkAttributeCodeString) use ($eavSetup) {
             $skyLinkAttributeCode = SkyLinkAttributeCode::get($skyLinkAttributeCodeString);
 
+            if ($this->attributeCodeShouldBeSkippedFromBeingAddedToProducts($skyLinkAttributeCode)) {
+                return;
+            }
+
             $eavSetup->addAttribute(
                 Product::ENTITY,
                 $skyLinkAttributeCode->getValue(),
                 [
                     'label' => $skyLinkAttributeCode->getLabel(),
                     'required' => false,
-
+                    'input' => 'select',
                 ]
             );
-        }, SkyLinkAttributeCode::getPredefined());
+
+            $this->addAttributeToDefaultGroupInAllSets($eavSetup, $skyLinkAttributeCode->getValue());
+
+        }, SkyLinkAttributeCode::getConstants());
+    }
+
+    /**
+     * Manufacturer is by default not exposed in the attribute sets, which make it impossible
+     * to create a mapping for it. By putting into all of the attribute sets, we can ensure
+     * that mapings can be created.
+     *
+     * @param EavSetup $eavSetup
+     */
+    private function addManufacturerToAttributeSets(EavSetup $eavSetup)
+    {
+        $this->addAttributeToDefaultGroupInAllSets($eavSetup, 'manufacturer');
     }
 
     private function addAttributeToDefaultGroupInAllSets(EavSetup $eavSetup, $attributeCode)
@@ -102,5 +120,14 @@ class InstallData implements InstallDataInterface
                 'skylink_product_id'
             );
         }
+    }
+
+    private function attributeCodeShouldBeSkippedFromBeingAddedToProducts(SkyLinkAttributeCode $skyLinkAttributeCode)
+    {
+        /**
+         * @todo move this to dependency injection just like is done over in
+         * \RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeRepository
+         */
+        return in_array($skyLinkAttributeCode->getValue(), ['brand', 'colour', 'size']);
     }
 }

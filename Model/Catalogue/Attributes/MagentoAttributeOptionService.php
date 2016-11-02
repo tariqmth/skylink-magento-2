@@ -16,8 +16,6 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
 
     private $magentoAttributeOptionFactory;
 
-    private $magentoAttributeOptionRepository;
-
     /**
      * Create a new Magento Attribute Option Service.
      *
@@ -27,13 +25,11 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
     public function __construct(
         ResourceConnection $resourceConnection,
         AttributeOptionManagementInterface $magentoAttributeOptionManagement,
-        AttributeOptionInterfaceFactory $magentoAttributeOptionFactory,
-        MagentoAttributeOptionRepository $magentoAttributeOptionRepository
+        AttributeOptionInterfaceFactory $magentoAttributeOptionFactory
     ) {
         $this->connection = $resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
         $this->magentoAttributeOptionManagement = $magentoAttributeOptionManagement;
         $this->magentoAttributeOptionFactory = $magentoAttributeOptionFactory;
-        $this->magentoAttributeOptionRepository = $magentoAttributeOptionRepository;
     }
 
     /**
@@ -83,8 +79,30 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
             $magentoAttributeOption
         );
 
-        return $this->magentoAttributeOptionRepository->getLastAddedMagentoAttributeOption(
-            $skyLinkAttributeOption->getAttribute()->getCode()
+        // Unfortuantely, the Magento Attribute Option Management implementation does
+        // not update the given attribute option's properties, so we'll query the
+        // database ourselves to find out what the last added id was.
+        $magentoAttributeOption->setValue(
+            $this->getLastAddedOptionIdForMagentoAttribute($magentoAttribute)
+        );
+
+        return $magentoAttributeOption;
+    }
+
+    /**
+     * @todo remove this once AttributeOptionInterfaceFactory updates the value / label of
+     * an attribute option after inserting in the database. We're currently coupling an
+     * assumption that whatever interface we have is actually using the same SQL-based
+     * database as us, which is naughty.
+     */
+    private function getLastAddedOptionIdForMagentoAttribute(ProductAttributeInterface $magentoAttribute)
+    {
+        return $this->connection->fetchOne(
+            $this->connection
+                ->select()
+                ->from($this->connection->getTableName('eav_attribute_option'), 'option_id')
+                ->where('attribute_id = ?', $magentoAttribute->getAttributeId())
+                ->order('option_id desc')
         );
     }
 

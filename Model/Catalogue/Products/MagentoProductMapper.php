@@ -4,6 +4,7 @@ namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
 use Magento\Catalog\Api\Data\ProductInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetRepositoryInterface;
+use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 
@@ -26,6 +27,25 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         if (!$magentoProduct->getId()) {
             $this->mapNewMagentoProduct($magentoProduct, $skyLinkProduct);
         }
+
+        // Setup pricing for product
+        $magentoProduct->setPrice($skyLinkProduct->getPricingStructure()->getRegularPrice()->toNative());
+        $magentoProduct->setCustomAttribute('special_price', $skyLinkProduct->getPricingStructure()->getRegularPrice()->toNative());
+
+        // @todo map inventory, physical package and attributes
+        foreach (SkyLinkAttributeCode::getConstants() as $skyLinkAttributeCodeString) {
+            $skyLinkAttributeCode = SkyLinkAttributeCode::get($skyLinkAttributeCodeString);
+            $skyLinkAttributeOption = $skyLinkProduct->getAttributeOption($skyLinkAttributeCode);
+
+            // @todo deal with orphaned options
+            if (null === $skyLinkAttributeOption) {
+                continue;
+            }
+
+            // @todo get the Magento Attribute and Magento Attribute Option for our SkyLink counterparts.
+            // If neither exist, we'll throw an exception regarding attributes needing syncing. Else,
+            // we'll just update the Magento Product's attribute values by providng this info.
+        }
     }
 
     /**
@@ -45,8 +65,5 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         $magentoProduct->setCustomAttribute('skylink_product_id', (string) $skyLinkProduct->getId());
 
         $magentoProduct->setName((string) $skyLinkProduct->getName());
-
-        $magentoProduct->setPrice($skyLinkProduct->getPricingStructure()->getRegularPrice()->toNative());
-        $magentoProduct->setCustomAttribute('special_price', $skyLinkProduct->getPricingStructure()->getRegularPrice()->toNative());
     }
 }

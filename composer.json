@@ -1,6 +1,6 @@
 {
   "name": "retail-express/skylink-magento-2",
-  "description": "Synchronisation extension for a Magento 2 based website to Retail Express.",
+  "description": "Magento 2 extension to manage synchronisation with Retail Express.",
   "type": "magento2-module",
   "license": "proprietary",
   "authors": [

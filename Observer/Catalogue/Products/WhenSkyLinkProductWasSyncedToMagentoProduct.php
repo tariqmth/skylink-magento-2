@@ -1,21 +1,22 @@
 <?php
 
-namespace RetailExpress\SkyLink\Observer\Customers;
+namespace RetailExpress\SkyLink\Observer\Catalogue\Products;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use RetailExpress\SkyLink\Observer\Eds\EntityProcessor;
-use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Eds\ChangeSetId;
 use RetailExpress\SkyLink\Eds\EntityType as EdsEntityType;
+use RetailExpress\SkyLink\Observer\Eds\EntityProcessor;
+use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
 
-class WhenSkyLinkCustomerWasSyncedToMagentoCustomer implements ObserverInterface
+// @todo remove repitition of these commands? (i.e. when skylink customer synced to magento customer)
+class WhenSkyLinkProductWasSyncedToMagentoProduct implements ObserverInterface
 {
     use EntityProcessor;
 
     public function execute(Observer $observer)
     {
-        /* @var \RetailExpress\SkyLink\Commands\Customers\SyncSkyLinkCustomerToMagentoCustomerCommand $command */
+        /* @var \RetailExpress\SkyLink\Commands\Catalogue\Products\SyncSkyLinkProductToMagentoProductCommand $command */
         $command = $observer->getData('command');
 
         if (null === $command->changeSetId) {
@@ -23,13 +24,13 @@ class WhenSkyLinkCustomerWasSyncedToMagentoCustomer implements ObserverInterface
         }
 
         $changeSetId = new ChangeSetId($command->changeSetId);
-        $skyLinkCustomerId = new SkyLinkCustomerId($command->skyLinkCustomerId);
+        $skyLinkProductId = new SkyLinkProductId($command->skyLinkProductId);
 
         /* @var \RetailExpress\SkyLink\Eds\Entity $edsEntity */
         $edsEntity = $this->getMatchingEdsEntity(
             $changeSetId,
-            EdsEntityType::get('customer'),
-            $skyLinkCustomerId
+            EdsEntityType::get('product'),
+            $skyLinkProductId
         );
 
         $this->changeSetService->processEntity($edsEntity);

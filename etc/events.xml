@@ -11,6 +11,11 @@
         <observer name="eds" instance="RetailExpress\SkyLink\Observer\Customers\WhenSkyLinkCustomerWasSyncedToMagentoCustomer"/>
     </event>
 
+    <!-- When a SkyLink Product was synced to a Magento Product -->
+    <event name="retail_express_skylink_skylink_product_was_synced_to_magento_product">
+        <observer name="eds" instance="RetailExpress\SkyLink\Observer\Catalogue\Products\WhenSkyLinkProductWasSyncedToMagentoProduct"/>
+    </event>
+
     <!-- When an EDS entity was processed -->
     <event name="retail_express_skylink_eds_entity_was_processed">
         <observer name="eds" instance="RetailExpress\SkyLink\Observer\Eds\WhenEdsEntityWasProcessed"/>

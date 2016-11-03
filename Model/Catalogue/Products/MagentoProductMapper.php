@@ -3,7 +3,7 @@
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
 use Magento\Catalog\Api\Data\ProductInterface;
-use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionRepository;
+use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetRepositoryInterface;
 use RetailExpress\SkyLink\Exceptions\Products\AttributeNotMappedException;
@@ -24,7 +24,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
     public function __construct(
         MagentoAttributeSetRepositoryInterface $attributeSetRepository,
         MagentoAttributeRepositoryInterface $attributeRepository,
-        MagentoAttributeOptionRepository $attributeOptionRepository
+        MagentoAttributeOptionRepositoryInterface $attributeOptionRepository
     ) {
         $this->attributeSetRepository = $attributeSetRepository;
         $this->attributeRepository = $attributeRepository;
@@ -45,6 +45,10 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         $magentoProduct->setPrice($skyLinkProduct->getPricingStructure()->getRegularPrice()->toNative());
         $magentoProduct->setCustomAttribute('special_price', $skyLinkProduct->getPricingStructure()->getRegularPrice()->toNative());
 
+        // Use the cubic weight for the given product
+        // @todo this should be configuration-based
+        $magentoProduct->setWeight($skyLinkProduct->getPhysicalPackage()->getCubicWeight()->toNative());
+
         // @todo map inventory, physical package and attributes
         foreach (SkyLinkAttributeCode::getConstants() as $skyLinkAttributeCodeString) {
             $skyLinkAttributeCode = SkyLinkAttributeCode::get($skyLinkAttributeCodeString);
@@ -55,10 +59,6 @@ class MagentoProductMapper implements MagentoProductMapperInterface
                 continue;
             }
 
-            // @todo get the Magento Attribute and Magento Attribute Option for our SkyLink counterparts.
-            // If neither exist, we'll throw an exception regarding attributes needing syncing. Else,
-            // we'll just update the Magento Product's attribute values by providng this info.
-
             /* @var \Magento\Catalog\Api\Data\ProductAttributeInterface $magentoAttribute */
             /* @var \Magento\Eav\Api\Data\AttributeOptionInterface $magentoAttributeOption */
             list($magentoAttribute, $magentoAttributeOption) = $this
@@ -67,7 +67,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
                 );
 
             // @todo Do we validate the attribute in the product's attribute set?
-            $product->setCustomAttribute(
+            $magentoProduct->setCustomAttribute(
                 $magentoAttribute->getAttributeCode(),
                 $magentoAttributeOption->getValue()
             );
@@ -84,7 +84,9 @@ class MagentoProductMapper implements MagentoProductMapperInterface
     {
         // Set the attribute set according to what is mapped for the given product type
         $magentoProduct->setAttributeSetId(
-            $this->attributeSetRepository->getAttributeSetForProductType($skyLinkProduct->getProductType())->getId()
+            $this
+                ->attributeSetRepository
+                ->getAttributeSetForProductType($skyLinkProduct->getProductType())->getId()
         );
 
         $magentoProduct->setSku((string) $skyLinkProduct->getSku());

@@ -6,7 +6,11 @@ use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\Data\ProductInterfaceFactory;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product\Type as ProductType;
+use Magento\CatalogInventory\Api\Data\StockItemInterface;
+use Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory;
+use Magento\CatalogInventory\Api\StockRegistryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoStockItemMapperInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 
@@ -14,18 +18,30 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
 {
     private $magentoProductMapper;
 
+    private $magentoStockItemMapper;
+
     private $magentoProductFactory;
+
+    private $magentoStockItemFactory;
 
     private $baseMagentoProductRepository;
 
+    private $magentoStockRegistry;
+
     public function __construct(
         MagentoProductMapperInterface $magentoProductMapper,
+        MagentoStockItemMapperInterface $magentoStockItemMapper,
         ProductInterfaceFactory $magentoProductFactory,
-        ProductRepositoryInterface $baseMagentoProductRepository
+        StockItemInterfaceFactory $magentoStockItemFactory,
+        ProductRepositoryInterface $baseMagentoProductRepository,
+        StockRegistryInterface $magentoStockRegistry
     ) {
         $this->magentoProductMapper = $magentoProductMapper;
+        $this->magentoStockItemMapper = $magentoStockItemMapper;
         $this->magentoProductFactory = $magentoProductFactory;
+        $this->magentoStockItemFactory = $magentoStockItemFactory;
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
+        $this->magentoStockRegistry = $magentoStockRegistry;
     }
 
     /**
@@ -33,10 +49,14 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
      */
     public function createMagentoProduct(SkyLinkProduct $skyLinkProduct)
     {
+        /* @var ProductInterface $magentoProduct */
         $magentoProduct = $this->magentoProductFactory->create();
         $magentoProduct->setTypeId(ProductType::TYPE_SIMPLE);
 
-        $this->mapAndSave($magentoProduct, $skyLinkProduct);
+        /* @var StockItemInterface $magentoStockItem */
+        $magentoStockItem = $this->magentoStockItemFactory->create();
+
+        $this->mapAndSave($magentoProduct, $magentoStockItem, $skyLinkProduct);
 
         return $magentoProduct;
     }
@@ -46,12 +66,22 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
      */
     public function updateMagentoProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
     {
-        $this->mapAndSave($magentoProduct, $skyLinkProduct);
+        /* @var StockItemInterface $magentoStockItem */
+        $magentoStockItem = $this->magentoStockRegistry->getStockItemBySku($magentoProduct->getSku());
+
+        $this->mapAndSave($magentoProduct, $magentoStockItem, $skyLinkProduct);
     }
 
-    private function mapAndSave(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
-    {
+    private function mapAndSave(
+        ProductInterface $magentoProduct,
+        StockItemInterface $magentoStockItem,
+        SkyLinkProduct $skyLinkProduct
+    ) {
+        // Map our Product and Stock Item
         $this->magentoProductMapper->mapMagentoProduct($magentoProduct, $skyLinkProduct);
+        $this->magentoStockItemMapper->mapStockItem($magentoStockItem, $skyLinkProduct->getInventoryItem());
+
         $this->baseMagentoProductRepository->save($magentoProduct);
+        $this->magentoStockRegistry->updateStockItemBySku($magentoProduct->getSku(), $magentoStockItem);
     }
 }

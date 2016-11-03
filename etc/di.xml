@@ -30,6 +30,7 @@
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoProductMapper"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSimpleProductRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSimpleProductService"/>
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoStockItemMapperInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoStockItemMapper"/>
 
     <!-- Setup product syncers -->
     <type name="RetailExpress\SkyLink\Commands\Catalogue\Products\SyncSkyLinkProductToMagentoProductHandler">

@@ -75,6 +75,8 @@ class MagentoAttributeOptionRepository implements MagentoAttributeOptionReposito
                 compact('skyLinkAttributeCode', 'skyLinkAttributeOption', 'magentoAttributeOptionId')
             ));
         }
+
+        return $magentoAttributeOption;
     }
 
     /**

@@ -21,6 +21,13 @@ class SyncSkyLinkProductToMagentoProductCommand implements QueueableCommand
     public $salesChannelId;
 
     /**
+     * An optional EDS Change Set ID that this command is associated with.
+     *
+     * @var string
+     */
+    public $changeSetId;
+
+    /**
      * Get the queue this command belongs to.
      *
      * @return string

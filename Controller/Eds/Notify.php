@@ -39,20 +39,41 @@ class Notify extends Action
 
         $jsonResult = $this->jsonResultFactory->create();
 
-        array_walk($changeSets, function (ChangeSet $changeSet) use ($jsonResult) {
+        $responses = [];
+
+        array_walk($changeSets, function (ChangeSet $changeSet) use (&$responses) {
             try {
                 $this->changeSetRepository->find($changeSet->getId());
-                $jsonResult
-                    ->setHttpResponseCode(202)
-                    ->setData(['message' => 'The Change Set has already been registered.']);
+
+                // Being idempotent, we'll accept the same Change Set twice without bitching
+                $responses[] = [
+                    'change_set' => (string) $changeSet->getId(),
+                    'status' => 202, // 202 Accepted
+                    'message' => 'The Change Set has already been registered.',
+                ];
             } catch (NoSuchEntityException $e) {
                 $this->changeSetRepository->save($changeSet);
-                $jsonResult
-                    ->setHttpResponseCode(201)
-                    ->setData(['message' => 'The Change Set has been registered.']);
+                $responses[] = [
+                    'change_set' => (string) $changeSet->getId(),
+                    'status' => 201, // 202 Created
+                    'message' => 'The Change Set has been registered.',
+                ];
             }
         });
 
+        return $jsonResult
+            ->setHttpResponseCode($this->determineHttpStatusFromResponses($responses))
+            ->setData($responses);
+
         return $jsonResult;
+    }
+
+    private function determineHttpStatusFromResponses(array $responses)
+    {
+        // Rather than set a priority, we will just return the lower status because
+        // we either use 201 or 202, and 201 is the preferred if required.
+        return min(array_map(function (array $response) {
+            return $response['status'];
+        }, $responses));
     }
 }

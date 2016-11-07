@@ -18,6 +18,17 @@ class InstallData implements InstallDataInterface
 
     private $eavConfig;
 
+    /**
+     * @todo rework this with \RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeRepository
+     */
+    private static function getDefaultAttributeMappings()
+    {
+        return [
+            'brand' => 'manufacturer',
+            'colour' => 'color',
+        ];
+    }
+
     public function __construct(
         EavSetupFactory $eavSetupFactory,
         EavConfig $eavConfig
@@ -34,9 +45,9 @@ class InstallData implements InstallDataInterface
         /* @var \Magento\Eav\Setup\EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
 
-        // $this->addSkyLinkCustomerIdToCustomers($eavSetup);
-        // $this->addSkyLinkProductIdsToProducts($eavSetup);
-        // $this->addSkyLinkAttributeCodesToProducts($eavSetup);
+        $this->addSkyLinkCustomerIdToCustomers($eavSetup);
+        $this->addSkyLinkProductIdsToProducts($eavSetup);
+        $this->addSkyLinkAttributeCodesToProducts($eavSetup);
         $this->addManufacturerToAttributeSets($eavSetup);
     }
 
@@ -78,22 +89,24 @@ class InstallData implements InstallDataInterface
     {
         array_map(function ($skyLinkAttributeCodeString) use ($eavSetup) {
             $skyLinkAttributeCode = SkyLinkAttributeCode::get($skyLinkAttributeCodeString);
+            $magentoAttributeCode = $this->getDefaultMagentoAttributeCode($skyLinkAttributeCode);
 
-            if ($this->attributeCodeShouldBeSkippedFromBeingAddedToProducts($skyLinkAttributeCode)) {
-                return;
+            $hasExistingAttribute = (bool) $eavSetup
+                ->getAttributeId(Product::ENTITY, $magentoAttributeCode);
+
+            if (false === $hasExistingAttribute) {
+                $eavSetup->addAttribute(
+                    Product::ENTITY,
+                    $magentoAttributeCode,
+                    [
+                        'label' => $skyLinkAttributeCode->getLabel(),
+                        'required' => false,
+                        'input' => 'select',
+                    ]
+                );
             }
 
-            $eavSetup->addAttribute(
-                Product::ENTITY,
-                $skyLinkAttributeCode->getValue(),
-                [
-                    'label' => $skyLinkAttributeCode->getLabel(),
-                    'required' => false,
-                    'input' => 'select',
-                ]
-            );
-
-            $this->addAttributeToDefaultGroupInAllSets($eavSetup, $skyLinkAttributeCode->getValue());
+            $this->addAttributeToDefaultGroupInAllSets($eavSetup, $magentoAttributeCode);
 
         }, SkyLinkAttributeCode::getConstants());
     }
@@ -110,24 +123,31 @@ class InstallData implements InstallDataInterface
         $this->addAttributeToDefaultGroupInAllSets($eavSetup, 'manufacturer');
     }
 
-    private function addAttributeToDefaultGroupInAllSets(EavSetup $eavSetup, $attributeCode)
+    private function addAttributeToDefaultGroupInAllSets(EavSetup $eavSetup, $magentoAttributeCode)
     {
         foreach ($eavSetup->getAllAttributeSetIds() as $attributeSetId) {
             $eavSetup->addAttributeToGroup(
                 Product::ENTITY,
                 $attributeSetId,
                 $eavSetup->getDefaultAttributeGroupId($attributeSetId), // @todo should this be another group?
-                'skylink_product_id'
+                $magentoAttributeCode
             );
         }
     }
 
-    private function attributeCodeShouldBeSkippedFromBeingAddedToProducts(SkyLinkAttributeCode $skyLinkAttributeCode)
+    /**
+     * @todo rework this with \RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeRepository
+     *
+     * @return string
+     */
+    private function getDefaultMagentoAttributeCode(SkyLinkAttributeCode $skyLinkAttributeCode)
     {
-        /**
-         * @todo move this to dependency injection just like is done over in
-         * \RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeRepository
-         */
-        return in_array($skyLinkAttributeCode->getValue(), ['brand', 'colour', 'size']);
+        $defaultAttributeMappings = self::getDefaultAttributeMappings();
+
+        if (array_key_exists($skyLinkAttributeCode->getValue(), $defaultAttributeMappings)) {
+            return $defaultAttributeMappings[$skyLinkAttributeCode->getValue()];
+        }
+
+        return $skyLinkAttributeCode->getValue();
     }
 }

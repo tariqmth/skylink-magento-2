@@ -2,6 +2,7 @@
 
 namespace RetailExpress\SkyLink\Setup;
 
+use Magento\Framework\DB\Adapter\AdapterInterface as DbAdapterInterface;
 use Magento\Framework\DB\Ddl\Table as DdlTable;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
@@ -26,10 +27,72 @@ trait InstallCatalogueSchema
             )
             ->addColumn(
                 'magento_attribute_code',
-                DdlTable::TYPE_VARCHAR,
+                DdlTable::TYPE_TEXT,
                 255,
                 ['nullable' => false],
                 'Magento Attribute Code'
+            );
+
+        $installer->getConnection()->createTable($table);
+
+        // Create Attribute Option mappings table
+        $attributeOptionsTable = 'retail_express_skylink_attribute_options';
+        $table = $setup
+            ->getConnection()
+            ->newTable($installer->getTable($attributeOptionsTable))
+            ->addColumn(
+                'skylink_attribute_code',
+                DdlTable::TYPE_TEXT,
+                255,
+                ['nullable' => false],
+                'SkyLink Attribute Code'
+            )
+            ->addColumn(
+                'skylink_attribute_option_id',
+                DdlTable::TYPE_TEXT,
+                255,
+                ['nullable' => false],
+                'SkyLink Attribute Option ID'
+            )
+            ->addColumn(
+                'magento_attribute_option_id',
+                DdlTable::TYPE_INTEGER,
+                10,
+                ['nullable' => false, 'unsigned' => true],
+                'Magento Attribute Option ID'
+            )
+            ->addIndex(
+                $installer->getIdxName(
+                    $attributeOptionsTable,
+                    ['skylink_attribute_code', 'skylink_attribute_option_id'],
+                    DbAdapterInterface::INDEX_TYPE_PRIMARY
+                ),
+                ['skylink_attribute_code', 'skylink_attribute_option_id'],
+                DbAdapterInterface::INDEX_TYPE_PRIMARY
+            )
+            ->addForeignKey(
+                $installer->getFkName(
+                    $attributeOptionsTable,
+                    'skylink_attribute_code',
+                    $attributesTable,
+                    'skylink_attribute_code'
+                ),
+                'skylink_attribute_code',
+                $attributesTable,
+                'skylink_attribute_code',
+                DdlTable::ACTION_CASCADE
+            )
+            ->addForeignKey(
+                $installer->getFkName(
+                    $attributeOptionsTable,
+                    'magento_attribute_option_id',
+                    'eav_attribute_option',
+                    'option_id'
+                ),
+                'magento_attribute_option_id',
+                'eav_attribute_option',
+                'option_id',
+                DdlTable::ACTION_CASCADE
             );
 
         $installer->getConnection()->createTable($table);

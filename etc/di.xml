@@ -37,6 +37,7 @@
         <arguments>
             <argument name="syncers" xsi:type="array">
                 <item name="simple" xsi:type="object">RetailExpress\SkyLink\Model\Catalogue\Products\SkyLinkSimpleProductToMagentoSimpleProductSyncer</item>
+                <item name="configurable" xsi:type="object">RetailExpress\SkyLink\Model\Catalogue\Products\SkyLinkMatrixToMagentoConfigurableProductSyncer</item>
             </argument>
         </arguments>
     </type>

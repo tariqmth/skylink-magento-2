@@ -9,6 +9,7 @@ use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
+use Magento\CatalogUrlRewrite\Model\ProductUrlPathGenerator;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoStockItemMapperInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface;
@@ -16,6 +17,8 @@ use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 
 class MagentoSimpleProductService implements MagentoSimpleProductServiceInterface
 {
+    use MagentoProductService;
+
     private $magentoProductMapper;
 
     private $magentoStockItemMapper;
@@ -23,8 +26,6 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
     private $magentoProductFactory;
 
     private $magentoStockItemFactory;
-
-    private $baseMagentoProductRepository;
 
     private $magentoStockRegistry;
 
@@ -34,7 +35,8 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         ProductInterfaceFactory $magentoProductFactory,
         StockItemInterfaceFactory $magentoStockItemFactory,
         ProductRepositoryInterface $baseMagentoProductRepository,
-        StockRegistryInterface $magentoStockRegistry
+        StockRegistryInterface $magentoStockRegistry,
+        ProductUrlPathGenerator $productUrlPathGenerator
     ) {
         $this->magentoProductMapper = $magentoProductMapper;
         $this->magentoStockItemMapper = $magentoStockItemMapper;
@@ -42,6 +44,7 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         $this->magentoStockItemFactory = $magentoStockItemFactory;
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
         $this->magentoStockRegistry = $magentoStockRegistry;
+        $this->productUrlPathGenerator = $productUrlPathGenerator;
     }
 
     /**
@@ -81,7 +84,8 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         $this->magentoProductMapper->mapMagentoProduct($magentoProduct, $skyLinkProduct);
         $this->magentoStockItemMapper->mapStockItem($magentoStockItem, $skyLinkProduct->getInventoryItem());
 
-        $this->baseMagentoProductRepository->save($magentoProduct);
+        $this->save($magentoProduct);
+
         $this->magentoStockRegistry->updateStockItemBySku($magentoProduct->getSku(), $magentoStockItem);
     }
 }

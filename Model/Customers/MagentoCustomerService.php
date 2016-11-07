@@ -44,9 +44,14 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
     {
         $magentoCustomer = $this->magentoCustomerFactory->create();
 
+        // Associate with the given SkyLink Customer
+        $magentoCustomer->setCustomAttribute(
+            'skylink_customer_id',
+            $skyLinkCustomer->getId()->toNative()
+        );
+
         $magentoBillingAddress = $this->createDefaultBillingAddress();
         $magentoShippingAddress = $this->createDefaultShippingAddress();
-
         $magentoCustomer->setAddresses([$magentoBillingAddress, $magentoShippingAddress]);
 
         $this->magentoCustomerMapper->mapMagentoCustomer($magentoCustomer, $skyLinkCustomer);

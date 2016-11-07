@@ -16,22 +16,17 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
      */
     public function mapMagentoCustomer(CustomerInterface $magentoCustomer, SkyLinkCustomer $skyLinkCustomer)
     {
-        $magentoCustomer->setCustomAttribute(
-            'skylink_customer_id',
-            $skyLinkCustomer->getId()->toNative()
-        );
-
         $magentoBillingAddress = current(array_filter(
             $magentoCustomer->getAddresses(),
-            function (AddressInterface $address) use ($magentoCustomer) {
-                return $address->getId() == $magentoCustomer->getDefaultBilling();
+            function (AddressInterface $address){
+                return $address->isDefaultBilling();
             }
         ));
 
         $magentoShippingAddress = current(array_filter(
             $magentoCustomer->getAddresses(),
             function (AddressInterface $address) use ($magentoCustomer) {
-                return $address->getId() == $magentoCustomer->getDefaultShipping();
+                return $address->isDefaultShipping();
             }
         ));
 

@@ -14,11 +14,10 @@ use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoStockItemMapperInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
+use RetailExpress\SkyLink\Api\Catalogue\Products\UrlKeyGeneratorInterface;
 
 class MagentoSimpleProductService implements MagentoSimpleProductServiceInterface
 {
-    use MagentoProductService;
-
     private $magentoProductMapper;
 
     private $magentoStockItemMapper;
@@ -27,7 +26,16 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
 
     private $magentoStockItemFactory;
 
+    /**
+     * The Base Magento Product Repository instance.
+     *
+     * @var \Magento\Catalog\Api\ProductRepositoryInterface
+     */
+    private $baseMagentoProductRepository;
+
     private $magentoStockRegistry;
+
+    private $urlKeyGenerator;
 
     public function __construct(
         MagentoProductMapperInterface $magentoProductMapper,
@@ -36,7 +44,8 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         StockItemInterfaceFactory $magentoStockItemFactory,
         ProductRepositoryInterface $baseMagentoProductRepository,
         StockRegistryInterface $magentoStockRegistry,
-        ProductUrlPathGenerator $productUrlPathGenerator
+        ProductUrlPathGenerator $productUrlPathGenerator,
+        UrlKeyGeneratorInterface $urlKeyGenerator
     ) {
         $this->magentoProductMapper = $magentoProductMapper;
         $this->magentoStockItemMapper = $magentoStockItemMapper;
@@ -45,6 +54,7 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
         $this->magentoStockRegistry = $magentoStockRegistry;
         $this->productUrlPathGenerator = $productUrlPathGenerator;
+        $this->urlKeyGenerator = $urlKeyGenerator;
     }
 
     /**
@@ -59,7 +69,9 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         /* @var StockItemInterface $magentoStockItem */
         $magentoStockItem = $this->magentoStockItemFactory->create();
 
-        $this->mapAndSave($magentoProduct, $magentoStockItem, $skyLinkProduct);
+        $this->mapProduct($magentoProduct, $skyLinkProduct);
+        $this->setUrlKeyForMappedProudct($magentoProduct);
+        $this->mapStockAndSave($magentoProduct, $magentoStockItem, $skyLinkProduct);
 
         return $magentoProduct;
     }
@@ -72,20 +84,28 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         /* @var StockItemInterface $magentoStockItem */
         $magentoStockItem = $this->magentoStockRegistry->getStockItemBySku($magentoProduct->getSku());
 
-        $this->mapAndSave($magentoProduct, $magentoStockItem, $skyLinkProduct);
+        $this->mapProduct($magentoProduct, $skyLinkProduct);
+        $this->mapStockAndSave($magentoProduct, $magentoStockItem, $skyLinkProduct);
     }
 
-    private function mapAndSave(
+    private function mapProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
+    {
+        $this->magentoProductMapper->mapMagentoProduct($magentoProduct, $skyLinkProduct);
+    }
+
+    private function setUrlKeyForMappedProudct(ProductInterface $magentoProduct)
+    {
+        $urlKey = $this->urlKeyGenerator->generateUniqueUrlKeyForMagentoProduct($magentoProduct);
+        $magentoProduct->setCustomAttribute('url_key', $urlKey);
+    }
+
+    private function mapStockAndSave(
         ProductInterface $magentoProduct,
         StockItemInterface $magentoStockItem,
         SkyLinkProduct $skyLinkProduct
     ) {
-        // Map our Product and Stock Item
-        $this->magentoProductMapper->mapMagentoProduct($magentoProduct, $skyLinkProduct);
         $this->magentoStockItemMapper->mapStockItem($magentoStockItem, $skyLinkProduct->getInventoryItem());
-
-        $this->save($magentoProduct);
-
+        $this->baseMagentoProductRepository->save($magentoProduct);
         $this->magentoStockRegistry->updateStockItemBySku($magentoProduct->getSku(), $magentoStockItem);
     }
 }

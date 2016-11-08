@@ -10,7 +10,7 @@ interface MagentoStockItemMapperInterface
     /**
      * Maps a SkyLink Inventory Item to a Magento Stock Item.
      *
-     * @param StockItemInterface $magentoStockItem
+     * @param StockItemInterface   $magentoStockItem
      * @param SkyLinkInventoryItem $skyLinkPhysicalPackage
      */
     public function mapStockItem(

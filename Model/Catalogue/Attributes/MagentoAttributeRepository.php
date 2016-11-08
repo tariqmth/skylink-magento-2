@@ -20,7 +20,7 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
     private $magentoProductAttributeRepository;
 
     /**
-     * Chosen Attribute Mappings
+     * Chosen Attribute Mappings.
      *
      * @var array
      */

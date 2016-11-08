@@ -25,10 +25,9 @@ class SaveMagentoAttribute extends Action
         $data = $this->getRequest()->getPostValue();
 
         array_walk($data['magento_attribute_mappings'], function ($magentoAttributeCode, $skyLinkAttributeCode) {
-
             $command = new SyncSkyLinkAttributeToMagentoAttributeCommand();
             $command->magentoAttributeCode = $magentoAttributeCode;
-            $command->skyLinkAttributeCode =  $skyLinkAttributeCode;
+            $command->skyLinkAttributeCode = $skyLinkAttributeCode;
 
             $this->commandBus->handle($command);
         });

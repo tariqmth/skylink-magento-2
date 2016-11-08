@@ -18,7 +18,7 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
     {
         $magentoBillingAddress = current(array_filter(
             $magentoCustomer->getAddresses(),
-            function (AddressInterface $address){
+            function (AddressInterface $address) {
                 return $address->isDefaultBilling();
             }
         ));

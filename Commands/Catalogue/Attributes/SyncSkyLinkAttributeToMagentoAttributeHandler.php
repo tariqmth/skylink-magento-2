@@ -4,7 +4,6 @@ namespace RetailExpress\SkyLink\Commands\Catalogue\Attributes;
 
 use Magento\Catalog\Api\Data\ProductAttributeInterface;
 use Magento\Catalog\Api\ProductAttributeRepositoryInterface as BaseProductAttributeRepositoryInterface;
-use Magento\Eav\Api\AttributeOptionManagementInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionServiceInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
@@ -131,7 +130,6 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
                 $magentoAttributeOptionToMap,
                 $skyLinkAttributeOption
             );
-
         }, $skyLinkAttribute->getOptions());
     }
 }

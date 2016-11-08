@@ -93,7 +93,7 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
      * @todo remove this once AttributeOptionInterfaceFactory updates the value / label of
      * an attribute option after inserting in the database. We're currently coupling an
      * assumption that whatever interface we have is actually using the same SQL-based
-     * database as us, which is naughty.
+     * database as us, which is naughty
      */
     private function getLastAddedOptionIdForMagentoAttribute(ProductAttributeInterface $magentoAttribute)
     {

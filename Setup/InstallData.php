@@ -108,7 +108,6 @@ class InstallData implements InstallDataInterface
             }
 
             $this->addAttributeToDefaultGroupInAllSets($eavSetup, $magentoAttributeCode);
-
         }, SkyLinkAttributeCode::getConstants());
     }
 

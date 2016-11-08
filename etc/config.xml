@@ -8,6 +8,9 @@
             <general>
                 <sales_channel_id>1</sales_channel_id>
             </general>
+            <products>
+                <configurable_product_match_threshold>0.5</configurable_product_match_threshold>
+            </products>
         </skylink>
     </default>
 </config>

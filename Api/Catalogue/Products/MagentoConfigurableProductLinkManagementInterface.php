@@ -3,6 +3,7 @@
 namespace RetailExpress\SkyLink\Api\Catalogue\Products;
 
 use Magento\Catalog\Api\Data\ProductInterface;
+use RetailExpress\SkyLink\Sdk\Catalogue\Products\MatrixPolicy as SkyLinkMatrixPolicy;
 
 interface MagentoConfigurableProductLinkManagementInterface
 {
@@ -16,8 +17,13 @@ interface MagentoConfigurableProductLinkManagementInterface
     /**
      * Syncs the given children to the configurable product provided.
      *
-     * @param ProductInterface   $parentProduct
-     * @param ProductInterface[] $childrenProducts
+     * @param SkyLinkMatrixPolicy $skyLinkMatrixPolicy
+     * @param ProductInterface    $parentProduct
+     * @param ProductInterface[]  $childrenProducts
      */
-    public function syncChildren(ProductInterface $parentProduct, array $childrenProducts);
+    public function syncChildren(
+        SkyLinkMatrixPolicy $skyLinkMatrixPolicy,
+        ProductInterface $parentProduct,
+        array $childrenProducts
+    );
 }

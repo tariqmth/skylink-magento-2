@@ -101,7 +101,7 @@ class MagentoConfigurableProductRepository implements MagentoConfigurableProduct
             $occurancesAsDecimal = $occurances / $totalOccurances;
 
             // Compare our occurance against the configured threshold
-            if ($occurancesAsDecimal < $threshold) {
+            if ($occurancesAsDecimal < $threshold->toNative()) {
                 continue;
             }
 

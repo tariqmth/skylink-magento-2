@@ -45,6 +45,11 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
      */
     public function sync(Product $skyLinkMatrix)
     {
+        // Wwe'll sync the simple products in the Matrix
+        $magentoSimpleProducts = array_map(function (SimpleProduct $skyLinkProduct) {
+            return $this->simpleProductSyncer->sync($skyLinkProduct); // @todo prioritise the URL key for the configurable product created later
+        }, $skyLinkMatrix->getProducts());
+
         // Grab our SkyLink product IDs
         $skyLinkProductIds = array_map(function (SimpleProduct $skyLinkProduct) {
             return $skyLinkProduct->getId();
@@ -62,18 +67,8 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
         } else {
             $magentoConfigurableProduct = $this
                 ->magentoConfigurableProductService
-                ->createMagentoProduct($skyLinkMatrix);
+                ->createMagentoProduct($skyLinkMatrix, $magentoSimpleProducts);
         }
-
-        // Now, we'll sync the simple products in the Matrix
-        $magentoSimpleProducts = array_map(function (SimpleProduct $skyLinkProduct) {
-            return $this->simpleProductSyncer->sync($skyLinkProduct);
-        }, $skyLinkMatrix->getProducts());
-
-        // Finally, we'll sync the children of the configurable product with the ones we have now
-        $this
-            ->magentoConfigurableProductLinkManagement
-            ->syncChildren($magentoConfigurableProduct, $magentoSimpleProducts);
 
         return $magentoConfigurableProduct;
     }

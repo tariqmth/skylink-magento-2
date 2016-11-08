@@ -9,7 +9,6 @@ use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
-use Magento\CatalogUrlRewrite\Model\ProductUrlPathGenerator;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoStockItemMapperInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface;
@@ -44,7 +43,6 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         StockItemInterfaceFactory $magentoStockItemFactory,
         ProductRepositoryInterface $baseMagentoProductRepository,
         StockRegistryInterface $magentoStockRegistry,
-        ProductUrlPathGenerator $productUrlPathGenerator,
         UrlKeyGeneratorInterface $urlKeyGenerator
     ) {
         $this->magentoProductMapper = $magentoProductMapper;
@@ -53,7 +51,6 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         $this->magentoStockItemFactory = $magentoStockItemFactory;
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
         $this->magentoStockRegistry = $magentoStockRegistry;
-        $this->productUrlPathGenerator = $productUrlPathGenerator;
         $this->urlKeyGenerator = $urlKeyGenerator;
     }
 
@@ -70,7 +67,7 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         $magentoStockItem = $this->magentoStockItemFactory->create();
 
         $this->mapProduct($magentoProduct, $skyLinkProduct);
-        $this->setUrlKeyForMappedProudct($magentoProduct);
+        $this->setUrlKeyForMappedProduct($magentoProduct);
         $this->mapStockAndSave($magentoProduct, $magentoStockItem, $skyLinkProduct);
 
         return $magentoProduct;
@@ -93,7 +90,7 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         $this->magentoProductMapper->mapMagentoProduct($magentoProduct, $skyLinkProduct);
     }
 
-    private function setUrlKeyForMappedProudct(ProductInterface $magentoProduct)
+    private function setUrlKeyForMappedProduct(ProductInterface $magentoProduct)
     {
         $urlKey = $this->urlKeyGenerator->generateUniqueUrlKeyForMagentoProduct($magentoProduct);
         $magentoProduct->setCustomAttribute('url_key', $urlKey);

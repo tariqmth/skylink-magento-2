@@ -36,7 +36,7 @@ class UrlKeyGenerator implements UrlKeyGeneratorInterface
 
         // Try find an existing product with the given URL key, and if so, we'll
         // generate one based on the name and the SKU (which is always unique).
-        if ($this->productExistsWithUrlKey($urlKey)) {
+        if ($this->productExistsWithUrlKey($magentoProduct, $urlKey)) {
             $urlKey = $this->generateUrlKeyBasedOnProductNameAndSku($magentoProduct, $productUrl);
         }
 
@@ -57,8 +57,12 @@ class UrlKeyGenerator implements UrlKeyGeneratorInterface
         ));
     }
 
-    private function productExistsWithUrlKey($urlKey)
+    private function productExistsWithUrlKey(ProductInterface $excludedMagentoProduct, $urlKey)
     {
+        // Make sure we don't include the same product
+        $this->searchCriteriaBuilder->addFilter('sku', $excludedMagentoProduct->getSku(), 'neq');
+
+        // Filter by the given URL key
         $this->searchCriteriaBuilder->addFilter('url_key', $urlKey);
 
         /* @var \Magento\Framework\Api\SearchCriteria $searchCriteria */

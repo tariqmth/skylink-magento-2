@@ -53,7 +53,7 @@ class MagentoCustomerRepository implements MagentoCustomerRepositoryInterface
             throw TooManyCustomerMatchesException::withSkyLinkCustomerId($skyLinkCustomerId, $existingCustomerMatches);
         }
 
-        if ($existingCustomerMatches === 1) {
+        if (1 === $existingCustomerMatches) {
             return current($existingCustomers->getItems());
         }
     }

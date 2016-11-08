@@ -40,7 +40,7 @@ class MagentoSimpleProductRepository implements MagentoSimpleProductRepositoryIn
             throw TooManyProductMatchesException::withSkyLinkProductId($skyLinkProductId, $existingProductMatches);
         }
 
-        if ($existingProductMatches === 1) {
+        if (1 === $existingProductMatches) {
             return current($existingProducts->getItems());
         }
     }

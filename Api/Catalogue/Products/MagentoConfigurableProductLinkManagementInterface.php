@@ -15,13 +15,13 @@ interface MagentoConfigurableProductLinkManagementInterface
     public function getParentProductId(ProductInterface $childProduct);
 
     /**
-     * Syncs the given children to the configurable product provided.
+     * Links the given children products to the configurable product provided.
      *
      * @param SkyLinkMatrixPolicy $skyLinkMatrixPolicy
      * @param ProductInterface    $parentProduct
      * @param ProductInterface[]  $childrenProducts
      */
-    public function syncChildren(
+    public function linkChildren(
         SkyLinkMatrixPolicy $skyLinkMatrixPolicy,
         ProductInterface $parentProduct,
         array $childrenProducts

@@ -60,6 +60,7 @@ class InstallData implements InstallDataInterface
                 'label' => 'SkyLink Customer ID',
                 'required' => false,
                 'system' => false,
+                'user_defined' => true,
             ]
         );
 

@@ -54,7 +54,7 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
 
         $this->mapProduct($magentoConfigurableProduct, $skyLinkMatrix);
         $this->setUrlKeyForMappedProduct($magentoConfigurableProduct);
-        $this->linkSimpleProducts($magentoConfigurableProduct, $magentoSimpleProducts);
+        $this->linkSimpleProducts($skyLinkMatrix, $magentoConfigurableProduct, $magentoSimpleProducts);
         $this->save($magentoConfigurableProduct);
 
         return $magentoConfigurableProduct;
@@ -85,10 +85,13 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
         $this->baseMagentoProductRepository->save($magentoConfigurableProduct);
     }
 
-    private function linkSimpleProducts(ProductInterface $magentoConfigurableProduct, array $magentoSimpleProducts)
-    {
+    private function linkSimpleProducts(
+        SkyLinkMatrix $skyLinkMatrix,
+        ProductInterface $magentoConfigurableProduct,
+        array $magentoSimpleProducts
+    ) {
         $this
             ->magentoConfigurableProductLinkManagement
-            ->linkChildren($magentoConfigurableProduct, $magentoSimpleProducts);
+            ->linkChildren($skyLinkMatrix->getPolicy(), $magentoConfigurableProduct, $magentoSimpleProducts);
     }
 }

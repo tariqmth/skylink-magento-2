@@ -10,6 +10,7 @@ use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Api\Data\CustomerInterfaceFactory;
 use PhpSpec\ObjectBehavior;
 use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
+use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface;
 use RetailExpress\SkyLink\Model\Customers\MagentoCustomerService;
 
@@ -59,6 +60,12 @@ class MagentoCustomerServiceSpec extends ObjectBehavior
         AddressInterface $magentoShippingAddress
     ) {
         $this->magentoCustomerFactory->create()->shouldBeCalled()->willReturn($magentoCustomer);
+
+        $skyLinkCustomerIdInteger = 124001;
+        $skyLinkCustomerId = new SkyLinkCustomerId($skyLinkCustomerIdInteger);
+        $skyLinkCustomer->getId()->willReturn($skyLinkCustomerId);
+        $magentoCustomer->setCustomAttribute('skylink_customer_id', $skyLinkCustomerIdInteger)->shouldBeCalled();
+
         $this->magentoAddressFactory->create()->shouldBeCalled()->willReturn(
             $magentoBillingAddress,
             $magentoShippingAddress

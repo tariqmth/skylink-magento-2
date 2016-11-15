@@ -26,10 +26,12 @@ class MagentoCustomerMapperSpec extends ObjectBehavior
     ) {
         // Mock out retrieving the default billing and shipping address
         $magentoCustomer->getAddresses()->willReturn([$magentoBillingAddress, $magentoShippingAddress]);
-        $magentoCustomer->getDefaultBilling()->willReturn('1');
-        $magentoBillingAddress->getId()->willReturn('1');
-        $magentoCustomer->getDefaultShipping()->willReturn('2');
-        $magentoShippingAddress->getId()->willReturn('2');
+
+        $magentoBillingAddress->isDefaultBilling()->willReturn(true);
+        $magentoBillingAddress->isDefaultShipping()->willReturn(false);
+
+        $magentoShippingAddress->isDefaultShipping()->willReturn(true);
+        $magentoShippingAddress->isDefaultBilling()->willReturn(false);
 
         // Prepare a real instance of a SkyLink Customer (mocking gets rather messy)
         $skyLinkCustomerId = new SkyLinkCustomerId($skyLinkCustomerIdInteger = 124001);
@@ -74,7 +76,6 @@ class MagentoCustomerMapperSpec extends ObjectBehavior
         );
 
         // Mapping customer information
-        $magentoCustomer->setCustomAttribute('skylink_customer_id', $skyLinkCustomerIdInteger)->shouldBeCalled();
         $magentoCustomer->setFirstname($contactFirstName)->shouldBeCalled()->willReturn($magentoCustomer);
         $magentoCustomer->setLastname($contactLastName)->shouldBeCalled()->willReturn($magentoCustomer);
         $magentoCustomer->setEmail($billingContactEmail)->shouldBeCalled()->willReturn($magentoCustomer);

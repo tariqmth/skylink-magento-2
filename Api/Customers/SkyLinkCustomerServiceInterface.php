@@ -8,7 +8,7 @@ use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
 interface SkyLinkCustomerServiceInterface
 {
     /**
-     * Register a new SkyLink Customer from the given SkyLink Customer.
+     * Register a new SkyLink Customer from the given Magento Customer.
      *
      * @param CustomerInterface $magentoCustomer
      */

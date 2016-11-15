@@ -63,9 +63,13 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
     /**
      * {@inheritdoc}
      */
-    public function updateMagentoProduct(ProductInterface $magentoConfigurableProduct, SkyLinkMatrix $skyLinkMatrix)
-    {
+    public function updateMagentoProduct(
+        SkyLinkMatrix $skyLinkMatrix,
+        ProductInterface $magentoConfigurableProduct,
+        array $magentoSimpleProducts
+    ) {
         $this->mapProduct($magentoConfigurableProduct, $skyLinkMatrix);
+        $this->linkSimpleProducts($skyLinkMatrix, $magentoConfigurableProduct, $magentoSimpleProducts);
         $this->save($magentoConfigurableProduct);
     }
 

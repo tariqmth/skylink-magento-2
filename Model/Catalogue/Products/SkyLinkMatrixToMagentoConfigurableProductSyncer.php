@@ -63,7 +63,7 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
         if (null !== $magentoConfigurableProduct) {
             $this
                 ->magentoConfigurableProductService
-                ->updateMagentoProduct($magentoConfigurableProduct, $skyLinkMatrix, $magentoSimpleProducts);
+                ->updateMagentoProduct($skyLinkMatrix, $magentoConfigurableProduct, $magentoSimpleProducts);
         } else {
             $magentoConfigurableProduct = $this
                 ->magentoConfigurableProductService

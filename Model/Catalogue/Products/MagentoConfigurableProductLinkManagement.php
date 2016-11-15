@@ -4,6 +4,8 @@ namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\Data\ProductExtensionFactory;
+use Magento\Catalog\Api\Data\ProductExtensionInterface;
+use Magento\ConfigurableProduct\Api\Data\OptionInterface;
 use Magento\ConfigurableProduct\Api\Data\OptionInterfaceFactory;
 use Magento\ConfigurableProduct\Api\Data\OptionValueInterfaceFactory;
 use Magento\ConfigurableProduct\Api\LinkManagementInterface as BaseLinkManagementInterface;
@@ -73,38 +75,35 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
         ProductInterface $parentProduct,
         array $childrenProducts
     ) {
-        // Grab the extension attributes instance
-        $productExtensionAtributes = $this->getProductExtensionAttributes($parentProduct);
+        // Grab an extension attributes instance
+        $extendedAttributes = $this->getProductExtensionAttributes($parentProduct);
 
-        // Firstly, let's set the links for the configurable product
-        $productExtensionAtributes
-            ->setConfigurableProductLinks($this->getConfigurableProductLinks($childrenProducts));
+        // Attach the new configurable product links
+        $extendedAttributes->setConfigurableProductLinks($this->getConfigurableProductLinks($childrenProducts));
 
-        // Now set the configurable product options
-        $productExtensionAtributes
-            ->setConfigurableProductOptions($this->getConfigurableProductOptions(
-                $skyLinkMatrixPolicy,
-                $childrenProducts
-            ));
+        // Grab our new options and update the model accordingly
+        $configurableProductOptions = $this->getConfigurableProductOptions($skyLinkMatrixPolicy, $childrenProducts);
+        $this->updateExistingConfigurableProductOptions($extendedAttributes, $configurableProductOptions);
     }
 
     private function getProductExtensionAttributes(ProductInterface $parentProduct)
     {
-        /* @var \Magento\Catalog\Api\Data\ProductExtensionInterface|null $productExtensionAtributes */
-        $productExtensionAtributes = $parentProduct->getExtensionAttributes();
+        /* @var |null $extendedAttributes */
+        $extendedAttributes = $parentProduct->getExtensionAttributes();
 
-        if (null === $productExtensionAtributes) {
+        if (null === $extendedAttributes) {
 
-            /* @var \Magento\Catalog\Api\Data\ProductExtensionInterface $productExtensionAtributes */
-            $productExtensionAtributes = $this->productExtensionFactory->create();
-            $parentProduct->setExtensionAttributes($productExtensionAtributes);
+            /* @var ProductExtensionInterface $extendedAttributes */
+            $extendedAttributes = $this->productExtensionFactory->create();
+            $parentProduct->setExtensionAttributes($extendedAttributes);
         }
 
-        return $productExtensionAtributes;
+        return $extendedAttributes;
     }
 
     private function getConfigurableProductLinks(array $childrenProducts)
     {
+        // Return the ID from each product
         return array_map(function (ProductInterface $childProduct) {
             return $childProduct->getId();
         }, $childrenProducts);
@@ -112,10 +111,6 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
 
     private function getConfigurableProductOptions(SkyLinkMatrixPolicy $skyLinkMatrixPolicy, array $childrenProducts)
     {
-        // Firstly, look at the attributes in the SkyLink Matrix Policy. Use our own Attributes Repository to find
-        // the corresponding Magento Attributes. We'll then grab the values of those attributes in the given
-        // children products and voila, we have the data we need to set the configurable product options!
-
         /* @var \Magento\Catalog\Api\Data\ProductAttributeInterface[] $magentoAttributes */
         $magentoAttributes = array_map(function (SkyLinkAttribute $skyLinkAttribute) {
 
@@ -127,15 +122,14 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
                 ->getMagentoAttributeForSkyLinkAttributeCode($skyLinkAttributeCode);
         }, $skyLinkMatrixPolicy->getAttributes());
 
-        $options = [];
-        $i = 0;
+        // Transform each product attribute into a configurable product option
+        return array_map(function ($magentoAttibute) use (&$options, $childrenProducts) {
 
-        array_walk($magentoAttributes, function ($magentoAttibute) use (&$options, &$i, $childrenProducts) {
+            /* @var OptionInterface $option */
             $option = $this->optionFactory->create();
             $option->setAttributeId($magentoAttibute->getAttributeId());
             $option->setLabel($magentoAttibute->getDefaultFrontendLabel()); // @todo, should this be scoped?
             $option->setValues([]);
-            $options[] = $option;
 
             array_walk($childrenProducts, function (ProductInterface $childProduct) use ($magentoAttibute, $option) {
                 $optionValue = $this->optionValueFactory->create();
@@ -147,8 +141,47 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
 
                 $option->setValues(array_merge($option->getValues(), [$optionValue]));
             });
+
+            return $option;
+        }, $magentoAttributes);
+    }
+
+    private function updateExistingConfigurableProductOptions(
+        ProductExtensionInterface $extendedAttributes,
+        array $newOptions
+    ) {
+        /* @var OptionInterface[] $existingOptions */
+        $existingOptions = $extendedAttributes->getConfigurableProductOptions();
+
+        // Determine the final options by iterating through new options
+        // and supplying a combination of the existing options.
+        $finalOptions = array_map(function (OptionInterface $newOption) use ($existingOptions) {
+            $existingOption = $this->findExistingConfigurableProductOptionForNewOption($newOption, $existingOptions);
+
+            if (null === $existingOption) {
+                return $newOption;
+            }
+
+            // Override the values of the existing option
+            $existingOption->setValues($newOption->getValues());
+            return $existingOption;
+        }, $newOptions);
+
+        $extendedAttributes->setConfigurableProductOptions($finalOptions);
+    }
+
+    private function findExistingConfigurableProductOptionForNewOption(
+        OptionInterface $newOption,
+        array $existingOptions
+    ) {
+        $matching = array_filter($existingOptions, function (OptionInterface $existingOption) use ($newOption) {
+
+            // Sometimes we have a string, sometimes we have an integer
+            return $existingOption->getAttributeId() == $newOption->getAttributeId();
         });
 
-        return $options;
+        if (count($matching) === 1) {
+            return current($matching); // @todo check if there's 2 matching? Not sure Magento could let that
+        }
     }
 }

@@ -11,7 +11,7 @@ interface MagentoConfigurableProductServiceInterface
      * Create a new Magento Product based on the given SkyLink Product.
      *
      * @param SkyLinkMatrix      $skyLinkMatrix
-     * @param ProductInterface[] $magentoSimpleProducts Simple products used for creating configurable links
+     * @param ProductInterface[] $magentoSimpleProducts
      *
      * @return ProductInterface
      */
@@ -20,8 +20,13 @@ interface MagentoConfigurableProductServiceInterface
     /**
      * Update the given Magento Product with the information from the SkyLink Product.
      *
-     * @param ProductInterface $magentoConfigurableProduct
      * @param SkyLinkMatrix    $skyLinkMatrix
+     * @param ProductInterface $magentoConfigurableProduct
+     * @param ProductInterface[] $magentoSimpleProducts
      */
-    public function updateMagentoProduct(ProductInterface $magentoConfigurableProduct, SkyLinkMatrix $skyLinkMatrix);
+    public function updateMagentoProduct(
+        SkyLinkMatrix $skyLinkMatrix,
+        ProductInterface $magentoConfigurableProduct,
+        array $magentoSimpleProducts
+    );
 }

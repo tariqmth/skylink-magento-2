@@ -24,6 +24,8 @@ class SyncSkyLinkCustomerToMagentoCustomerCommand implements QueueableCommand
      * Get the queue this command belongs to.
      *
      * @return string
+     *
+     * @codeCoverageIgnore
      */
     public function getQueue()
     {
@@ -34,6 +36,8 @@ class SyncSkyLinkCustomerToMagentoCustomerCommand implements QueueableCommand
      * Get the name of the command on the queue.
      *
      * @return string
+     *
+     * @codeCoverageIgnore
      */
     public function getName()
     {

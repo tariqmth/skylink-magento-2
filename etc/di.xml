@@ -15,8 +15,7 @@
     <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerRepositoryInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerService"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerMapper"/>
-    <preference for="RetailExpress\SkyLink\Api\Customers\SkyLinkCustomerServiceInterface" type="RetailExpress\SkyLink\Model\Customers\SkyLinkCustomerService"/>
-    <preference for="RetailExpress\SkyLink\Api\Customers\SkyLinkstomerMapperInterface" type="RetailExpress\SkyLink\Model\Customers\SkyLinkCustomerMapper"/>
+    <preference for="RetailExpress\SkyLink\Api\Customers\SkyLinkCustomerBuilderInterface" type="RetailExpress\SkyLink\Model\Customers\SkyLinkCustomerBuilder"/>
 
     <!-- Catalogue attribute implementations -->
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeOptionRepository"/>

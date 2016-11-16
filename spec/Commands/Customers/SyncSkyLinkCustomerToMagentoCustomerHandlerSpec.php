@@ -31,7 +31,7 @@ class SyncSkyLinkCustomerToMagentoCustomerHandlerSpec extends ObjectBehavior
 
     private $skyLinkCustomerId;
 
-    private $syncSkyLinkCustomerToMagentoCustomerCommand;
+    private $command;
 
     public function let(
         SkylinkCustomerRepositoryFactory $skyLinkCustomerRepositoryFactory,
@@ -56,8 +56,8 @@ class SyncSkyLinkCustomerToMagentoCustomerHandlerSpec extends ObjectBehavior
         $this->skyLinkCustomerRepositoryFactory->create()->willReturn($this->skyLinkCustomerRepository);
 
         $this->skyLinkCustomerId = new SkyLinkCustomerId(124001);
-        $this->syncSkyLinkCustomerToMagentoCustomerCommand = new SyncSkyLinkCustomerToMagentoCustomerCommand();
-        $this->syncSkyLinkCustomerToMagentoCustomerCommand->skyLinkCustomerId = $this->skyLinkCustomerId->toNative();
+        $this->command = new SyncSkyLinkCustomerToMagentoCustomerCommand();
+        $this->command->skyLinkCustomerId = $this->skyLinkCustomerId->toNative();
     }
 
     public function it_is_initializable()
@@ -72,7 +72,7 @@ class SyncSkyLinkCustomerToMagentoCustomerHandlerSpec extends ObjectBehavior
             ->find($this->skyLinkCustomerId)
             ->willThrow(CustomerNotFoundException::class);
 
-        $this->shouldThrow(CustomerNotFoundException::class)->duringHandle($this->syncSkyLinkCustomerToMagentoCustomerCommand);
+        $this->shouldThrow(CustomerNotFoundException::class)->duringHandle($this->command);
     }
 
     public function it_should_update_an_existing_magento_customer_customer_if_one_is_found(
@@ -88,12 +88,12 @@ class SyncSkyLinkCustomerToMagentoCustomerHandlerSpec extends ObjectBehavior
         $this->magentoCustomerService->updateMagentoCustomer($magentoCustomer, $skyLinkCustomer)->shouldBeCalled();
 
         $this->eventManager->dispatch(self::EVENT_NAME, [
-            'command' => $this->syncSkyLinkCustomerToMagentoCustomerCommand,
+            'command' => $this->command,
             'skylink_customer' => $skyLinkCustomer,
             'magento_customer' => $magentoCustomer,
         ])->shouldBeCalled();
 
-        $this->handle($this->syncSkyLinkCustomerToMagentoCustomerCommand);
+        $this->handle($this->command);
     }
 
     public function it_should_register_a_new_magento_customer_if_none_is_found(
@@ -105,11 +105,11 @@ class SyncSkyLinkCustomerToMagentoCustomerHandlerSpec extends ObjectBehavior
         $this->magentoCustomerService->registerMagentoCustomer($skyLinkCustomer)->shouldBeCalled()->willReturn($magentoCustomer);
 
         $this->eventManager->dispatch(self::EVENT_NAME, [
-            'command' => $this->syncSkyLinkCustomerToMagentoCustomerCommand,
+            'command' => $this->command,
             'skylink_customer' => $skyLinkCustomer,
             'magento_customer' => $magentoCustomer,
         ])->shouldBeCalled();
 
-        $this->handle($this->syncSkyLinkCustomerToMagentoCustomerCommand);
+        $this->handle($this->command);
     }
 }

@@ -58,9 +58,12 @@ class SkyLinkCustomerBuilder implements SkyLinkCustomerBuilderInterface
         );
     }
 
-    private function createBillingContact(AddressInterface $billingAddress)
+    private function createBillingContact(AddressInterface $billingAddress, $email)
     {
-        return SkyLinkBillingContact::fromNative($this->getBillingContactArguments($billingAddress, $email));
+        return forward_static_call_array(
+            [SkyLinkBillingContact::class, 'fromNative'],
+            $this->getBillingContactArguments($billingAddress, $email)
+        );
     }
 
     private function createShippingContact(AddressInterface $shippingAddress)
@@ -70,11 +73,15 @@ class SkyLinkCustomerBuilder implements SkyLinkCustomerBuilderInterface
         unset($arguments[2]); // Email
         unset($arguments[11]); // Fax
 
-        return ShippingContact::fromNative($arguments);
+        return forward_static_call_array([SkyLinkShippingContact::class, 'fromNative'], $arguments);
     }
 
-    private function getBillingContactArguments(AddressInterface $magentoAddress, $email = '')
+    private function getBillingContactArguments(AddressInterface $magentoAddress = null, $email = '')
     {
+        if (null === $magentoAddress) {
+            return array_fill(0, 11, '');
+        }
+
         $addressLines = $magentoAddress->getStreet() ?: [];
 
         return [

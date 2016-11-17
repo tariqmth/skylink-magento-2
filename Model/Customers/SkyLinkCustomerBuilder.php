@@ -19,19 +19,19 @@ class SkyLinkCustomerBuilder implements SkyLinkCustomerBuilderInterface
      */
     public function buildFromMagentoCustomer(CustomerInterface $magentoCustomer)
     {
-        $magentoBillingAddress = current(array_filter(
+        $magentoBillingAddress = array_first(
             $magentoCustomer->getAddresses(),
             function (AddressInterface $address) {
                 return $address->isDefaultBilling();
             }
-        ));
+        );
 
-        $magentoShippingAddress = current(array_filter(
+        $magentoShippingAddress = array_first(
             $magentoCustomer->getAddresses(),
             function (AddressInterface $address) use ($magentoCustomer) {
                 return $address->isDefaultShipping();
             }
-        ));
+        );
 
         $skyLinkBillingContact = $this->createBillingContact($magentoBillingAddress, $magentoCustomer->getEmail());
         $skyLinkShippingContact = $this->createShippingContact($magentoBillingAddress);
@@ -58,7 +58,7 @@ class SkyLinkCustomerBuilder implements SkyLinkCustomerBuilderInterface
         );
     }
 
-    private function createBillingContact(AddressInterface $billingAddress, $email)
+    private function createBillingContact(AddressInterface $billingAddress = null, $email)
     {
         return forward_static_call_array(
             [SkyLinkBillingContact::class, 'fromNative'],
@@ -66,7 +66,7 @@ class SkyLinkCustomerBuilder implements SkyLinkCustomerBuilderInterface
         );
     }
 
-    private function createShippingContact(AddressInterface $shippingAddress)
+    private function createShippingContact(AddressInterface $shippingAddress = null)
     {
         // We'll strip out the email and fax arguments as these are not used in teh shipping contact
         $arguments = $this->getBillingContactArguments($shippingAddress);
@@ -79,7 +79,10 @@ class SkyLinkCustomerBuilder implements SkyLinkCustomerBuilderInterface
     private function getBillingContactArguments(AddressInterface $magentoAddress = null, $email = '')
     {
         if (null === $magentoAddress) {
-            return array_fill(0, 11, '');
+            $arguments = array_fill(0, 11, '');
+            $arguments[2] = $email;
+
+            return $arguments;
         }
 
         $addressLines = $magentoAddress->getStreet() ?: [];

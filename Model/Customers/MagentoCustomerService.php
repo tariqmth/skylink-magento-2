@@ -7,6 +7,7 @@ use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\AddressInterfaceFactory;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Api\Data\CustomerInterfaceFactory;
+use Magento\Framework\Registry;
 use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface;
@@ -23,18 +24,22 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
 
     private $magentoCustomerMapper;
 
+    private $registry;
+
     public function __construct(
         AccountManagementInterface $magentoAccountManagement,
         CustomerRepositoryInterface $magentoCustomerRepository,
         CustomerInterfaceFactory $magentoCustomerFactory,
         AddressInterfaceFactory $magentoAddressFactory,
-        MagentoCustomerMapperInterface $magentoCustomerMapper
+        MagentoCustomerMapperInterface $magentoCustomerMapper,
+        Registry $registry
     ) {
         $this->magentoAccountManagement = $magentoAccountManagement;
         $this->magentoCustomerRepository = $magentoCustomerRepository;
         $this->magentoCustomerFactory = $magentoCustomerFactory;
         $this->magentoAddressFactory = $magentoAddressFactory;
         $this->magentoCustomerMapper = $magentoCustomerMapper;
+        $this->registry = $registry;
     }
 
     /**
@@ -56,7 +61,9 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
 
         $this->magentoCustomerMapper->mapMagentoCustomer($magentoCustomer, $skyLinkCustomer);
 
-        $this->magentoAccountManagement->createAccount($magentoCustomer);
+        $this->lockSkyLinkToMagento(function () {
+            $this->magentoAccountManagement->createAccount($magentoCustomer);
+        });
 
         return $magentoCustomer;
     }
@@ -82,7 +89,9 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
 
         $this->magentoCustomerMapper->mapMagentoCustomer($magentoCustomer, $skyLinkCustomer);
 
-        $this->magentoCustomerRepository->save($magentoCustomer);
+        $this->lockSkyLinkToMagento(function () {
+            $this->magentoCustomerRepository->save($magentoCustomer);
+        });
     }
 
     private function createDefaultBillingAddress()
@@ -99,5 +108,12 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
         $magentoShippingAddress->setIsDefaultShipping(true);
 
         return $magentoShippingAddress;
+    }
+
+    private function lockSkyLinkToMagento(callable $callback)
+    {
+        $this->registry->register('skylink_to_magento_lock');
+        $callable($callback);
+        $this->registry->unregister('skylink_to_magento_lock');
     }
 }

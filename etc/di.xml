@@ -18,9 +18,12 @@
     <preference for="RetailExpress\SkyLink\Api\Customers\SkyLinkCustomerBuilderInterface" type="RetailExpress\SkyLink\Model\Customers\SkyLinkCustomerBuilder"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\SkyLinkCustomerServiceInterface" type="RetailExpress\SkyLink\Model\Customers\SkyLinkCustomerService"/>
 
-    <!-- Create a plugin to tap into customer account management -->
-    <type name="Magento\Customer\Api\AccountManagementInterface">
-        <plugin name="skylink_customer_account_management" type="RetailExpress\SkyLink\Plugin\Customers\AccountManagementPlugin" sortOrder="1" disabled="false"/>
+    <!-- Create a plugin to tap into customer persistence -->
+    <type name="Magento\Customer\Api\AddressRepositoryInterface">
+        <plugin name="skylink_address_repository" type="RetailExpress\SkyLink\Plugin\Customers\AddressRepositoryPlugin" sortOrder="10" disabled="false"/>
+    </type>
+    <type name="Magento\Customer\Api\CustomerRepositoryInterface">
+        <plugin name="skylink_customer_repository" type="RetailExpress\SkyLink\Plugin\Customers\CustomerRepositoryPlugin" sortOrder="10" disabled="false"/>
     </type>
 
     <!-- Catalogue attribute implementations -->

@@ -34,7 +34,7 @@ class SkyLinkCustomerBuilder implements SkyLinkCustomerBuilderInterface
         );
 
         $skyLinkBillingContact = $this->createBillingContact($magentoBillingAddress, $magentoCustomer->getEmail());
-        $skyLinkShippingContact = $this->createShippingContact($magentoBillingAddress);
+        $skyLinkShippingContact = $this->createShippingContact($magentoShippingAddress);
         $skyLinkNewsletterSubscription = new SkyLinkNewsletterSubscription(false);
 
         // If the Magento Customer has a SkyLink Customer ID attached to it
@@ -96,10 +96,10 @@ class SkyLinkCustomerBuilder implements SkyLinkCustomerBuilderInterface
             array_get($addressLines, 1, ''),
             (string) $magentoAddress->getCity(),
             $magentoAddress->getRegion() ? $magentoAddress->getRegion()->getRegionCode() : '',
-            $magentoAddress->getPostCode(),
-            $magentoAddress->getCountryId(),
-            $magentoAddress->getTelephone(),
-            $magentoAddress->getFax(),
+            (string) $magentoAddress->getPostCode(),
+            (string) $magentoAddress->getCountryId(),
+            (string) $magentoAddress->getTelephone(),
+            (string) $magentoAddress->getFax(),
         ];
     }
 }

@@ -112,8 +112,8 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
 
     private function lockSkyLinkToMagento(callable $callback)
     {
-        $this->registry->register('skylink_to_magento_lock');
+        $this->registry->register(self::REGISTRY_LOCK_KEY);
         $callable($callback);
-        $this->registry->unregister('skylink_to_magento_lock');
+        $this->registry->unregister(self::REGISTRY_LOCK_KEY);
     }
 }

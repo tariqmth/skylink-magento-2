@@ -7,6 +7,8 @@ use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
 
 interface MagentoCustomerServiceInterface
 {
+    const REGISTRY_LOCK_KEY = 'skylink_customer_to_magento_customer_lock';
+
     /**
      * Register a new Magento Customer from the given SkyLink Customer.
      *

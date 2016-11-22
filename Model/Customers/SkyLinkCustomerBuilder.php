@@ -96,7 +96,7 @@ class SkyLinkCustomerBuilder implements SkyLinkCustomerBuilderInterface
             array_get($addressLines, 1, ''),
             (string) $magentoAddress->getCity(),
             $magentoAddress->getRegion() ? $magentoAddress->getRegion()->getRegionCode() : '',
-            (string) $magentoAddress->getPostCode(),
+            (string) $magentoAddress->getPostcode(),
             (string) $magentoAddress->getCountryId(),
             (string) $magentoAddress->getTelephone(),
             (string) $magentoAddress->getFax(),

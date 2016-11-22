@@ -11,6 +11,9 @@
             <products>
                 <configurable_product_match_threshold>0.5</configurable_product_match_threshold>
             </products>
+            <orders>
+                <guest_customer_id>124001</guest_customer_id>
+            </orders>
         </skylink>
     </default>
 </config>

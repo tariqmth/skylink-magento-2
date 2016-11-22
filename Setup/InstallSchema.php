@@ -231,8 +231,8 @@ class InstallSchema implements InstallSchemaInterface
             )
             ->addColumn(
                 'skylink_order_id',
-                DdlTable::TYPE_INTEGER,
-                null,
+                DdlTable::TYPE_TEXT,
+                11,
                 ['unsigned' => true, 'nullable' => false]
             )
             ->addIndex(

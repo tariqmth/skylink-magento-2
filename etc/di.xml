@@ -58,6 +58,7 @@
     </type>
 
     <!-- Sales order implementations -->
+    <preference for="RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkGuestCustomerServiceInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\SkyLinkGuestCustomerService"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderBuilderInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\SkyLinkOrderBuilder"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderServiceInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\SkyLinkOrderService"/>
 

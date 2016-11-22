@@ -47,6 +47,11 @@
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoStockItemMapperInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoStockItemMapper"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\UrlKeyGeneratorInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\UrlKeyGenerator"/>
 
+    <!-- Create a plugin for managing SkyLink Order IDs within Magento Ordes (extnesion attributes) -->
+    <type name="Magento\Sales\Api\OrderRepositoryInterface">
+        <plugin name="skylink_order_repository" type="RetailExpress\SkyLink\Plugin\Sales\Orders\OrderRepositoryPlugin" sortOrder="10" disabled="false"/>
+    </type>
+
     <!-- Setup product syncers -->
     <type name="RetailExpress\SkyLink\Commands\Catalogue\Products\SyncSkyLinkProductToMagentoProductHandler">
         <arguments>

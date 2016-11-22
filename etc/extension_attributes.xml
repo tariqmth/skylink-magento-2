@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Api/etc/extension_attributes.xsd">
+
+    <!-- Add a SkyLink Order ID to Magento Orders -->
+    <extension_attributes for="Magento\Sales\Api\Data\OrderInterface">
+        <attribute code="skylink_order_id" type="RetailExpress\SkyLink\Api\Data\Sales\Orders\SkyLinkOrderIdInterface">
+
+            <!-- @todo Maybe use a more specific ACL ndoe? -->
+            <resources>
+                <resource ref="RetailExpress_SkyLink::skylink"/>
+            </resources>
+
+        </attribute>
+    </extension_attributes>
+
+</config>

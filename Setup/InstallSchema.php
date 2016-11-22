@@ -17,11 +17,12 @@ class InstallSchema implements InstallSchemaInterface
     {
         $installer = $setup;
 
-        $this->installEdsSchema($setup, $context);
-        $this->installCatalogueSchema($setup, $context);
+        $this->installEds($setup, $context);
+        $this->installAttributeMappings($setup, $context);
+        $this->installOrderAttributes($setup, $context);
     }
 
-    private function installEdsSchema(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    private function installEds(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $installer = $setup;
 
@@ -96,7 +97,7 @@ class InstallSchema implements InstallSchemaInterface
         $installer->getConnection()->createTable($table);
     }
 
-    private function installCatalogueSchema(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    private function installAttributeMappings(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $installer = $setup;
 
@@ -208,6 +209,46 @@ class InstallSchema implements InstallSchemaInterface
                 'magento_attribute_set_id',
                 'eav_attribute_set',
                 'attribute_set_id',
+                DdlTable::ACTION_CASCADE
+            );
+
+        $installer->getConnection()->createTable($table);
+    }
+
+    private function installOrderAttributes(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    {
+        $installer = $setup;
+
+        $ordersTable = 'retail_express_skylink_orders';
+        $table = $setup
+            ->getConnection()
+            ->newTable($installer->getTable($ordersTable))
+            ->addColumn(
+                'magento_order_id',
+                DdlTable::TYPE_INTEGER,
+                null,
+                ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true]
+            )
+            ->addColumn(
+                'skylink_order_id',
+                DdlTable::TYPE_INTEGER,
+                null,
+                ['unsigned' => true, 'nullable' => false]
+            )
+            ->addIndex(
+                $installer->getIdxName(
+                    $ordersTable,
+                    ['magento_order_id', 'skylink_order_id'],
+                    DbAdapterInterface::INDEX_TYPE_PRIMARY
+                ),
+                ['magento_order_id', 'skylink_order_id'],
+                DbAdapterInterface::INDEX_TYPE_PRIMARY
+            )
+            ->addForeignKey(
+                $installer->getFkName($ordersTable, 'magento_order_id', 'sales_order', 'entity_id'),
+                'magento_order_id',
+                'sales_order',
+                'entity_id',
                 DdlTable::ACTION_CASCADE
             );
 

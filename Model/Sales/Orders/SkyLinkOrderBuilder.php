@@ -4,18 +4,17 @@ namespace RetailExpress\SkyLink\Model\Sales\Orders;
 
 use DateTimeImmutable;
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Customer\Api\CustomerRepositoryInterface;
-use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Api\OrderAddressRepositoryInterface;
 use Magento\Sales\Model\Order as MagentoOrder;
-use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkGuestCustomerServiceInterface;
+use RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderAddressExtractorInterface;
+use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkCustomerIdServiceInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderBuilderInterface;
+use RetailExpress\SkyLink\Exceptions\Sales\Orders\MagentoOrderItemNotLinkedToSkyLinkProductException;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
 use RetailExpress\SkyLink\Sdk\Customers\BillingContact as SkyLinkBillingContact;
-use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Sdk\Customers\ShippingContact as SkyLinkShippingContact;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\Item as SkyLinkOrderItem;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\Order as SkyLinkOrder;
@@ -28,13 +27,9 @@ use ValueObjects\StringLiteral\StringLiteral;
  */
 class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
 {
-    private $baseMagentoCustomerRepository;
+    private $skyLinkCustomerIdService;
 
-    private $skyLinkGuestCustomerService;
-
-    private $magentoOrderAddressRepository;
-
-    private $searchCriteriaBuilder;
+    private $magentoOrderAddressExtractor;
 
     private $magentoProductRepository;
 
@@ -61,16 +56,12 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
      * @todo allow custom Magento State to SkyLink Status mappings to be injected.
      */
     public function __construct(
-        CustomerRepositoryInterface $baseMagentoCustomerRepository,
-        SkyLinkGuestCustomerServiceInterface $skyLinkGuestCustomerService,
-        OrderAddressRepositoryInterface $magentoOrderAddressRepository,
-        SearchCriteriaBuilder $searchCriteriaBuilder,
+        SkyLinkCustomerIdServiceInterface $skyLinkCustomerIdService,
+        MagentoOrderAddressExtractorInterface $magentoOrderAddressExtractor,
         ProductRepositoryInterface $magentoProductRepository
     ) {
-        $this->baseMagentoCustomerRepository = $baseMagentoCustomerRepository;
-        $this->skyLinkGuestCustomerService = $skyLinkGuestCustomerService;
-        $this->magentoOrderAddressRepository = $magentoOrderAddressRepository;
-        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->skyLinkCustomerIdService = $skyLinkCustomerIdService;
+        $this->magentoOrderAddressExtractor = $magentoOrderAddressExtractor;
         $this->magentoProductRepository = $magentoProductRepository;
     }
 
@@ -80,7 +71,7 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
     public function buildFromMagentoOrder(OrderInterface $magentoOrder)
     {
         $skyLinkOrder = SkyLinkOrder::forCustomerWithId(
-            $this->getSkyLinkCustomerId($magentoOrder),
+            $this->skyLinkCustomerIdService->determineSkyLinkCustomerId($magentoOrder),
             $this->getPlacedAt($magentoOrder),
             $this->getSkyLinkStatus($magentoOrder),
             $this->getSkyLinkBillingContact($magentoOrder),
@@ -103,32 +94,6 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
         return $skyLinkOrder;
     }
 
-    /**
-     * Gets a SkyLink Customer ID from the given Magento Order.
-     *
-     * @return SkyLinkCustomerId
-     */
-    private function getSkyLinkCustomerId(OrderInterface $magentoOrder)
-    {
-        // If the Magento Order is using a guest customer,
-        // we'll just grab the mapped guest customer ID.
-        if ($magentoOrder->getCustomerIsGuest()) {
-            return $this->skyLinkGuestCustomerService->getGuestCustomerId();
-        }
-
-        // Otherwise, we'll find the Magento Customer and grab their SkyLink Customer Id
-        $magentoCustomer = $this->baseMagentoCustomerRepository->getById($magentoOrder->getCustomerId());
-
-        /* @var \Magento\Framework\Api\AttributeInterface|null $skyLinkCustomerIdAttribute */
-        $skyLinkCustomerIdAttribute = $magentoCustomer->getCustomAttribute('skylink_customer_id');
-
-        if (null === $skyLinkCustomerIdAttribute) {
-            // @todo throw exeption - mapping should have occured
-        }
-
-        return new SkyLinkCustomerId($skyLinkCustomerIdAttribute->getValue());
-    }
-
     private function getPlacedAt(OrderInterface $magentoOrder)
     {
         return new DateTimeImmutable($magentoOrder->getCreatedAt()); // @todo Timezones?
@@ -146,7 +111,7 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
      */
     private function getSkyLinkBillingContact(OrderInterface $magentoOrder)
     {
-        $magentoBillingAddress = $magentoOrder->getBillingAddress();
+        $magentoBillingAddress = $this->magentoOrderAddressExtractor->extractBillingAddress($magentoOrder);
 
         return forward_static_call_array(
             [SkyLinkBillingContact::class, 'fromNative'],
@@ -159,38 +124,13 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
      */
     private function getSkyLinkShippingContact(OrderInterface $magentoOrder)
     {
-        $magentoShippingAddress = $this->getMagentoShippingAddress($magentoOrder);
+        $magentoShippingAddress = $this->magentoOrderAddressExtractor->extractShippingAddress($magentoOrder);
 
         $arguments = $this->getBillingContactArguments($magentoShippingAddress);
         unset($arguments[2]); // Email
         unset($arguments[11]); // Fax
 
         return forward_static_call_array([SkyLinkShippingContact::class, 'fromNative'], $arguments);
-    }
-
-    /**
-     * @todo extract to own class.
-     *
-     * @return OrderAddressInterface
-     */
-    private function getMagentoShippingAddress(OrderInterface $magentoOrder)
-    {
-        // Filter by the given order and address type
-        $this->searchCriteriaBuilder->addFilter(OrderAddressInterface::PARENT_ID, $magentoOrder->getEntityId());
-        $this->searchCriteriaBuilder->addFilter(OrderAddressInterface::ADDRESS_TYPE, 'shipping');
-
-        /* @var \Magento\Framework\Api\SearchCriteria $searchCriteria */
-        $searchCriteria = $this->searchCriteriaBuilder->create();
-
-        /* @var \\Magento\Sales\Api\Data\OrderAddressSearchResultInterface $searchResults */
-        $searchResults = $this->magentoOrderAddressRepository->getList($searchCriteria);
-
-        // There should always be only one billing contact
-        if (1 !== $searchResults->getTotalCount()) {
-            // @todo throw exception?
-        }
-
-        return current($searchResults->getItems());
     }
 
     /**
@@ -238,7 +178,7 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
         $skyLinkProductIdAttribute = $magentoProduct->getCustomAttribute('skylink_product_id');
 
         if (null === $skyLinkProductIdAttribute) {
-            // @todo we can't sync?!?!
+            throw MagentoOrderItemNotLinkedToSkyLinkProductException::withMagentoProductId($magentoProductId);
         }
 
         return SkyLinkOrderItem::fromNative(

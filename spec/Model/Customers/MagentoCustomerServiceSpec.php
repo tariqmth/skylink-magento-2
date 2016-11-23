@@ -68,7 +68,7 @@ class MagentoCustomerServiceSpec extends ObjectBehavior
     ) {
         $this->magentoCustomerFactory->create()->shouldBeCalled()->willReturn($magentoCustomer);
 
-        $skyLinkCustomerId = new SkyLinkCustomerId($skyLinkCustomerIdInteger = 124001);
+        $skyLinkCustomerId = new SkyLinkCustomerId($skyLinkCustomerIdInteger = 300000);
         $skyLinkCustomer->getId()->willReturn($skyLinkCustomerId);
         $magentoCustomer->setCustomAttribute('skylink_customer_id', $skyLinkCustomerIdInteger)->shouldBeCalled();
 

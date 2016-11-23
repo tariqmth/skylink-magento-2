@@ -34,7 +34,7 @@ class MagentoCustomerMapperSpec extends ObjectBehavior
         $magentoShippingAddress->isDefaultBilling()->willReturn(false);
 
         // Prepare a real instance of a SkyLink Customer (mocking gets rather messy)
-        $skyLinkCustomerId = new SkyLinkCustomerId($skyLinkCustomerIdInteger = 124001);
+        $skyLinkCustomerId = new SkyLinkCustomerId($skyLinkCustomerIdInteger = 300000);
 
         $billingContact = SkyLinkBillingContact::fromNative(
             $contactFirstName = 'Ben',

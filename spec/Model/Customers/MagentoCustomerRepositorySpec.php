@@ -31,8 +31,8 @@ class MagentoCustomerRepositorySpec extends ObjectBehavior
 
         $this->beConstructedWith($this->searchCriteriaBuilder, $this->baseMagentoCustomerRepository);
 
-        $this->skyLinkCustomerId = new SkyLinkCustomerId(124001);
-        $this->skyLinkCustomerIdString = '124001';
+        $this->skyLinkCustomerId = new SkyLinkCustomerId(300000);
+        $this->skyLinkCustomerIdString = '300000';
     }
 
     public function it_is_initializable()

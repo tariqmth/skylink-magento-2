@@ -59,9 +59,11 @@
 
     <!-- Sales order implementations -->
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderAddressExtractorInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\MagentoOrderAddressExtractor"/>
+    <preference for="RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkContactBuilderInterface" type="RetailExpress\SkyLink\Model\Customers\SkyLinkContactBuilder"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkCustomerIdServiceInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\SkyLinkCustomerIdService"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkGuestCustomerServiceInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\SkyLinkGuestCustomerService"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderBuilderInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\SkyLinkOrderBuilder"/>
+    <preference for="RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderItemBuilderInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\SkyLinkOrderItemBuilder"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderServiceInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\SkyLinkOrderService"/>
 
     <!-- Create a plugin for managing SkyLink Order IDs within Magento Ordes (extnesion attributes) -->

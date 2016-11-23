@@ -4,7 +4,6 @@ namespace spec\RetailExpress\SkyLink\Model\Customers;
 
 use Magento\Customer\Api\Data\AddressInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
-use Magento\Customer\Api\Data\RegionInterface;
 use Magento\Framework\Api\AttributeInterface;
 use PhpSpec\ObjectBehavior;
 use RetailExpress\SkyLink\Api\Customers\SkyLinkContactBuilderInterface as SkyLinkCustomerContactBuilderInterface;

@@ -7,7 +7,6 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\Api\AttributeInterface;
 use Magento\Sales\Api\Data\OrderItemInterface;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use RetailExpress\SkyLink\Exceptions\Sales\Orders\MagentoOrderItemNotLinkedToSkyLinkProductException;
 use RetailExpress\SkyLink\Exceptions\Sales\Orders\MagentoOrderItemNotProductBasedException;
 use RetailExpress\SkyLink\Model\Sales\Orders\SkyLinkOrderItemBuilder;

@@ -2,7 +2,6 @@
 
 namespace spec\RetailExpress\SkyLink\Model\Sales\Orders;
 
-use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderItemInterface;

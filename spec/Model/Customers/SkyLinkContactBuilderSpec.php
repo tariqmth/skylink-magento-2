@@ -6,7 +6,6 @@ use Magento\Customer\Api\Data\AddressInterface;
 use Magento\Customer\Api\Data\RegionInterface;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use RetailExpress\SkyLink\Model\Customers\SkyLinkContactBuilder;
 use RetailExpress\SkyLink\Sdk\Customers\BillingContact as SkyLinkBillingContact;
 use RetailExpress\SkyLink\Sdk\Customers\ShippingContact as SkyLinkShippingContact;
@@ -103,7 +102,7 @@ class SkyLinkContactBuilderSpec extends ObjectBehavior
         $magentoAddress->getCompany()->willReturn($this->valuesToAssert['companyName'] = 'Retail Express');
         $magentoAddress->getStreet()->willReturn([
             $this->valuesToAssert['addressLine1'] = 'Unit 5',
-            $this->valuesToAssert['addressLine2'] = '192 Ann Street'
+            $this->valuesToAssert['addressLine2'] = '192 Ann Street',
         ]);
         $magentoAddress->getCity()->willReturn($this->valuesToAssert['addressCity'] = 'Brisbane');
         $magentoAddress->getPostcode()->willReturn($this->valuesToAssert['addressPostcode'] = '4000');

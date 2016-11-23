@@ -3,8 +3,6 @@
 namespace RetailExpress\SkyLink\Model\Sales\Orders;
 
 use DateTimeImmutable;
-use Magento\Catalog\Api\ProductRepositoryInterface;
-use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Model\Order as MagentoOrder;
@@ -14,9 +12,6 @@ use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkCustomerIdServiceInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderBuilderInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderItemBuilderInterface;
 use RetailExpress\SkyLink\Exceptions\Sales\Orders\MagentoOrderStateNotMappedException;
-use RetailExpress\SkyLink\Sdk\Customers\BillingContact as SkyLinkBillingContact;
-use RetailExpress\SkyLink\Sdk\Customers\ShippingContact as SkyLinkShippingContact;
-use RetailExpress\SkyLink\Sdk\Sales\Orders\Item as SkyLinkOrderItem;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\Order as SkyLinkOrder;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\Status as SkyLinkStatus;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\ShippingCharge;

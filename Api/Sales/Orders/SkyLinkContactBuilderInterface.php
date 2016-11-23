@@ -2,7 +2,6 @@
 
 namespace RetailExpress\SkyLink\Api\Sales\Orders;
 
-use Magento\Customer\Api\Data\AddressInterface;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 
 interface SkyLinkContactBuilderInterface

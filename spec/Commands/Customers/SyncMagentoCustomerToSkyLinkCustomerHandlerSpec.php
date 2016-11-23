@@ -11,8 +11,6 @@ use RetailExpress\SkyLink\Api\Customers\SkyLinkCustomerServiceInterface;
 use RetailExpress\SkyLink\Commands\Customers\SyncMagentoCustomerToSkyLinkCustomerCommand;
 use RetailExpress\SkyLink\Commands\Customers\SyncMagentoCustomerToSkyLinkCustomerHandler;
 use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
-use RetailExpress\SkyLink\Sdk\Customers\CustomerRepository as SkylinkCustomerRepository;
-use RetailExpress\SkyLink\Sdk\Customers\CustomerRepositoryFactory as SkylinkCustomerRepositoryFactory;
 
 class SyncMagentoCustomerToSkyLinkCustomerHandlerSpec extends ObjectBehavior
 {

@@ -8,9 +8,7 @@ use RetailExpress\SkyLink\Api\Customers\SkyLinkCustomerBuilderInterface;
 use RetailExpress\SkyLink\Api\Customers\SkyLinkContactBuilderInterface as SkyLinkCustomerContactBuilderInterface;
 use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
-use RetailExpress\SkyLink\Sdk\Customers\BillingContact as SkyLinkBillingContact;
 use RetailExpress\SkyLink\Sdk\Customers\NewsletterSubscription as SkyLinkNewsletterSubscription;
-use RetailExpress\SkyLink\Sdk\Customers\ShippingContact as SkyLinkShippingContact;
 use ValueObjects\StringLiteral\StringLiteral;
 
 class SkyLinkCustomerBuilder implements SkyLinkCustomerBuilderInterface
@@ -71,5 +69,4 @@ class SkyLinkCustomerBuilder implements SkyLinkCustomerBuilderInterface
             $skyLinkNewsletterSubscription
         );
     }
-
 }

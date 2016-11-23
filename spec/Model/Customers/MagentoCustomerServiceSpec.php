@@ -8,10 +8,12 @@ use Magento\Customer\Api\Data\AddressInterface;
 use Magento\Customer\Api\Data\AddressInterfaceFactory;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Api\Data\CustomerInterfaceFactory;
+use Magento\Framework\Registry;
 use PhpSpec\ObjectBehavior;
 use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface;
+use RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface;
 use RetailExpress\SkyLink\Model\Customers\MagentoCustomerService;
 
 class MagentoCustomerServiceSpec extends ObjectBehavior
@@ -26,25 +28,30 @@ class MagentoCustomerServiceSpec extends ObjectBehavior
 
     private $magentoCustomerMapper;
 
+    private $registry;
+
     public function let(
         AccountManagementInterface $magentoAccountManagement,
         CustomerRepositoryInterface $magentoCustomerRepository,
         CustomerInterfaceFactory $magentoCustomerFactory,
         AddressInterfaceFactory $magentoAddressFactory,
-        MagentoCustomerMapperInterface $magentoCustomerMapper
+        MagentoCustomerMapperInterface $magentoCustomerMapper,
+        Registry $registry
     ) {
         $this->magentoAccountManagement = $magentoAccountManagement;
         $this->magentoCustomerRepository = $magentoCustomerRepository;
         $this->magentoCustomerFactory = $magentoCustomerFactory;
         $this->magentoAddressFactory = $magentoAddressFactory;
         $this->magentoCustomerMapper = $magentoCustomerMapper;
+        $this->registry = $registry;
 
         $this->beConstructedWith(
             $this->magentoAccountManagement,
             $this->magentoCustomerRepository,
             $this->magentoCustomerFactory,
             $this->magentoAddressFactory,
-            $this->magentoCustomerMapper
+            $this->magentoCustomerMapper,
+            $this->registry
         );
     }
 
@@ -77,6 +84,10 @@ class MagentoCustomerServiceSpec extends ObjectBehavior
 
         $this->magentoCustomerMapper->mapMagentoCustomer($magentoCustomer, $skyLinkCustomer)->shouldBeCalled();
 
+        $this->registry->register(MagentoCustomerServiceInterface::REGISTRY_LOCK_KEY, true)->shouldBeCalled();
+        $this->magentoAccountManagement->createAccount($magentoCustomer)->shouldBeCalled();
+        $this->registry->unregister(MagentoCustomerServiceInterface::REGISTRY_LOCK_KEY)->shouldBeCalled();
+
         $this->registerMagentoCustomer($skyLinkCustomer);
     }
 
@@ -89,7 +100,9 @@ class MagentoCustomerServiceSpec extends ObjectBehavior
 
         $this->magentoCustomerMapper->mapMagentoCustomer($magentoCustomer, $skyLinkCustomer)->shouldBeCalled();
 
+        $this->registry->register(MagentoCustomerServiceInterface::REGISTRY_LOCK_KEY, true)->shouldBeCalled();
         $this->magentoCustomerRepository->save($magentoCustomer)->shouldBeCalled();
+        $this->registry->unregister(MagentoCustomerServiceInterface::REGISTRY_LOCK_KEY)->shouldBeCalled();
 
         $this->updateMagentoCustomer($magentoCustomer, $skyLinkCustomer);
     }
@@ -116,7 +129,9 @@ class MagentoCustomerServiceSpec extends ObjectBehavior
 
         $this->magentoCustomerMapper->mapMagentoCustomer($magentoCustomer, $skyLinkCustomer)->shouldBeCalled();
 
+        $this->registry->register(MagentoCustomerServiceInterface::REGISTRY_LOCK_KEY, true)->shouldBeCalled();
         $this->magentoCustomerRepository->save($magentoCustomer)->shouldBeCalled();
+        $this->registry->unregister(MagentoCustomerServiceInterface::REGISTRY_LOCK_KEY)->shouldBeCalled();
 
         $this->updateMagentoCustomer($magentoCustomer, $skyLinkCustomer);
     }

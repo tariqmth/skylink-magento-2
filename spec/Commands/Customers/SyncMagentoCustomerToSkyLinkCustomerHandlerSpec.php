@@ -7,6 +7,7 @@ use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use PhpSpec\ObjectBehavior;
 use RetailExpress\SkyLink\Api\Customers\SkyLinkCustomerBuilderInterface;
+use RetailExpress\SkyLink\Api\Customers\SkyLinkCustomerServiceInterface;
 use RetailExpress\SkyLink\Commands\Customers\SyncMagentoCustomerToSkyLinkCustomerCommand;
 use RetailExpress\SkyLink\Commands\Customers\SyncMagentoCustomerToSkyLinkCustomerHandler;
 use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
@@ -17,11 +18,9 @@ class SyncMagentoCustomerToSkyLinkCustomerHandlerSpec extends ObjectBehavior
 {
     private $baseMagentoCustomerRepository;
 
-    private $skyLinkCustomerRepositoryFactory;
-
-    private $skyLinkCustomerRepository;
-
     private $skyLinkCustomerBuilder;
+
+    private $skyLinkCustomerService;
 
     private $magentoCustomerId;
 
@@ -29,22 +28,18 @@ class SyncMagentoCustomerToSkyLinkCustomerHandlerSpec extends ObjectBehavior
 
     public function let(
         CustomerRepositoryInterface $baseMagentoCustomerRepository,
-        SkylinkCustomerRepositoryFactory $skyLinkCustomerRepositoryFactory,
-        SkylinkCustomerRepository $skyLinkCustomerRepository,
-        SkyLinkCustomerBuilderInterface $skyLinkCustomerBuilder
+        SkyLinkCustomerBuilderInterface $skyLinkCustomerBuilder,
+        SkyLinkCustomerServiceInterface $skyLinkCustomerService
     ) {
         $this->baseMagentoCustomerRepository = $baseMagentoCustomerRepository;
-        $this->skyLinkCustomerRepositoryFactory = $skyLinkCustomerRepositoryFactory;
-        $this->skyLinkCustomerRepository = $skyLinkCustomerRepository;
         $this->skyLinkCustomerBuilder = $skyLinkCustomerBuilder;
+        $this->skyLinkCustomerService = $skyLinkCustomerService;
 
         $this->beConstructedWith(
             $this->baseMagentoCustomerRepository,
-            $this->skyLinkCustomerRepositoryFactory,
-            $this->skyLinkCustomerBuilder
+            $this->skyLinkCustomerBuilder,
+            $this->skyLinkCustomerService
         );
-
-        $this->skyLinkCustomerRepositoryFactory->create()->willReturn($this->skyLinkCustomerRepository);
 
         $this->magentoCustomerId = 1;
         $this->command = new SyncMagentoCustomerToSkyLinkCustomerCommand();
@@ -74,7 +69,7 @@ class SyncMagentoCustomerToSkyLinkCustomerHandlerSpec extends ObjectBehavior
 
         $this->skyLinkCustomerBuilder->buildFromMagentoCustomer($magentoCustomer)->willReturn($skyLinkCustomer);
 
-        $this->skyLinkCustomerRepository->add($skyLinkCustomer)->shouldBeCalled();
+        $this->skyLinkCustomerService->pushSkyLinkCustomer($skyLinkCustomer, $magentoCustomer)->shouldBeCalled();
 
         $this->handle($this->command);
     }

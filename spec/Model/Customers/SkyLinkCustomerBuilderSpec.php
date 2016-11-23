@@ -109,6 +109,7 @@ class SkyLinkCustomerBuilderSpec extends ObjectBehavior
         $magentoShippingAddress->getPostcode()->willReturn($contactAddressPostcode = '4000');
         $magentoShippingAddress->getCountryId()->willReturn($contactAddressCountry = 'AU');
         $magentoShippingAddress->getTelephone()->willReturn($contactAddressPhoneNumber = '(07) 1111 1111');
+        $magentoShippingAddress->getFax()->willReturn('Unused fax number');
 
         return compact(
             'billingContactEmail',

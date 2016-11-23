@@ -61,7 +61,7 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
 
         $this->magentoCustomerMapper->mapMagentoCustomer($magentoCustomer, $skyLinkCustomer);
 
-        $this->lockSkyLinkToMagento(function () {
+        $this->lockSkyLinkToMagento(function () use ($magentoCustomer) {
             $this->magentoAccountManagement->createAccount($magentoCustomer);
         });
 
@@ -89,7 +89,7 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
 
         $this->magentoCustomerMapper->mapMagentoCustomer($magentoCustomer, $skyLinkCustomer);
 
-        $this->lockSkyLinkToMagento(function () {
+        $this->lockSkyLinkToMagento(function () use ($magentoCustomer) {
             $this->magentoCustomerRepository->save($magentoCustomer);
         });
     }
@@ -112,8 +112,8 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
 
     private function lockSkyLinkToMagento(callable $callback)
     {
-        $this->registry->register(self::REGISTRY_LOCK_KEY);
-        $callable($callback);
+        $this->registry->register(self::REGISTRY_LOCK_KEY, true);
+        $callback();
         $this->registry->unregister(self::REGISTRY_LOCK_KEY);
     }
 }

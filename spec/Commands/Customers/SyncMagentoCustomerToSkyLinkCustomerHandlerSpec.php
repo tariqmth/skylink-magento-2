@@ -4,15 +4,12 @@ namespace spec\RetailExpress\SkyLink\Commands\Customers;
 
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
-use Magento\Framework\Api\AttributeInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use RetailExpress\SkyLink\Api\Customers\SkyLinkCustomerBuilderInterface;
 use RetailExpress\SkyLink\Commands\Customers\SyncMagentoCustomerToSkyLinkCustomerCommand;
 use RetailExpress\SkyLink\Commands\Customers\SyncMagentoCustomerToSkyLinkCustomerHandler;
 use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
-use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerRepository as SkylinkCustomerRepository;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerRepositoryFactory as SkylinkCustomerRepositoryFactory;
 

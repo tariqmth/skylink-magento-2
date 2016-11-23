@@ -3,7 +3,6 @@
 namespace RetailExpress\SkyLink\Api\Customers;
 
 use Magento\Customer\Api\Data\CustomerInterface;
-use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
 
 interface SkyLinkCustomerBuilderInterface
 {

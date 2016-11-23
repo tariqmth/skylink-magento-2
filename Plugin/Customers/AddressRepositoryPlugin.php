@@ -39,4 +39,3 @@ class AddressRepositoryPlugin
         return $magentoAddress;
     }
 }
-

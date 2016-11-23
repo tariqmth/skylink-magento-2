@@ -3,7 +3,6 @@
 namespace RetailExpress\SkyLink\Exceptions\Sales\Orders;
 
 use Magento\Framework\Exception\LocalizedException;
-use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
 
 class MagentoOrderItemNotLinkedToSkyLinkProductException extends LocalizedException
 {

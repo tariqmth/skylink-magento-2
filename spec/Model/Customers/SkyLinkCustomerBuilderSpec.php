@@ -7,9 +7,7 @@ use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Api\Data\RegionInterface;
 use Magento\Framework\Api\AttributeInterface;
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use RetailExpress\SkyLink\Model\Customers\SkyLinkCustomerBuilder;
-use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
 
 class SkyLinkCustomerBuilderSpec extends ObjectBehavior
 {

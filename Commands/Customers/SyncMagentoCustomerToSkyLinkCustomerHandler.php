@@ -5,7 +5,6 @@ namespace RetailExpress\SkyLink\Commands\Customers;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use RetailExpress\SkyLink\Api\Customers\SkyLinkCustomerBuilderInterface;
 use RetailExpress\SkyLink\Api\Customers\SkyLinkCustomerServiceInterface;
-use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 
 class SyncMagentoCustomerToSkyLinkCustomerHandler
 {

@@ -164,6 +164,7 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
 
             // Override the values of the existing option
             $existingOption->setValues($newOption->getValues());
+
             return $existingOption;
         }, $newOptions);
 

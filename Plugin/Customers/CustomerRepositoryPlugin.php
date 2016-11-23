@@ -32,4 +32,3 @@ class CustomerRepositoryPlugin
         return $magentoCustomer;
     }
 }
-

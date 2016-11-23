@@ -7,13 +7,11 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderItemInterface;
-use Magento\Sales\Api\OrderAddressRepositoryInterface;
 use Magento\Sales\Model\Order as MagentoOrder;
 use RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderAddressExtractorInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkCustomerIdServiceInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderBuilderInterface;
 use RetailExpress\SkyLink\Exceptions\Sales\Orders\MagentoOrderItemNotLinkedToSkyLinkProductException;
-use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
 use RetailExpress\SkyLink\Sdk\Customers\BillingContact as SkyLinkBillingContact;
 use RetailExpress\SkyLink\Sdk\Customers\ShippingContact as SkyLinkShippingContact;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\Item as SkyLinkOrderItem;
@@ -53,7 +51,7 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
     }
 
     /**
-     * @todo allow custom Magento State to SkyLink Status mappings to be injected.
+     * @todo allow custom Magento State to SkyLink Status mappings to be injected
      */
     public function __construct(
         SkyLinkCustomerIdServiceInterface $skyLinkCustomerIdService,
@@ -107,7 +105,7 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
     }
 
     /**
-     * @todo See RetailExpress\SkyLink\Model\Customers::createBillingContact() to reduce code duplication.
+     * @todo See RetailExpress\SkyLink\Model\Customers::createBillingContact() to reduce code duplication
      */
     private function getSkyLinkBillingContact(OrderInterface $magentoOrder)
     {
@@ -120,7 +118,7 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
     }
 
     /**
-     * @todo See RetailExpress\SkyLink\Model\Customers::createShippingContact() to reduce code duplication.
+     * @todo See RetailExpress\SkyLink\Model\Customers::createShippingContact() to reduce code duplication
      */
     private function getSkyLinkShippingContact(OrderInterface $magentoOrder)
     {
@@ -134,7 +132,7 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
     }
 
     /**
-     * @todo See RetailExpress\SkyLink\Model\Customers::getBillingContactArguments() to reduce code duplication.
+     * @todo See RetailExpress\SkyLink\Model\Customers::getBillingContactArguments() to reduce code duplication
      */
     private function getBillingContactArguments(OrderAddressInterface $magentoOrderAddress)
     {

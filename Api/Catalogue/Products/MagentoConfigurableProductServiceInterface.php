@@ -20,8 +20,8 @@ interface MagentoConfigurableProductServiceInterface
     /**
      * Update the given Magento Product with the information from the SkyLink Product.
      *
-     * @param SkyLinkMatrix    $skyLinkMatrix
-     * @param ProductInterface $magentoConfigurableProduct
+     * @param SkyLinkMatrix      $skyLinkMatrix
+     * @param ProductInterface   $magentoConfigurableProduct
      * @param ProductInterface[] $magentoSimpleProducts
      */
     public function updateMagentoProduct(

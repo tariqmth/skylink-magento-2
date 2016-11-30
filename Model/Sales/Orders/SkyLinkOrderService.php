@@ -4,7 +4,6 @@ namespace RetailExpress\SkyLink\Model\Sales\Orders;
 
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
-use Magento\Sales\Api\Data\OrderExtensionInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderServiceInterface;
@@ -13,11 +12,11 @@ use RetailExpress\SkyLink\Sdk\Sales\Orders\OrderRepositoryFactory;
 
 class SkyLinkOrderService implements SkyLinkOrderServiceInterface
 {
+    use OrderExtensionAttributes;
+
     private $skyLinkOrderRepositoryFactory;
 
     private $config;
-
-    private $orderExtensionFactory;
 
     public function __construct(
         OrderRepositoryFactory $skyLinkOrderRepositoryFactory,
@@ -48,22 +47,9 @@ class SkyLinkOrderService implements SkyLinkOrderServiceInterface
         // Now we'll grab the extension attributes instance and set the SkyLink Order ID
         $extendedAttributes = $this->getOrderExtensionAttributes($magentoOrder);
         $extendedAttributes->setSkylinkOrderId($skyLinkOrder->getId()); // @todo check for existing SkyLink Order ID?
+        var_dump($skyLinkOrder->getId());
 
         // Save the Magento Order
         $this->baseMagentoOrderRepository->save($magentoOrder);
-    }
-
-    private function getOrderExtensionAttributes(OrderInterface $magentoOrder)
-    {
-        $extendedAttributes = $magentoOrder->getExtensionAttributes();
-
-        if (null === $extendedAttributes) {
-
-            /* @var OrderExtensionInterface $extendedAttributes */
-            $extendedAttributes = $this->orderExtensionFactory->create();
-            $magentoOrder->setExtensionAttributes($extendedAttributes);
-        }
-
-        return $extendedAttributes;
     }
 }

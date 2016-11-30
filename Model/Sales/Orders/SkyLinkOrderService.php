@@ -47,7 +47,6 @@ class SkyLinkOrderService implements SkyLinkOrderServiceInterface
         // Now we'll grab the extension attributes instance and set the SkyLink Order ID
         $extendedAttributes = $this->getOrderExtensionAttributes($magentoOrder);
         $extendedAttributes->setSkylinkOrderId($skyLinkOrder->getId()); // @todo check for existing SkyLink Order ID?
-        var_dump($skyLinkOrder->getId());
 
         // Save the Magento Order
         $this->baseMagentoOrderRepository->save($magentoOrder);

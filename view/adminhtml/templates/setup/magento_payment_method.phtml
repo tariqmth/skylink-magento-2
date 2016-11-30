@@ -1,0 +1,56 @@
+<?php /* @var \RetailExpress\SkyLink\Block\Adminhtml\Setup\MagentoPaymentMethod $block */ ?>
+<?php
+
+/* @var \Magento\Payment\Model\MethodInterface[] $magentoPaymentMethods */
+$magentoPaymentMethods = $block->getMagentoPaymentMethods();
+
+/* @var \RetailExpress\SkyLink\Sdk\Sales\Payments\PaymentMethod[] $skyLinkPaymentMethods */
+$skyLinkPaymentMethods = $block->getSkyLinkPaymentMethods();
+?>
+<h3><?=__('Map Magento Payment Methods to SkyLink Payment Methods')?></h3>
+<form action="<?php /* @escapeNotVerified */ echo $block->getSaveUrl() ?>" method="post">
+    <input name="form_key" type="hidden" value="<?php /* @escapeNotVerified */ echo $block->getFormKey() ?>" />
+    <table class="data-grid">
+        <thead>
+            <tr>
+                <th class="data-grid-th"><?=__('Magento Payment Method')?></th>
+                <th class="data-grid-th"><?=__('SkyLink Payment Method')?></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($magentoPaymentMethods as $magentoPaymentMethod): ?>
+                <?php
+
+                /* @var \RetailExpress\SkyLink\Sdk\Sales\Payments\PaymentMethod|null $chosenPaymentMethod */
+                $chosenPaymentMethod = $block->getSkyLinkPaymentMethodForMagentoPaymentMethod($magentoPaymentMethod);
+                ?>
+                <tr>
+                    <td>
+                        <?=$block->escapeHtml($magentoPaymentMethod->getTitle())?>
+                    </td>
+                    <td>
+                        <select name="skylink_payment_method_mappings[<?php /* @escapeNotVerified */ echo $magentoPaymentMethod->getCode() ?>]">
+                            <?php foreach ($skyLinkPaymentMethods as $skyLinkPaymentMethod): ?>
+                                <option
+                                    value="<?php /* @escapeNotVerified */ echo $skyLinkPaymentMethod->getId() ?>"
+                                    <?php if (null !== $chosenPaymentMethod && $chosenPaymentMethod->sameValueAs($skyLinkPaymentMethod)): ?>
+                                        selected
+                                    <?php endif ?>
+                                >
+                                    <?=$block->escapeHtml($skyLinkPaymentMethod->getName())?>
+                                </option>
+                            <?php endforeach ?>
+                        </select>
+                    </td>
+                </tr>
+            <?php endforeach ?>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">
+                    <button type="submit"><?=__('Save Mappings')?></button>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</form>

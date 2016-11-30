@@ -1,7 +1,7 @@
-<?php /** @var \RetailExpress\SkyLink\Block\Adminhtml\Setup\MagentoAttributeSet $block */ ?>
+<?php /* @var \RetailExpress\SkyLink\Block\Adminhtml\Setup\MagentoAttributeSet $block */ ?>
 <?php
 
-/** @var \Magento\Eav\Api\Data\AttributeSetInterface[] $magentoAttributeSets */
+/* @var \Magento\Eav\Api\Data\AttributeSetInterface[] $magentoAttributeSets */
 $magentoAttributeSets = $block->getMagentoAttributeSets();
 ?>
 <h3><?=__('Map SkyLink Product Types to Magento Attribute Sets')?></h3>
@@ -15,10 +15,10 @@ $magentoAttributeSets = $block->getMagentoAttributeSets();
             </tr>
         </thead>
         <tbody>
-            <?php /** @var \RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption $skyLinkProductType */ ?>
+            <?php /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption $skyLinkProductType */ ?>
             <?php foreach ($block->getSkyLinkProductTypes() as $skyLinkProductType): ?>
                 <?php
-                /** @var \Magento\Eav\Api\Data\AttributeSetInterface|null $chosenAttributeSet */
+                /* @var \Magento\Eav\Api\Data\AttributeSetInterface|null $chosenAttributeSet */
                 $chosenAttributeSet = $block->getAttributeSetForProductType($skyLinkProductType);
                 ?>
                 <tr>
@@ -26,9 +26,9 @@ $magentoAttributeSets = $block->getMagentoAttributeSets();
                         <?=$block->escapeHtml($skyLinkProductType->getLabel())?>
                     </td>
                     <td>
-                        <?php /** @var \Magento\Eav\Api\Data\AttributeSetInterface $magentoAttributeSet */ ?>
+                        <?php /* @var \Magento\Eav\Api\Data\AttributeSetInterface $magentoAttributeSet */ ?>
                         <select name="magento_attribute_set_mappings[<?php /* @escapeNotVerified */ echo $skyLinkProductType->getId() ?>]">
-                            <?php /** @var \Magento\Eav\Api\Data\AttributeSetInterface $magentoAttributeSet */ ?>
+                            <?php /* @var \Magento\Eav\Api\Data\AttributeSetInterface $magentoAttributeSet */ ?>
                             <?php foreach ($magentoAttributeSets as $magentoAttributeSet): ?>
                                 <option
                                     value="<?php /* @escapeNotVerified */ echo $magentoAttributeSet->getAttributeSetId() ?>"
@@ -53,3 +53,5 @@ $magentoAttributeSets = $block->getMagentoAttributeSets();
         </tfoot>
     </table>
 </form>
+
+<br><br><br>

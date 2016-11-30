@@ -16,6 +16,11 @@
         <observer name="eds" instance="RetailExpress\SkyLink\Observer\Catalogue\Products\WhenSkyLinkProductWasSyncedToMagentoProduct"/>
     </event>
 
+    <!-- When a SkyLink Payment was created from a Magento Invoice -->
+    <event name="retail_express_skylink_skylink_payment_was_created_from_magento_invoice">
+        <observer name="skylink_extension_attributes" instance="RetailExpress\SkyLink\Observer\Sales\Invoices\WhenSkyLinkPaymentWasCreatedFromMagentoInvoice"/>
+    </event>
+
     <!-- When an EDS entity was processed -->
     <event name="retail_express_skylink_eds_entity_was_processed">
         <observer name="eds" instance="RetailExpress\SkyLink\Observer\Eds\WhenEdsEntityWasProcessed"/>

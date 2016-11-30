@@ -1,10 +1,10 @@
-<?php /** @var \RetailExpress\SkyLink\Block\Adminhtml\Setup\MagentoAttribute $block */ ?>
+<?php /* @var \RetailExpress\SkyLink\Block\Adminhtml\Setup\MagentoAttribute $block */ ?>
 <?php
 
-/** @var \RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode[] $skyLinkAttributeCodes */
+/* @var \RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode[] $skyLinkAttributeCodes */
 $skyLinkAttributeCodes = $block->getSkyLinkAttributeCodes();
 
-/** @var \Magento\Catalog\Api\Data\ProductAttributeInterface[] $magentoAttributes */
+/* @var \Magento\Catalog\Api\Data\ProductAttributeInterface[] $magentoAttributes */
 $magentoAttributes = $block->getMagentoAttributes();
 ?>
 <h3><?=__('Map SkyLink Attributes to Magento Attributes')?></h3>
@@ -18,11 +18,11 @@ $magentoAttributes = $block->getMagentoAttributes();
             </tr>
         </thead>
         <tbody>
-            <?php /** @var \Magento\Catalog\Api\Data\ProductAttributeInterface $skyLinkAttributeCode */ ?>
+            <?php /* @var \Magento\Catalog\Api\Data\ProductAttributeInterface $skyLinkAttributeCode */ ?>
             <?php foreach ($skyLinkAttributeCodes as $skyLinkAttributeCode): ?>
                 <?php
 
-                /** @var \Magento\Eav\Api\Data\AttributeInterface|null $selectedAttribute */
+                /* @var \Magento\Eav\Api\Data\AttributeInterface|null $selectedAttribute */
                 $selectedAttribute = $block->getMagentoAttributeForSkyLinkAttributeCode($skyLinkAttributeCode);
                 ?>
                 <tr>
@@ -31,7 +31,7 @@ $magentoAttributes = $block->getMagentoAttributes();
                     </td>
                     <td>
                         <select name="magento_attribute_mappings[<?php /* @escapeNotVerified */ echo $skyLinkAttributeCode->getValue() ?>]">
-                            <?php /** @var \Magento\Catalog\Api\Data\ProductAttributeInterface $magentoAttribute */ ?>
+                            <?php /* @var \Magento\Catalog\Api\Data\ProductAttributeInterface $magentoAttribute */ ?>
                             <?php foreach ($magentoAttributes as $magentoAttribute): ?>
                                 <option
                                     value="<?php /* @escapeNotVerified */ echo $magentoAttribute->getAttributeCode() ?>"
@@ -57,4 +57,3 @@ $magentoAttributes = $block->getMagentoAttributes();
 </form>
 
 <br><br><br>
-

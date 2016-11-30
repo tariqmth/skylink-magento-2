@@ -19,6 +19,7 @@ class InstallSchema implements InstallSchemaInterface
 
         $this->installEds($setup, $context);
         $this->installAttributeMappings($setup, $context);
+        $this->installPaymentMethodMappings($setup, $context);
         $this->installOrderAttributes($setup, $context);
         $this->installInvoiceAttributes($setup, $context);
     }
@@ -216,6 +217,40 @@ class InstallSchema implements InstallSchemaInterface
         $installer->getConnection()->createTable($table);
     }
 
+    private function installPaymentMethodMappings(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    {
+        $installer = $setup;
+
+        $paymentMethodsTable = 'retail_express_skylink_payment_methods';
+
+        $table = $setup
+            ->getConnection()
+            ->newTable($installer->getTable($paymentMethodsTable))
+            ->addColumn(
+                'magento_payment_method_code',
+                DdlTable::TYPE_TEXT,
+                255,
+                ['nullable' => false]
+            )
+            ->addColumn(
+                'skylink_payment_method_id',
+                DdlTable::TYPE_INTEGER,
+                null,
+                ['unsigned' => true, 'nullable' => false]
+            )
+            ->addIndex(
+                $installer->getIdxName(
+                    $paymentMethodsTable,
+                    ['magento_payment_method_code', 'skylink_payment_method_id'],
+                    DbAdapterInterface::INDEX_TYPE_PRIMARY
+                ),
+                ['magento_payment_method_code', 'skylink_payment_method_id'],
+                DbAdapterInterface::INDEX_TYPE_PRIMARY
+            );
+
+        $installer->getConnection()->createTable($table);
+    }
+
     private function installOrderAttributes(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $installer = $setup;
@@ -271,7 +306,7 @@ class InstallSchema implements InstallSchemaInterface
                 ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true]
             )
             ->addColumn(
-                'skylink_payment_Id',
+                'skylink_payment_id',
                 DdlTable::TYPE_TEXT,
                 32,
                 ['unsigned' => true, 'nullable' => false]
@@ -279,10 +314,10 @@ class InstallSchema implements InstallSchemaInterface
             ->addIndex(
                 $installer->getIdxName(
                     $invoicesPaymentsTable,
-                    ['magento_invoice_id', 'skylink_payment_Id'],
+                    ['magento_invoice_id', 'skylink_payment_id'],
                     DbAdapterInterface::INDEX_TYPE_PRIMARY
                 ),
-                ['magento_invoice_id', 'skylink_payment_Id'],
+                ['magento_invoice_id', 'skylink_payment_id'],
                 DbAdapterInterface::INDEX_TYPE_PRIMARY
             )
             ->addForeignKey(

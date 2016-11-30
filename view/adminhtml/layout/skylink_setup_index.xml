@@ -4,6 +4,7 @@
         <referenceContainer name="content">
             <block class="RetailExpress\SkyLink\Block\Adminhtml\Setup\MagentoAttribute" name="retail_express_skylink_setup_magento_attribute" template="setup/magento_attribute.phtml"/>
             <block class="RetailExpress\SkyLink\Block\Adminhtml\Setup\MagentoAttributeSet" name="retail_express_skylink_setup_magento_attribute_set" template="setup/magento_attribute_set.phtml"/>
+            <block class="RetailExpress\SkyLink\Block\Adminhtml\Setup\MagentoPaymentMethod" name="retail_express_skylink_setup_magento_payment_method" template="setup/magento_payment_method.phtml"/>
         </referenceContainer>
     </body>
 </page>

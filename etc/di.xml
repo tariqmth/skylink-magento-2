@@ -76,5 +76,14 @@
     <type name="Magento\Sales\Api\InvoiceRepositoryInterface">
         <plugin name="skylink_invoice_repository" type="RetailExpress\SkyLink\Plugin\Sales\Invoices\InvoiceRepositoryPlugin" sortOrder="10" disabled="false"/>
     </type>
+    <!-- See plugin for docs as to why this is required. @todo Remove with docs -->
+    <type name="Magento\Sales\Model\Order\Invoice">
+        <plugin name="skylink_invoice" type="RetailExpress\SkyLink\Plugin\Sales\Invoices\InvoicePlugin" sortOrder="10" disabled="false"/>
+    </type>
+
+    <preference for="RetailExpress\SkyLink\Api\Sales\Payments\MagentoPaymentMethodRepositoryInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\MagentoPaymentMethodRepository"/>
+    <preference for="RetailExpress\SkyLink\Api\Sales\Payments\SkyLinkPaymentBuilderInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\SkyLinkPaymentBuilder"/>
+    <preference for="RetailExpress\SkyLink\Api\Sales\Payments\SkyLinkPaymentMethodRepositoryInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\SkyLinkPaymentMethodRepository"/>
+    <preference for="RetailExpress\SkyLink\Api\Sales\Payments\SkyLinkPaymentMethodServiceInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\SkyLinkPaymentMethodService"/>
 
 </config>

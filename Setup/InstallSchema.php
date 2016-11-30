@@ -20,6 +20,7 @@ class InstallSchema implements InstallSchemaInterface
         $this->installEds($setup, $context);
         $this->installAttributeMappings($setup, $context);
         $this->installOrderAttributes($setup, $context);
+        $this->installInvoiceAttributes($setup, $context);
     }
 
     private function installEds(SchemaSetupInterface $setup, ModuleContextInterface $context)
@@ -248,6 +249,46 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getFkName($ordersTable, 'magento_order_id', 'sales_order', 'entity_id'),
                 'magento_order_id',
                 'sales_order',
+                'entity_id',
+                DdlTable::ACTION_CASCADE
+            );
+
+        $installer->getConnection()->createTable($table);
+    }
+
+    private function installInvoiceAttributes(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    {
+        $installer = $setup;
+
+        $invoicesPaymentsTable = 'retail_express_skylink_invoices_payments';
+        $table = $setup
+            ->getConnection()
+            ->newTable($installer->getTable($invoicesPaymentsTable))
+            ->addColumn(
+                'magento_invoice_id',
+                DdlTable::TYPE_INTEGER,
+                null,
+                ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true]
+            )
+            ->addColumn(
+                'skylink_payment_Id',
+                DdlTable::TYPE_TEXT,
+                32,
+                ['unsigned' => true, 'nullable' => false]
+            )
+            ->addIndex(
+                $installer->getIdxName(
+                    $invoicesPaymentsTable,
+                    ['magento_invoice_id', 'skylink_payment_Id'],
+                    DbAdapterInterface::INDEX_TYPE_PRIMARY
+                ),
+                ['magento_invoice_id', 'skylink_payment_Id'],
+                DbAdapterInterface::INDEX_TYPE_PRIMARY
+            )
+            ->addForeignKey(
+                $installer->getFkName($invoicesPaymentsTable, 'magento_invoice_id', 'sales_invoice', 'entity_id'),
+                'magento_invoice_id',
+                'sales_invoice',
                 'entity_id',
                 DdlTable::ACTION_CASCADE
             );

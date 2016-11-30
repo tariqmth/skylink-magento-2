@@ -30,13 +30,24 @@ class InvoicePlugin
         $this->commandBus = $commandBus;
     }
 
-    public function afterRegister(InvoiceInterface $subject, InvoiceInterface $invoice)
+    /**
+     * Around an invoice being saved
+     */
+    public function aroundSave(InvoiceInterface $magentoInvoice, callable $proceed)
     {
-        // Send a payment for the given invoice to Retail Express
-        $command = new CreateSkyLinkPaymentFromMagentoInvoiceCommand();
-        $command->magentoInvoiceId = $invoice->getEntityId();
-        $this->commandBus->handle($command);
+        // Determine if we're new
+        $isNew = !$magentoInvoice->getEntityId();
 
-        return $invoice;
+        // Call the original save method
+        $magentoInvoice = $proceed();
+
+        // Send a payment for the given invoice to Retail Express for new invoices
+        if (true === $isNew) {
+            $command = new CreateSkyLinkPaymentFromMagentoInvoiceCommand();
+            $command->magentoInvoiceId = $magentoInvoice->getEntityId();
+            $this->commandBus->handle($command);
+        }
+
+        return $magentoInvoice;
     }
 }

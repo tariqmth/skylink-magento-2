@@ -42,8 +42,9 @@
     "magento/module-catalog": "^100.0",
     "magento/module-configurable-product": "^100.0",
     "retail-express/command-bus-magento-2": "^1.0",
+    "retail-express/skylink-eds": "^1.0",
     "retail-express/skylink-sdk": "^1.0",
-    "retail-express/skylink-eds": "^1.0"
+    "retail-express/skylink-sdk-v2-order-shim": "^1.0"
   },
   "extra": {
     "branch-alias": {

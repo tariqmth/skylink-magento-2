@@ -22,6 +22,7 @@ class InstallSchema implements InstallSchemaInterface
         $this->installPaymentMethodMappings($setup, $context);
         $this->installOrderAttributes($setup, $context);
         $this->installInvoiceAttributes($setup, $context);
+        $this->installShipmentAttributes($setup, $context);
     }
 
     private function installEds(SchemaSetupInterface $setup, ModuleContextInterface $context)
@@ -324,6 +325,46 @@ class InstallSchema implements InstallSchemaInterface
                 $installer->getFkName($invoicesPaymentsTable, 'magento_invoice_id', 'sales_invoice', 'entity_id'),
                 'magento_invoice_id',
                 'sales_invoice',
+                'entity_id',
+                DdlTable::ACTION_CASCADE
+            );
+
+        $installer->getConnection()->createTable($table);
+    }
+
+    private function installShipmentAttributes(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    {
+        $installer = $setup;
+
+        $shipmentsFulfillmentBatchesTable = 'retail_express_skylink_shipments_fufillment_batches';
+        $table = $setup
+            ->getConnection()
+            ->newTable($installer->getTable($shipmentsFulfillmentBatchesTable))
+            ->addColumn(
+                'magento_shipment_id',
+                DdlTable::TYPE_INTEGER,
+                null,
+                ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true]
+            )
+            ->addColumn(
+                'skylink_fulfillment_batch_id',
+                DdlTable::TYPE_TEXT,
+                32,
+                ['unsigned' => true, 'nullable' => false]
+            )
+            ->addIndex(
+                $installer->getIdxName(
+                    $shipmentsFulfillmentBatchesTable,
+                    ['magento_shipment_id', 'skylink_fulfillmen_batch_id'],
+                    DbAdapterInterface::INDEX_TYPE_PRIMARY
+                ),
+                ['magento_shipment_id', 'skylink_fulfillmen_batch_id'],
+                DbAdapterInterface::INDEX_TYPE_PRIMARY
+            )
+            ->addForeignKey(
+                $installer->getFkName($shipmentsFulfillmentBatchesTable, 'magento_shipment_id', 'sales_shipment', 'entity_id'),
+                'magento_shipment_id',
+                'sales_shipment',
                 'entity_id',
                 DdlTable::ACTION_CASCADE
             );

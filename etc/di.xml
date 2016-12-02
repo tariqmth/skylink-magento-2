@@ -81,6 +81,11 @@
         <plugin name="skylink_invoice" type="RetailExpress\SkyLink\Plugin\Sales\Invoices\InvoicePlugin" sortOrder="10" disabled="false"/>
     </type>
 
+    <!-- Create a plugin for managing SkyLink Fulfillment Batch IDs within Magento Shipments (extension attribute) -->
+    <type name="Magento\Sales\Api\ShipmentRepositoryInterface">
+        <plugin name="skylink_shipment_repository" type="RetailExpress\SkyLink\Plugin\Sales\Shipments\ShipmentRepositoryPlugin" sortOrder="10" disabled="false"/>
+    </type>
+
     <preference for="RetailExpress\SkyLink\Api\Sales\Payments\MagentoPaymentMethodRepositoryInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\MagentoPaymentMethodRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Payments\SkyLinkPaymentBuilderInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\SkyLinkPaymentBuilder"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Payments\SkyLinkPaymentMethodRepositoryInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\SkyLinkPaymentMethodRepository"/>

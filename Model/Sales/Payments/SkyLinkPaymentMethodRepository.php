@@ -44,7 +44,7 @@ class SkyLinkPaymentMethodRepository implements SkyLinkPaymentMethodRepositoryIn
     {
         return array_first(
             $this->getList(),
-            function (SkyLinkPaymentMethod $paymentMethod) use ($paymentMethodId) {
+            function ($key, SkyLinkPaymentMethod $paymentMethod) use ($paymentMethodId) {
                 return true === $paymentMethod->getId()->sameValueAs($paymentMethodId);
             },
             function () use ($paymentMethodId) {

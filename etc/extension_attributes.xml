@@ -21,4 +21,13 @@
         </attribute>
     </extension_attributes>
 
+    <!-- Add a SkyLink Fulfillment Batch ID to Magento Shipments -->
+    <extension_attributes for="Magento\Sales\Api\Data\ShipmentInterface">
+        <attribute code="skylink_fulfillment_batch_id" type="RetailExpress\SkyLink\Api\Data\Sales\Shipments\SkyLinkFulfillmentBatchIdInterface">
+            <resources>
+                <resource ref="RetailExpress_SkyLink::skylink"/>
+            </resources>
+        </attribute>
+    </extension_attributes>
+
 </config>

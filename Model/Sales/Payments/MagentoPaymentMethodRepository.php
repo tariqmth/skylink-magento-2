@@ -30,7 +30,7 @@ class MagentoPaymentMethodRepository implements MagentoPaymentMethodRepositoryIn
     public function get($magentoPaymentMethodCode)
     {
         return array_first(
-            $this->getList(), function (MethodInterface $method) use ($magentoPaymentMethodCode) {
+            $this->getList(), function ($key, MethodInterface $method) use ($magentoPaymentMethodCode) {
                 return $method->getCode() === $magentoPaymentMethodCode;
             },
             function () use ($magentoPaymentMethodCode) {

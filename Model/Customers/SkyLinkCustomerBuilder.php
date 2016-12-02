@@ -27,14 +27,14 @@ class SkyLinkCustomerBuilder implements SkyLinkCustomerBuilderInterface
     {
         $magentoBillingAddress = array_first(
             $magentoCustomer->getAddresses(),
-            function (AddressInterface $address) {
+            function ($key, AddressInterface $address) {
                 return $address->isDefaultBilling();
             }
         );
 
         $magentoShippingAddress = array_first(
             $magentoCustomer->getAddresses(),
-            function (AddressInterface $address) use ($magentoCustomer) {
+            function ($key, AddressInterface $address) use ($magentoCustomer) {
                 return $address->isDefaultShipping();
             }
         );

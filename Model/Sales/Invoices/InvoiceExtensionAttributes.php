@@ -7,7 +7,7 @@ use Magento\Sales\Api\Data\InvoiceInterface;
 trait InvoiceExtensionAttributes
 {
     /**
-     * Invoice Extnesion Factory
+     * Invoice Extnesion Factory.
      *
      * @var \Magento\Sales\Api\Data\InvoiceExtensionFactory
      */

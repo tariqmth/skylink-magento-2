@@ -22,8 +22,8 @@ class InvoicePlugin
     /**
      * Create a new Invoice Plugin.
      *
-     * @param ResourceConnection    $resourceConnection
-     * @param CommandBusInterface   $commandBus
+     * @param ResourceConnection  $resourceConnection
+     * @param CommandBusInterface $commandBus
      */
     public function __construct(CommandBusInterface $commandBus)
     {
@@ -31,7 +31,7 @@ class InvoicePlugin
     }
 
     /**
-     * Around an invoice being saved
+     * Around an invoice being saved.
      */
     public function aroundSave(InvoiceInterface $magentoInvoice, callable $proceed)
     {

@@ -101,7 +101,7 @@ class OrderRepositoryPlugin
 
     private function mappingExists($magentoOrderId, SkyLinkOrderId $skyLinkOrderId)
     {
-         return (bool) $this->connection->fetchOne(
+        return (bool) $this->connection->fetchOne(
             $this->connection
                 ->select()
                 ->from($this->getOrdersTable(), 'count(skylink_order_id)')

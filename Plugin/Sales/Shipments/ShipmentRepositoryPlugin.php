@@ -7,18 +7,13 @@ use Magento\Sales\Api\Data\ShipmentExtensionFactory;
 use Magento\Sales\Api\Data\ShipmentInterface;
 use Magento\Sales\Api\ShipmentRepositoryInterface;
 use RetailExpress\SkyLink\Model\Sales\Shipments\ShipmentExtensionAttributes;
+use RetailExpress\SkyLink\Model\Sales\Shipments\ShipmentFulfillmentBatchHelper;
 use RetailExpress\SkyLink\Sdk\Sales\Fulfillments\BatchId as SkyLinkFulfillmentBatchId;
 
 class ShipmentRepositoryPlugin
 {
     use ShipmentExtensionAttributes;
-
-    /**
-     * Database connection.
-     *
-     * @var \Magento\Framework\DB\Adapter\AdapterInterface
-     */
-    private $connection;
+    use ShipmentFulfillmentBatchHelper;
 
     public function __construct(
         ResourceConnection $resourceConnection,
@@ -50,8 +45,16 @@ class ShipmentRepositoryPlugin
         return $magentoShipment;
     }
 
-    public function afterSave(ShipmentRepositoryInterface $subject, ShipmentInterface $magentoShipment, SkyLinkFulfillmentBatchId $skyLinkFulfillmentBatchId)
+    public function afterSave(ShipmentRepositoryInterface $subject, ShipmentInterface $magentoShipment)
     {
+        /* @var \Magento\Sales\Api\Data\ShipmentExtensionInterface $extendedAttributes */
+        $extendedAttributes = $this->getShipmentExtensionAttributes($magentoShipment);
+        $skyLinkFulfillmentBatchId = $extendedAttributes->getSkylinkFulfillmentBatchId();
+
+        if (null === $skyLinkFulfillmentBatchId) {
+            return $magentoShipment;
+        }
+
         $magentoShipmentId = $magentoShipment->getEntityId();
 
         // Update
@@ -86,10 +89,5 @@ class ShipmentRepositoryPlugin
                 ->from($this->getShipmentsFulfillmentBatchesTable(), 'skylink_fulfillment_batch_id')
                 ->where('magento_shipment_id = ?', $magentoShipmentId)
         );
-    }
-
-    private function getShipmentsFulfillmentBatchesTable()
-    {
-        return $this->connection->getTableName('retail_express_skylink_shipments_fufillment_batches');
     }
 }

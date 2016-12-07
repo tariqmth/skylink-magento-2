@@ -13,6 +13,7 @@
             </products>
             <orders>
                 <guest_customer_id>124001</guest_customer_id>
+                <bulk_order_recache_threshold>300</bulk_order_recache_threshold>
             </orders>
         </skylink>
     </default>

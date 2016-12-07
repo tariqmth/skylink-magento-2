@@ -9,18 +9,13 @@ use Magento\Sales\Api\OrderRepositoryInterface;
 use RetailExpress\CommandBus\Api\CommandBusInterface;
 use RetailExpress\SkyLink\Commands\Sales\Orders\CreateSkyLinkOrderFromMagentoOrderCommand;
 use RetailExpress\SkyLink\Model\Sales\Orders\OrderExtensionAttributes;
+use RetailExpress\SkyLink\Model\Sales\Orders\OrderHelper;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\OrderId as SkyLinkOrderId;
 
 class OrderRepositoryPlugin
 {
     use OrderExtensionAttributes;
-
-    /**
-     * Database connection.
-     *
-     * @var \Magento\Framework\DB\Adapter\AdapterInterface
-     */
-    private $connection;
+    use OrderHelper;
 
     /**
      * The command bus.
@@ -120,10 +115,5 @@ class OrderRepositoryPlugin
                 'skylink_order_id' => $skyLinkOrderId,
             ]
         );
-    }
-
-    private function getOrdersTable()
-    {
-        return $this->connection->getTableName('retail_express_skylink_orders');
     }
 }

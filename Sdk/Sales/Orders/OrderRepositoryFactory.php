@@ -2,9 +2,15 @@
 
 namespace RetailExpress\SkyLink\Sdk\Sales\Orders;
 
+use Magento\Framework\App\Filesystem\DirectoryList;
 use RetailExpress\SkyLink\Api\ConfigInterface;
+use RetailExpress\SkyLink\Api\Sales\Orders\ConfigInterface as OrderConfigInterface;
 use RetailExpress\SkyLink\Sdk\Apis\V2Factory as V2ApiFactory;
 use RetailExpress\SkyLink\Model\Factory;
+use RetailExpress\SkyLink\Sdk\V2OrderShim\DefaultBulkOrderCacher;
+use RetailExpress\SkyLink\Sdk\V2OrderShim\OrderRepository;
+use RetailExpress\SkyLink\Sdk\V2OrderShim\Storage\FilesystemStorage;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class OrderRepositoryFactory
 {
@@ -14,18 +20,38 @@ class OrderRepositoryFactory
 
     private $v2ApiFactory;
 
+    private $directoryList;
+
+    private $orderConfig;
+
     public function __construct(
         ConfigInterface $config,
-        V2ApiFactory $v2ApiFactory
+        V2ApiFactory $v2ApiFactory,
+        DirectoryList $directoryList,
+        OrderConfigInterface $orderConfig
     ) {
         $this->config = $config;
         $this->v2ApiFactory = $v2ApiFactory;
+        $this->directoryList = $directoryList;
+        $this->orderConfig = $orderConfig;
     }
 
     public function create()
     {
         $this->assertV2Api($this->config->getApiVersion());
 
-        return new V2OrderRepository($this->v2ApiFactory->create());
+        $api = $this->v2ApiFactory->create();
+
+        // Setup a filesystem storage that points to /var/tmp
+        $storage = new FilesystemStorage(new StringLiteral(
+            $this->directoryList->getPath(DirectoryList::TMP)
+        ));
+
+        $bulkOrderCacher = new DefaultBulkOrderCacher($api, $storage);
+
+        /* @var \RetailExpress\SkyLink\Sdk\V2OrderShim\RecacheThreshold $recacheThreshold */
+        $recacheThreshold = $this->orderConfig->getBulkOrderRecacheThreshold();
+
+        return new OrderRepository($api, $bulkOrderCacher, $recacheThreshold);
     }
 }

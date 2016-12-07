@@ -59,7 +59,9 @@
     </type>
 
     <!-- Sales order implementations -->
+    <preference for="RetailExpress\SkyLink\Api\Sales\Orders\ConfigInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\Config"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderAddressExtractorInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\MagentoOrderAddressExtractor"/>
+    <preference for="RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderRepositoryInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\MagentoOrderRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkContactBuilderInterface" type="RetailExpress\SkyLink\Model\Customers\SkyLinkContactBuilder"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkCustomerIdServiceInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\SkyLinkCustomerIdService"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkGuestCustomerServiceInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\SkyLinkGuestCustomerService"/>
@@ -80,6 +82,12 @@
     <type name="Magento\Sales\Model\Order\Invoice">
         <plugin name="skylink_invoice" type="RetailExpress\SkyLink\Plugin\Sales\Invoices\InvoicePlugin" sortOrder="10" disabled="false"/>
     </type>
+
+    <!-- Sales shipment implementations -->
+    <preference for="RetailExpress\SkyLink\Api\Sales\Shipments\MagentoOrderItemAndSkyLinkFulfillmentGrouperInterface" type="RetailExpress\SkyLink\Model\Sales\Shipments\MagentoOrderItemAndSkyLinkFulfillmentGrouper"/>
+    <preference for="RetailExpress\SkyLink\Api\Sales\Shipments\MagentoShipmentBuilderInterface" type="RetailExpress\SkyLink\Model\Sales\Shipments\MagentoShipmentBuilder"/>
+    <preference for="RetailExpress\SkyLink\Api\Sales\Shipments\MagentoShipmentRepositoryInterface" type="RetailExpress\SkyLink\Model\Sales\Shipments\MagentoShipmentRepository"/>
+    <preference for="RetailExpress\SkyLink\Api\Sales\Shipments\MagentoShipmentServiceInterface" type="RetailExpress\SkyLink\Model\Sales\Shipments\MagentoShipmentService"/>
 
     <!-- Create a plugin for managing SkyLink Fulfillment Batch IDs within Magento Shipments (extension attribute) -->
     <type name="Magento\Sales\Api\ShipmentRepositoryInterface">

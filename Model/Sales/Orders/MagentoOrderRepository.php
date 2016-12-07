@@ -5,7 +5,6 @@ namespace RetailExpress\SkyLink\Model\Sales\Orders;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderRepositoryInterface;
-use RetailExpress\SkyLink\Exceptions\Sales\Orders\NoMagentoOrderForSkyLinkOrderIdException;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\OrderId as SkyLinkOrderId;
 
 class MagentoOrderRepository implements MagentoOrderRepositoryInterface

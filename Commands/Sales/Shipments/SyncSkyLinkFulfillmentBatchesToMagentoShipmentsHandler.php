@@ -3,7 +3,6 @@
 namespace RetailExpress\SkyLink\Commands\Sales\Shipments;
 
 use RetailExpress\SkyLink\Api\ConfigInterface;
-use RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderRepositoryInterface;
 use RetailExpress\SkyLink\Api\Sales\Shipments\MagentoShipmentServiceInterface;
 use RetailExpress\SkyLink\Api\Sales\Shipments\MagentoShipmentRepositoryInterface;
 use RetailExpress\SkyLink\Sdk\Sales\Fulfillments\Batch as SkyLinkFulfillmentBatch;

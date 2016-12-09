@@ -105,6 +105,7 @@ class InstallData implements InstallDataInterface
                         'required' => false,
                         'input' => 'select',
                         'user_defined' => true,
+                        'filterable' => 1, // Filterable (with results) @todo look for constant
                     ]
                 );
             }

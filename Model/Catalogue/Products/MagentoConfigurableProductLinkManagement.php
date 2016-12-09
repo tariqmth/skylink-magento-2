@@ -150,8 +150,12 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
         ProductExtensionInterface $extendedAttributes,
         array $newOptions
     ) {
-        /* @var OptionInterface[] $existingOptions */
+        /* @var OptionInterface[]|null $existingOptions */
         $existingOptions = $extendedAttributes->getConfigurableProductOptions();
+
+        if (null === $existingOptions) {
+            $existingOptions = [];
+        }
 
         // Determine the final options by iterating through new options
         // and supplying a combination of the existing options.

@@ -32,7 +32,7 @@ class SaveMagentoAttribute extends Action
             $this->commandBus->handle($command);
         });
 
-        $this->messageManager->addSuccess(__('Successfully mapped SkyLink Attributes to Magento Attributes.'));
+        $this->messageManager->addSuccess(__('Queued the mapping SkyLink Attributes to Magento Attributes. Your mapped attributes selection will update once the background task has completed (@todo make selections update immediately).'));
 
         $resultRedirect = $this->resultRedirectFactory->create();
         $resultRedirect->setPath('*/*/index');

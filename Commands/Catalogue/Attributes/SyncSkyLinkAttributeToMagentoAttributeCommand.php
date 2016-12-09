@@ -2,7 +2,9 @@
 
 namespace RetailExpress\SkyLink\Commands\Catalogue\Attributes;
 
-class SyncSkyLinkAttributeToMagentoAttributeCommand
+use RetailExpress\CommandBus\Queues\QueueableCommand;
+
+class SyncSkyLinkAttributeToMagentoAttributeCommand implements QueueableCommand
 {
     /**
      * The Magento Attribute Code.
@@ -17,4 +19,24 @@ class SyncSkyLinkAttributeToMagentoAttributeCommand
      * @var string
      */
     public $skyLinkAttributeCode;
+
+    /**
+     * Get the queue this command belongs to.
+     *
+     * @return string
+     */
+    public function getQueue()
+    {
+        return 'attributes';
+    }
+
+    /**
+     * Get the name of the command on the queue.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return 'sync_skylink_to_magento';
+    }
 }

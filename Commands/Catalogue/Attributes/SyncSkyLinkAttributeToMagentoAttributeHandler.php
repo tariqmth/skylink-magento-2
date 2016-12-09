@@ -109,7 +109,7 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
 
             // If there's a mapping already, nothing further needs to happen
             if (true === $hasExistingMapping) {
-                continue;
+                return;
             }
 
             // Now, we'll try grab a possible Magento Attribute Option to set a new mapping against

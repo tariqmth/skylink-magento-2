@@ -8,6 +8,9 @@
             <general>
                 <sales_channel_id>1</sales_channel_id>
             </general>
+            <attributes>
+                <cache_time>60</cache_time>
+            </attributes>
             <products>
                 <configurable_product_match_threshold>0.5</configurable_product_match_threshold>
             </products>
@@ -15,6 +18,9 @@
                 <guest_customer_id>124001</guest_customer_id>
                 <bulk_order_recache_threshold>300</bulk_order_recache_threshold>
             </orders>
+            <payments>
+                <cache_time>60</cache_time>
+            </payments>
         </skylink>
     </default>
 </config>

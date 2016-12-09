@@ -104,6 +104,7 @@ class InstallData implements InstallDataInterface
                         'label' => $skyLinkAttributeCode->getLabel(),
                         'required' => false,
                         'input' => 'select',
+                        'user_defined' => true,
                     ]
                 );
             }

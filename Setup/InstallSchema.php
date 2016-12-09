@@ -355,10 +355,10 @@ class InstallSchema implements InstallSchemaInterface
             ->addIndex(
                 $installer->getIdxName(
                     $shipmentsFulfillmentBatchesTable,
-                    ['magento_shipment_id', 'skylink_fulfillmen_batch_id'],
+                    ['magento_shipment_id', 'skylink_fulfillment_batch_id'],
                     DbAdapterInterface::INDEX_TYPE_PRIMARY
                 ),
-                ['magento_shipment_id', 'skylink_fulfillmen_batch_id'],
+                ['magento_shipment_id', 'skylink_fulfillment_batch_id'],
                 DbAdapterInterface::INDEX_TYPE_PRIMARY
             )
             ->addForeignKey(

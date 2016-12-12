@@ -2,7 +2,7 @@
 
 namespace RetailExpress\SkyLink\Commands\Customers;
 
-use RetailExpress\CommandBus\Queues\QueueableCommand;
+use RetailExpress\CommandBus\Api\Queues\QueueableCommand;
 
 class SyncSkyLinkCustomerToMagentoCustomerCommand implements QueueableCommand
 {

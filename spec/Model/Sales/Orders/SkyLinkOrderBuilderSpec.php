@@ -11,6 +11,7 @@ use RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderAddressExtractorInterface
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkContactBuilderInterface as SkyLinkOrderContactBuilderInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkCustomerIdServiceInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderItemBuilderInterface;
+use RetailExpress\SkyLink\Exceptions\Sales\Orders\MagentoOrderStateNotMappedException;
 use RetailExpress\SkyLink\Model\Sales\Orders\SkyLinkOrderBuilder;
 use RetailExpress\SkyLink\Sdk\Customers\BillingContact as SkyLinkBillingContact;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
@@ -85,6 +86,33 @@ class SkyLinkOrderBuilderSpec extends ObjectBehavior
         $skyLinkOrder->getItems()->shouldHaveCount(1);
 
         // @todo validate billing/shipping contact and items better
+    }
+
+    public function it_throws_an_exception_when_a_magento_order_with_an_unmapped_state_appears(
+        OrderInterface $magentoOrder,
+        OrderAddressInterface $magentoBillingAddress,
+        OrderAddressInterface $magentoShippingAddress,
+        SkyLinkBillingContact $skyLinkBillingContact,
+        SkyLinkShippingContact $skyLinkShippingContact,
+        OrderItemInterface $magentoOrderItem,
+        SkyLinkOrderItem $skyLinkOrderItem
+    ) {
+        $valuesToAssert = $this->setupMagentoOrderStubs(
+            $magentoOrder,
+            $magentoBillingAddress,
+            $magentoShippingAddress,
+            $skyLinkBillingContact,
+            $skyLinkShippingContact,
+            $magentoOrderItem,
+            $skyLinkOrderItem
+        );
+
+        $magentoOrder->getIncrementId()->willReturn('1-00000001');
+        $magentoOrder->getState()->willReturn('an unmapped state');
+
+        $this
+            ->shouldThrow(MagentoOrderStateNotMappedException::class)
+            ->duringBuildFromMagentoOrder($magentoOrder);
     }
 
     private function setupMagentoOrderStubs(

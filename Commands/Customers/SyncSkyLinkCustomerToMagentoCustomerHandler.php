@@ -3,10 +3,12 @@
 namespace RetailExpress\SkyLink\Commands\Customers;
 
 use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
+use Magento\Framework\Exception\State\InputMismatchException;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerRepositoryFactory as SkylinkCustomerRepositoryFactory;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerRepositoryInterface;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface;
+use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 
 class SyncSkyLinkCustomerToMagentoCustomerHandler
 {
@@ -39,23 +41,33 @@ class SyncSkyLinkCustomerToMagentoCustomerHandler
     private $eventManager;
 
     /**
+     * Logger instance.
+     *
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * Create a new Sync SkyLink Customer to Magento Customer Handler.
      *
      * @param SkylinkCustomerRepositoryFactory   $skyLinkCustomerRepositoryFactory
      * @param MagentoCustomerRepositoryInterface $magentoCustomerRepository
      * @param MagentoCustomerServiceInterface    $magentoCustomerService
      * @param EventManagerInterface              $eventManager
+     * @param SkyLinkLoggerInterface             $logger
      */
     public function __construct(
         SkylinkCustomerRepositoryFactory $skyLinkCustomerRepositoryFactory,
         MagentoCustomerRepositoryInterface $magentoCustomerRepository,
         MagentoCustomerServiceInterface $magentoCustomerService,
-        EventManagerInterface $eventManager
+        EventManagerInterface $eventManager,
+        SkyLinkLoggerInterface $logger
     ) {
         $this->skyLinkCustomerRepositoryFactory = $skyLinkCustomerRepositoryFactory;
         $this->magentoCustomerRepository = $magentoCustomerRepository;
         $this->magentoCustomerService = $magentoCustomerService;
         $this->eventManager = $eventManager;
+        $this->logger = $logger;
     }
 
     /**
@@ -69,6 +81,8 @@ class SyncSkyLinkCustomerToMagentoCustomerHandler
     {
         $skyLinkCustomerId = new SkyLinkCustomerId($command->skyLinkCustomerId);
 
+        $this->logger->debug('Syncing SkyLink Customer to Magento Customer.', ['SkyLink Customer ID' => $skyLinkCustomerId]);
+
         /** @var \RetailExpress\SkyLink\Sdk\Customers\CustomerRepository $skyLinkCustomerRepository */
         $skyLinkCustomerRepository = $this->skyLinkCustomerRepositoryFactory->create();
 
@@ -77,8 +91,15 @@ class SyncSkyLinkCustomerToMagentoCustomerHandler
         $magentoCustomer = $this->magentoCustomerRepository->findBySkyLinkCustomerId($skyLinkCustomerId);
 
         if (null !== $magentoCustomer) {
+            $this->logger->debug('Found Magento Customer exists for SkyLink Customer, updating.', [
+                'SkyLink Customer ID' => $skyLinkCustomerId,
+                'Magento Customer ID' => $magentoCustomer->getId(),
+            ]);
             $this->magentoCustomerService->updateMagentoCustomer($magentoCustomer, $skyLinkCustomer);
         } else {
+            $this->logger->debug('No Magento Customer exists for SkyLink Customer, registering.', [
+                'SkyLink Customer ID' => $skyLinkCustomerId,
+            ]);
             $magentoCustomer = $this->magentoCustomerService->registerMagentoCustomer($skyLinkCustomer);
         }
 

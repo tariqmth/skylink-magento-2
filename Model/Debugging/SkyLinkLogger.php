@@ -5,6 +5,7 @@ namespace RetailExpress\SkyLink\Model\Debugging;
 use Psr\Log\LoggerInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkMonologHandlerInterface;
+use ValueObjects\ValueObjectInterface;
 
 class SkyLinkLogger implements SkyLinkLoggerInterface
 {
@@ -89,7 +90,8 @@ class SkyLinkLogger implements SkyLinkLoggerInterface
 
     /**
      * Modifies the given context to add a reserved key so that we can determine
-     * if we are to handle it or not in our own SkyLink implementations.
+     * if we are to handle it or not in our own SkyLink implementations and also
+     * transforms any Value Objects present into strings.
      *
      * @param array $context
      *
@@ -98,6 +100,13 @@ class SkyLinkLogger implements SkyLinkLoggerInterface
     private function updateContext(array $context)
     {
         $context[SkyLinkMonologHandlerInterface::CONTEXT_KEY] = true;
+
+        // Stringify value objects
+        array_walk($context, function (&$value) {
+            if ($value instanceof ValueObjectInterface) {
+                $value = (string) $value;
+            }
+        });
 
         return $context;
     }

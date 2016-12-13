@@ -59,6 +59,23 @@
         </arguments>
     </type>
 
+    <!-- Debugging implementations -->
+    <preference for="RetailExpress\SkyLink\Api\Debugging\ConfigInterface" type="RetailExpress\SkyLink\Model\Debugging\Config"/>
+    <preference for="RetailExpress\SkyLink\Api\Debugging\SkyLinkMonologHandlerInterface" type="RetailExpress\SkyLink\Model\Debugging\SkyLinkMonologHandler"/>
+    <preference for="RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface" type="RetailExpress\SkyLink\Model\Debugging\SkyLinkLogger"/>
+
+    <!-- Setup a SkyLink Monolog Handler -->
+    <type name="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <!-- See https://github.com/magento/magento2/issues/2529 -->
+                <item name="0" xsi:type="object">Magento\Framework\Logger\Handler\System</item>
+                <item name="1" xsi:type="object">Magento\Framework\Logger\Handler\Debug</item>
+                <item name="2" xsi:type="object">RetailExpress\SkyLink\Api\Debugging\SkyLinkMonologHandlerInterface</item>
+            </argument>
+        </arguments>
+    </type>
+
     <!-- Sales order implementations -->
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\ConfigInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\Config"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderAddressExtractorInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\MagentoOrderAddressExtractor"/>

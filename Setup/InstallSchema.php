@@ -23,6 +23,7 @@ class InstallSchema implements InstallSchemaInterface
         $this->installOrderAttributes($setup, $context);
         $this->installInvoiceAttributes($setup, $context);
         $this->installShipmentAttributes($setup, $context);
+        $this->installLoggingTables($setup, $context);
     }
 
     private function installEds(SchemaSetupInterface $setup, ModuleContextInterface $context)
@@ -367,6 +368,59 @@ class InstallSchema implements InstallSchemaInterface
                 'sales_shipment',
                 'entity_id',
                 DdlTable::ACTION_CASCADE
+            );
+
+        $installer->getConnection()->createTable($table);
+    }
+
+    private function installLoggingTables(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    {
+        $installer = $setup;
+
+        $loggingTable = 'retail_express_skylink_logs';
+        $table = $setup
+            ->getConnection()
+            ->newTable($installer->getTable($loggingTable))
+            ->addColumn(
+                'id',
+                DdlTable::TYPE_INTEGER,
+                null,
+                ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true]
+            )
+            ->addColumn(
+                'channel',
+                DdlTable::TYPE_TEXT,
+                '255',
+                ['nullable' => false]
+            )
+            ->addColumn(
+                'level',
+                DdlTable::TYPE_INTEGER,
+                '3',
+                ['unsigned' => true, 'nullable' => false]
+            )
+            ->addColumn(
+                'message',
+                DdlTable::TYPE_TEXT,
+                '64k'
+            )
+            ->addColumn(
+                'context',
+                DdlTable::TYPE_TEXT,
+                '64k'
+            )
+            ->addColumn(
+                'logged_at',
+                DdlTable::TYPE_TIMESTAMP,
+                '150',
+                ['nullable' => false, 'default' => DdlTable::TIMESTAMP_INIT],
+                'Logged At'
+            )
+            ->addColumn(
+                'captured',
+                DdlTable::TYPE_BOOLEAN,
+                null,
+                ['nullable' => false, 'default' => 0]
             );
 
         $installer->getConnection()->createTable($table);

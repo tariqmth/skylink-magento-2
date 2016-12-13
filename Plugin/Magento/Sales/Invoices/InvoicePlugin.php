@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Magento\Plugin\Sales\Invoices;
+namespace RetailExpress\SkyLink\Plugin\Magento\Sales\Invoices;
 
 use Magento\Framework\App\ResourceConnection;
 use Magento\Sales\Api\Data\InvoiceInterface;

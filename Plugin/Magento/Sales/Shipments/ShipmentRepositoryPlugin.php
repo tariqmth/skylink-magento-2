@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Magento\Plugin\Sales\Shipments;
+namespace RetailExpress\SkyLink\Plugin\Magento\Sales\Shipments;
 
 use Magento\Framework\App\ResourceConnection;
 use Magento\Sales\Api\Data\ShipmentExtensionFactory;

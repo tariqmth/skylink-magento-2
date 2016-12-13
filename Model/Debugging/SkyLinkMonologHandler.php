@@ -2,14 +2,16 @@
 
 namespace RetailExpress\SkyLink\Model\Debugging;
 
-use Magento\Framework\App\ResourceConnection;
-use Magento\Framework\DB\Select as DbSelect;
+use Magento\Framework\App\ObjectManager;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 use Monolog\Formatter\NormalizerFormatter;
 use RetailExpress\SkyLink\Api\Debugging\ConfigInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkMonologHandlerInterface;
 
+/**
+ * @todo See why dependencies injected through the constructor are breaking the admin login.
+ */
 class SkyLinkMonologHandler extends AbstractProcessingHandler implements SkyLinkMonologHandlerInterface
 {
     use LogHelper;
@@ -17,18 +19,6 @@ class SkyLinkMonologHandler extends AbstractProcessingHandler implements SkyLink
     const IS_EXCEPTION_KEY = 'is_exception';
 
     private $config;
-
-    public function __construct(
-        ResourceConnection $resourceConnection,
-        ConfigInterface $config,
-        $level = Logger::DEBUG,
-        $bubble = true
-    ) {
-        $this->resourceConnection = $resourceConnection;
-        $this->config = $config;
-
-        parent::__construct($level, $bubble);
-    }
 
     /**
      * {@inheritdoc}
@@ -57,7 +47,7 @@ class SkyLinkMonologHandler extends AbstractProcessingHandler implements SkyLink
                 'message' => $message,
                 'context' => json_encode($context),
                 'logged_at' => $datetime,
-                'captured' => $this->config->shouldCaptureLogs()
+                'captured' => $this->getConfig()->shouldCaptureLogs()
             ]
         );
 
@@ -80,13 +70,13 @@ class SkyLinkMonologHandler extends AbstractProcessingHandler implements SkyLink
     private function purgeOldLogs()
     {
         // This query is not the most optimised in the world so we'll just purge according to the configured chance
-        $purgingChance = $this->config->getPurgingChance();
+        $purgingChance = $this->getConfig()->getPurgingChance();
         if ($purgingChance->toNative() < mt_rand(0, 1)) {
             return;
         }
 
-        $captureLogs = $this->config->shouldCaptureLogs();
-        $logsTokeep = $captureLogs ? $this->config->getCapturedLogsToKeep() : $this->config->getUncapturedLogsToKeep();
+        $captureLogs = $this->getConfig()->shouldCaptureLogs();
+        $logsTokeep = $captureLogs ? $this->getConfig()->getCapturedLogsToKeep() : $this->getConfig()->getUncapturedLogsToKeep();
 
         // @todo see if we can use the query builder for this (I had a few attempts to no avail)
         $this->getConnection()
@@ -105,5 +95,14 @@ where `id` <= (
 and captured = "{$captureLogs}"
 SQL
             );
+    }
+
+    private function getConfig()
+    {
+        if (null === $this->config) {
+            $this->config = ObjectManager::getInstance()->get(ConfigInterface::class);
+        }
+
+        return $this->config;
     }
 }

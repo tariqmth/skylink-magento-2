@@ -2,6 +2,7 @@
 
 namespace RetailExpress\SkyLink\Model\Debugging;
 
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\App\ResourceConnection;
 
 trait LogHelper
@@ -23,7 +24,8 @@ trait LogHelper
     private function getConnection()
     {
         if (null === $this->connection) {
-            $this->connection = $this->resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
+            $resourceConnection = ObjectManager::getInstance()->get(ResourceConnection::class);
+            $this->connection = $resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
         }
 
         return $this->connection;

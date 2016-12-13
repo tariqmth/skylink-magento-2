@@ -3,17 +3,11 @@
 namespace RetailExpress\SkyLink\Model\Debugging;
 
 use DateTimeImmutable;
-use Magento\Framework\App\ResourceConnection;
 use RetailExpress\SkyLink\Api\Debugging\LogViewerInterface;
 
 class LogViewer implements LogViewerInterface
 {
     use LogHelper;
-
-    public function __construct(ResourceConnection $resourceConnection)
-    {
-        $this->resourceConnection = $resourceConnection;
-    }
 
     /**
      * {@inheritdoc}

@@ -265,7 +265,7 @@ class InstallSchema implements InstallSchemaInterface
                 'magento_order_id',
                 DdlTable::TYPE_INTEGER,
                 null,
-                ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true]
+                ['unsigned' => true, 'nullable' => false, 'primary' => true]
             )
             ->addColumn(
                 'skylink_order_id',
@@ -305,7 +305,7 @@ class InstallSchema implements InstallSchemaInterface
                 'magento_invoice_id',
                 DdlTable::TYPE_INTEGER,
                 null,
-                ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true]
+                ['unsigned' => true, 'nullable' => false, 'primary' => true]
             )
             ->addColumn(
                 'skylink_payment_id',
@@ -345,7 +345,7 @@ class InstallSchema implements InstallSchemaInterface
                 'magento_shipment_id',
                 DdlTable::TYPE_INTEGER,
                 null,
-                ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true]
+                ['unsigned' => true, 'nullable' => false, 'primary' => true]
             )
             ->addColumn(
                 'skylink_fulfillment_batch_id',

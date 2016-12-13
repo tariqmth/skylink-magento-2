@@ -14,6 +14,8 @@ class SkyLinkMonologHandler extends AbstractProcessingHandler implements SkyLink
 {
     use LogHelper;
 
+    const IS_EXCEPTION_KEY = 'is_exception';
+
     private $config;
 
     public function __construct(
@@ -43,6 +45,9 @@ class SkyLinkMonologHandler extends AbstractProcessingHandler implements SkyLink
 
         // Given that we've got this far, we'll remove the key from the "context" array
         unset($context[self::CONTEXT_KEY]);
+
+        // We'll also remove the "is_exception" key from our logging as we really don't care for that
+        unset($context[self::IS_EXCEPTION_KEY]);
 
         $this->getConnection()->insert(
             $this->getLogsTable(),

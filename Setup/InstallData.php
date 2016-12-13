@@ -53,9 +53,11 @@ class InstallData implements InstallDataInterface
 
     private function addSkyLinkCustomerIdToCustomers(EavSetup $eavSetup)
     {
+        $attributeCode = 'skylink_customer_id';
+
         $eavSetup->addAttribute(
             Customer::ENTITY,
-            'skylink_customer_id',
+            $attributeCode,
             [
                 'label' => 'SkyLink Customer ID',
                 'required' => false,
@@ -66,9 +68,11 @@ class InstallData implements InstallDataInterface
 
         $this
             ->eavConfig
-            ->getAttribute(Customer::ENTITY, 'skylink_customer_id')
+            ->getAttribute(Customer::ENTITY, $attributeCode)
             ->setData('used_in_forms', ['adminhtml_customer'])
             ->save();
+
+        $this->addAttributeToDefaultGroupInAllSets($eavSetup, $attributeCode, Customer::ENTITY);
     }
 
     private function addSkyLinkProductIdsToProducts(EavSetup $eavSetup)
@@ -81,10 +85,11 @@ class InstallData implements InstallDataInterface
             [
                 'label' => 'SkyLink Product ID',
                 'required' => false,
+                'user_defined' => true,
             ]
         );
 
-        $this->addAttributeToDefaultGroupInAllSets($eavSetup, $attributeCode);
+        $this->addAttributeToDefaultGroupInAllSets($eavSetup, $attributeCode, Product::ENTITY);
     }
 
     private function addSkyLinkAttributeCodesToProducts(EavSetup $eavSetup)
@@ -110,7 +115,7 @@ class InstallData implements InstallDataInterface
                 );
             }
 
-            $this->addAttributeToDefaultGroupInAllSets($eavSetup, $magentoAttributeCode);
+            $this->addAttributeToDefaultGroupInAllSets($eavSetup, $magentoAttributeCode, Product::ENTITY);
         }, SkyLinkAttributeCode::getConstants());
     }
 
@@ -123,14 +128,14 @@ class InstallData implements InstallDataInterface
      */
     private function addManufacturerToAttributeSets(EavSetup $eavSetup)
     {
-        $this->addAttributeToDefaultGroupInAllSets($eavSetup, 'manufacturer');
+        $this->addAttributeToDefaultGroupInAllSets($eavSetup, 'manufacturer', Product::ENTITY);
     }
 
-    private function addAttributeToDefaultGroupInAllSets(EavSetup $eavSetup, $magentoAttributeCode)
+    private function addAttributeToDefaultGroupInAllSets(EavSetup $eavSetup, $magentoAttributeCode, $entityType)
     {
-        foreach ($eavSetup->getAllAttributeSetIds() as $attributeSetId) {
+        foreach ($eavSetup->getAllAttributeSetIds($entityType) as $attributeSetId) {
             $eavSetup->addAttributeToGroup(
-                Product::ENTITY,
+                $entityType,
                 $attributeSetId,
                 $eavSetup->getDefaultAttributeGroupId($attributeSetId), // @todo should this be another group?
                 $magentoAttributeCode

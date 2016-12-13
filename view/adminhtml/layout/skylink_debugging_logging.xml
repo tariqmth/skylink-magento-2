@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <link src="RetailExpress_SkyLink::js/vue-2.1.5.js"/>
+        <link src="RetailExpress_SkyLink::js/logging.js"/>
+
+        <css src="RetailExpress_SkyLink::css/logging.css"/>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="RetailExpress\SkyLink\Block\Adminhtml\Debugging\Logging" name="retail_express_skylink_debuggin_logging" template="debugging/logging.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

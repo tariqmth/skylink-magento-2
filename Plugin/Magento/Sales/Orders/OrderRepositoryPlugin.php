@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Plugin\Sales\Orders;
+namespace RetailExpress\SkyLink\Magento\Plugin\Sales\Orders;
 
 use Magento\Framework\App\ResourceConnection;
 use Magento\Sales\Api\Data\OrderExtensionFactory;

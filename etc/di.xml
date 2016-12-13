@@ -21,10 +21,10 @@
 
     <!-- Create a plugin to tap into customer persistence -->
     <type name="Magento\Customer\Api\AddressRepositoryInterface">
-        <plugin name="skylink_address_repository" type="RetailExpress\SkyLink\Plugin\Customers\AddressRepositoryPlugin" sortOrder="10" disabled="false"/>
+        <plugin name="skylink_address_repository" type="RetailExpress\SkyLink\Magento\Plugin\Customers\AddressRepositoryPlugin" sortOrder="10" disabled="false"/>
     </type>
     <type name="Magento\Customer\Api\CustomerRepositoryInterface">
-        <plugin name="skylink_customer_repository" type="RetailExpress\SkyLink\Plugin\Customers\CustomerRepositoryPlugin" sortOrder="10" disabled="false"/>
+        <plugin name="skylink_customer_repository" type="RetailExpress\SkyLink\Magento\Plugin\Customers\CustomerRepositoryPlugin" sortOrder="10" disabled="false"/>
     </type>
 
     <!-- Catalogue attribute implementations -->
@@ -89,16 +89,16 @@
 
     <!-- Create a plugin for managing SkyLink Order IDs within Magento Orders (extension attributes) -->
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
-        <plugin name="skylink_order_repository" type="RetailExpress\SkyLink\Plugin\Sales\Orders\OrderRepositoryPlugin" sortOrder="10" disabled="false"/>
+        <plugin name="skylink_order_repository" type="RetailExpress\SkyLink\Magento\Plugin\Sales\Orders\OrderRepositoryPlugin" sortOrder="10" disabled="false"/>
     </type>
 
     <!-- Create a plugin for managing SkyLink Payment IDs within Magento Invoices (extension attributes) -->
     <type name="Magento\Sales\Api\InvoiceRepositoryInterface">
-        <plugin name="skylink_invoice_repository" type="RetailExpress\SkyLink\Plugin\Sales\Invoices\InvoiceRepositoryPlugin" sortOrder="10" disabled="false"/>
+        <plugin name="skylink_invoice_repository" type="RetailExpress\SkyLink\Magento\Plugin\Sales\Invoices\InvoiceRepositoryPlugin" sortOrder="10" disabled="false"/>
     </type>
     <!-- See plugin for docs as to why this is required. @todo Remove with docs -->
     <type name="Magento\Sales\Model\Order\Invoice">
-        <plugin name="skylink_invoice" type="RetailExpress\SkyLink\Plugin\Sales\Invoices\InvoicePlugin" sortOrder="10" disabled="false"/>
+        <plugin name="skylink_invoice" type="RetailExpress\SkyLink\Magento\Plugin\Sales\Invoices\InvoicePlugin" sortOrder="10" disabled="false"/>
     </type>
 
     <!-- Sales shipment implementations -->
@@ -109,7 +109,7 @@
 
     <!-- Create a plugin for managing SkyLink Fulfillment Batch IDs within Magento Shipments (extension attribute) -->
     <type name="Magento\Sales\Api\ShipmentRepositoryInterface">
-        <plugin name="skylink_shipment_repository" type="RetailExpress\SkyLink\Plugin\Sales\Shipments\ShipmentRepositoryPlugin" sortOrder="10" disabled="false"/>
+        <plugin name="skylink_shipment_repository" type="RetailExpress\SkyLink\Magento\Plugin\Sales\Shipments\ShipmentRepositoryPlugin" sortOrder="10" disabled="false"/>
     </type>
 
     <preference for="RetailExpress\SkyLink\Api\Sales\Payments\ConfigInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\Config"/>

@@ -27,6 +27,11 @@
         <plugin name="skylink_customer_repository" type="RetailExpress\SkyLink\Plugin\Magento\Customers\CustomerRepositoryPlugin" sortOrder="10" disabled="false"/>
     </type>
 
+    <!-- Create a plugin to usefully log validation issues with managing Magento Customers -->
+    <type name="RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface">
+        <plugin name="skylink_magento_customer_service_validation" type="RetailExpress\SkyLink\Plugin\SkyLink\Customers\MagentoCustomerServiceValidationPlugin" sortOrder="10" disabled="false"/>
+    </type>
+
     <!-- Catalogue attribute implementations -->
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\ConfigInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\Config"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeOptionRepository"/>

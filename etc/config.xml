@@ -23,8 +23,8 @@
             </payments>
             <debugging>
                 <should_capture_logs>0</should_capture_logs>
-                <uncaptured_logs_to_keep>10</uncaptured_logs_to_keep>
-                <captured_logs_to_keep>10000</captured_logs_to_keep>
+                <uncaptured_logs_to_keep>100</uncaptured_logs_to_keep>
+                <captured_logs_to_keep>100000</captured_logs_to_keep>
                 <purging_chance>0.25</purging_chance>
             </debugging>
         </skylink>

@@ -2,6 +2,7 @@
 
 namespace RetailExpress\SkyLink\Model\Customers;
 
+use Exception;
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\AddressInterfaceFactory;
@@ -113,7 +114,18 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
     private function lockSkyLinkToMagento(callable $callback)
     {
         $this->registry->register(self::REGISTRY_LOCK_KEY, true);
-        $callback();
+        try {
+            $callback();
+        } catch (Exception $e) {
+            $this->unlockSkyLinkToMagento();
+            throw $e;
+        }
+
+        $this->unlockSkyLinkToMagento();
+    }
+
+    private function unlockSkyLinkToMagento()
+    {
         $this->registry->unregister(self::REGISTRY_LOCK_KEY);
     }
 }

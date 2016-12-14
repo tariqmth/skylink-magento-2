@@ -3,6 +3,7 @@
     <p>Last ID {{ since_id }}</p>
     <ul>
         <li v-for="item in items">
+            <span>[{{ item.human_level }}]</span>
             <strong>{{ item.message }}</strong>
             <em>{{ item.human_logged_at }}</em>
             <pre>{{ item.context | json }}</pre>

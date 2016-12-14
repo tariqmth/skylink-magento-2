@@ -8,6 +8,7 @@ use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory as JsonResultFactory;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Monolog\Logger;
 use RetailExpress\SkyLink\Api\Debugging\LogViewerInterface;
 
 class LogViewer extends Action
@@ -35,6 +36,7 @@ class LogViewer extends Action
         $sinceId = $this->getRequest()->getQueryValue('since_id');
 
         $logs = $this->logViewer->getList($sinceId);
+        $this->addHumanLevel($logs);
         $this->addHumanLoggedAt($logs);
 
         $jsonResult = $this->jsonResultFactory->create();
@@ -48,6 +50,13 @@ class LogViewer extends Action
     protected function _isAllowed()
     {
         return $this->_authorization->isAllowed('RetailExpress_SkyLink::skylink_logging');
+    }
+
+    private function addHumanLevel(array &$logs)
+    {
+        array_walk($logs, function (array &$log) {
+            $log['human_level'] = Logger::getLevelName($log['level']);
+        });
     }
 
     private function addHumanLoggedAt(array &$logs)

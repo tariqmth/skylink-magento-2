@@ -1,8 +1,21 @@
+<div id="app">
+    <button @click="getItems">Refresh</button>
+    <p>Last ID {{ since_id }}</p>
+    <ul>
+        <li v-for="item in items">
+            <strong>{{ item.message }}</strong>
+            <em>{{ item.human_logged_at }}</em>
+            <pre>{{ item.context | json }}</pre>
+        </li>
+    </ul>
+</div>
+
 <script type="text/x-magento-init">
     {
-        "*" {
-            "RetailExpress_SkyLink/js/logging": {
-                "log_viewer_url": "<?=$this->escapeHtml($this->getLogViewerUrl())?>"
+        "#app": {
+            "skyLinkLogging":{
+                "log_viewer_url": "<?=$block->escapeHtml($block->getLogViewerUrl())?>",
+                "delay": 0.1
             }
         }
     }

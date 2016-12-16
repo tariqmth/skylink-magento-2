@@ -1,0 +1,104 @@
+.logging {
+  .logs {
+    max-height: 800px;
+    overflow-y: scroll;
+    background-color: #000;
+    font-family: monospace;
+    font-size: 15px;
+    list-style: none;
+  }
+
+  .log {
+    padding: 15px 15px 15px 25px;
+    position: relative;
+    min-height: 100px;
+
+    + .log {
+      border-top: 1px solid #333;
+    }
+
+    &:before,
+    &:after {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 10px;
+      content: "";
+    }
+
+    &:before {
+      left: 0;
+    }
+
+    &:after {
+      right: 0;
+    }
+
+    pre {
+      margin-bottom: 0;
+    }
+
+    .log-message {
+      float: left;
+    }
+
+    .log-date {
+      float: right;
+      font-size: 0.8em;
+    }
+
+    .log-context {
+      clear: both;
+    }
+  }
+
+  .log-level-100 {
+    color: #dddeda;
+
+    &:before, &:after {
+      background-color: #dddeda;
+    }
+  }
+
+  .log-level-200 {
+    color: #89b1da;
+
+    &:before, &:after {
+      background-color: #89b1da;
+    }
+  }
+
+  .log-level-250 {
+    color: #fcf25c;
+
+    &:before, &:after {
+      background-color: #fcf25c;
+    }
+  }
+
+  .log-level-300 {
+    color: #fcc55c;
+
+    &:before, &:after {
+      background-color: #fcc55c;
+    }
+  }
+
+  .log-level-400 {
+    color: #ee834e;
+
+    &:before, &:after {
+      background-color: #ee834e;
+    }
+  }
+
+  .log-level-500,
+  .log-level-550
+  .log-level-600 {
+    color: #e73631;
+
+    &:before, &:after {
+      background-color: #e73631;
+    }
+  }
+}

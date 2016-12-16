@@ -1,22 +1,41 @@
-<div id="app">
-    <button @click="getItems">Refresh</button>
-    <p>Last ID {{ since_id }}</p>
-    <ul>
-        <li v-for="item in items">
-            <span>[{{ item.human_level }}]</span>
-            <strong>{{ item.message }}</strong>
-            <em>{{ item.human_logged_at }}</em>
-            <pre>{{ item.context | json }}</pre>
+<div id="logging" class="logging">
+
+    <label for="logging-level"><?=__('Filter Level')?></label>
+    <select id="logging-level" v-model="currentLevelFilter">
+        <?php foreach ($block->getHumanLevels() as $humanLevel => $level): ?>
+            <option value="<?=$block->escapeHtml($level)?>"><?=$block->escapeHtml($humanLevel)?></option>
+        <?php endforeach ?>
+    </select>
+
+    <button v-if="autoscroll" @click="toggleAutoscroll">
+        <?=__('Disable Autoscroll')?>
+    </button>
+    <button v-else @click="toggleAutoscroll">
+        <?=__('Enable Autoscroll')?>
+    </button>
+
+    <ul class="logs" id="logs">
+        <li v-for="log in filteredLogs()" :class="getCssClass(log)">
+            <p class="log-summary">
+                <strong class="log-message">{{ log.message }}</strong>
+                <em class="log-date">{{ log.human_logged_at }}</em>
+            </p>
+
+            <pre class="log-context">{{ log.context }}</pre>
         </li>
     </ul>
+
 </div>
 
 <script type="text/x-magento-init">
     {
-        "#app": {
-            "skyLinkLogging":{
+        "#logging": {
+            "skyLinkLogging": {
                 "log_viewer_url": "<?=$block->escapeHtml($block->getLogViewerUrl())?>",
-                "delay": 0.1
+                "levels": <?=json_encode($block->getLevels())?>,
+                "default_level": <?=$block->getLevels()[0]?>,
+                "update_timeout": 1000,
+                "logs": "#logs"
             }
         }
     }

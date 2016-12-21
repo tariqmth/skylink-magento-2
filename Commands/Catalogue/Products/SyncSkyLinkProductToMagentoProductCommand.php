@@ -28,6 +28,16 @@ class SyncSkyLinkProductToMagentoProductCommand implements QueueableCommand
     public $changeSetId;
 
     /**
+     * Flag for whether the sync is a potential composite product rerun (meaning that
+     * there might be a request to sync multiple child products from the same
+     * product group [which currently consists of a matrix]). Clever use of
+     * timing will asist in skipping subsequent syncs for the same matrix.
+     *
+     * @var bool
+     */
+    public $potentialCompositeProductRerun = false;
+
+    /**
      * Get the queue this command belongs to.
      *
      * @return string

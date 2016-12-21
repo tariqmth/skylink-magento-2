@@ -4,9 +4,12 @@ namespace RetailExpress\SkyLink\Commands\Catalogue\Products;
 
 use InvalidArgumentException;
 use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSyncCompositeProductRerunManagerInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\SkyLinkProductToMagentoProductSyncerInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 use RetailExpress\SkyLink\Exceptions\Products\SkyLinkProductDoesNotExistException;
+use RetailExpress\SkyLink\Sdk\Catalogue\Products\CompositeProduct as CompositeSkyLinkProduct;
+use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductRepositoryFactory as SkyLinkProductRepositoryFactory;
 use RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId;
@@ -16,6 +19,8 @@ class SyncSkyLinkProductToMagentoProductHandler
     private $skyLinkProductRepositoryFactory;
 
     private $syncers = [];
+
+    private $compositeProductRerunManager;
 
     /**
      * Event Manager instance.
@@ -34,14 +39,16 @@ class SyncSkyLinkProductToMagentoProductHandler
     /**
      * Create a new Sync SkyLink Product to Magento Product Handler.
      *
-     * @param SkyLinkProductRepository                        $skyLinkProductRepositoryFactory
-     * @param SkyLinkProductToMagentoProductSyncerInterface[] $syncers
-     * @param SkyLinkLoggerInterface                          $logger
-     * @param EventManagerInterface                           $eventManager
+     * @param SkyLinkProductRepository                         $skyLinkProductRepositoryFactory
+     * @param SkyLinkProductToMagentoProductSyncerInterface[]  $syncers
+     * @param MagentoSyncCompositeProductRerunManagerInterface $compositeProductRerunManager
+     * @param SkyLinkLoggerInterface                           $logger
+     * @param EventManagerInterface                            $eventManager
      */
     public function __construct(
         SkyLinkProductRepositoryFactory $skyLinkProductRepositoryFactory,
         array $syncers,
+        MagentoSyncCompositeProductRerunManagerInterface $compositeProductRerunManager,
         SkyLinkLoggerInterface $logger,
         EventManagerInterface $eventManager
     ) {
@@ -51,6 +58,7 @@ class SyncSkyLinkProductToMagentoProductHandler
             $this->syncers[] = $syncer;
         });
 
+        $this->compositeProductRerunManager = $compositeProductRerunManager;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
     }
@@ -76,11 +84,28 @@ class SyncSkyLinkProductToMagentoProductHandler
         if (null === $skyLinkProduct) {
             $e = SkyLinkProductDoesNotExistException::withSkyLinkProductId($skyLinkProductId);
 
-            $this->logger->error($e->getMessage(), [
+            $this->logger->error('SkyLink Product does not exist on the Retail Express API, is it part of a package?', [
+                'Error' => $e->getMessage(),
                 'SkyLink Product ID' => $skyLinkProductId,
             ]);
 
             throw $e;
+        }
+
+        // If we're not allowed to proceed, we'll just
+        if (
+            $this->caresAboutCompositeProductReruns($command, $skyLinkProduct) &&
+            false === $this->compositeProductRerunManager->canProceedWithSync($skyLinkProduct)
+        ) {
+            $this->logger->info('Skipping syncing SkyLink Product to Magento Product because it is part of a SkyLink Composite Product that was recently synced and does not need to be re-synced yet.', [
+                'SkyLink Product ID' => $skyLinkProduct->getId(),
+                'SkyLink Product SKU' => $skyLinkProduct->getSku(),
+                'SkyLink Product Name' => $skyLinkProduct->getName(),
+            ]);
+
+            // We don't need to dispatch an event becuase the reruns do not occur
+            // in conjunction with any observers that watch that event (e.g. EDS)
+            return;
         }
 
         foreach ($this->syncers as $syncer) {
@@ -102,6 +127,10 @@ class SyncSkyLinkProductToMagentoProductHandler
 
         success:
 
+        if ($this->caresAboutCompositeProductReruns($command, $skyLinkProduct)) {
+            $this->compositeProductRerunManager->didSync($skyLinkProduct);
+        }
+
         $this->eventManager->dispatch(
             'retail_express_skylink_skylink_product_was_synced_to_magento_product',
             [
@@ -110,5 +139,13 @@ class SyncSkyLinkProductToMagentoProductHandler
                 'magento_product' => $magentoProduct,
             ]
         );
+    }
+
+    private function caresAboutCompositeProductReruns(
+        SyncSkyLinkProductToMagentoProductCommand $command,
+        SkyLinkProduct $skyLinkProduct
+    ) {
+        return $skyLinkProduct instanceof CompositeSkyLinkProduct &&
+            true === $command->potentialCompositeProductRerun;
     }
 }

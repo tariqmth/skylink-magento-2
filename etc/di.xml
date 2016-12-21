@@ -45,6 +45,7 @@
 
     <!-- Catalogue product implementations -->
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\ConfigInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\Config"/>
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSyncCompositeProductRerunManagerInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSyncCompositeProductRerunManager"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductLinkManagementInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoConfigurableProductLinkManagement"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoConfigurableProductRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoConfigurableProductService"/>

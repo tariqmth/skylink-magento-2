@@ -9,6 +9,7 @@ use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionService
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeServiceInterface;
 use RetailExpress\SkyLink\Api\ConfigInterface;
+use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeRepositoryFactory;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\Attribute as SkyLinkAttribute;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
@@ -31,6 +32,13 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
 
     private $magentoAttributeOptionService;
 
+    /**
+     * Logger instance.
+     *
+     * @var SkyLinkLoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         ConfigInterface $config,
         AttributeRepositoryFactory $attributeRepositoryFactory,
@@ -38,7 +46,8 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
         MagentoAttributeRepositoryInterface $magentoAttributeRepository,
         MagentoAttributeServiceInterface $magentoAttributeService,
         MagentoAttributeOptionRepositoryInterface $magentoAttributeOptionRepository,
-        MagentoAttributeOptionServiceInterface $magentoAttributeOptionService
+        MagentoAttributeOptionServiceInterface $magentoAttributeOptionService,
+        SkyLinkLoggerInterface $logger
     ) {
         $this->config = $config;
         $this->attributeRepositoryFactory = $attributeRepositoryFactory;
@@ -47,6 +56,7 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
         $this->magentoAttributeService = $magentoAttributeService;
         $this->magentoAttributeOptionRepository = $magentoAttributeOptionRepository;
         $this->magentoAttributeOptionService = $magentoAttributeOptionService;
+        $this->logger = $logger;
     }
 
     public function handle(SyncSkyLinkAttributeToMagentoAttributeCommand $command)
@@ -65,6 +75,11 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
         // Get the Magento attribute instance
         /* @var ProductAttributeInterface $magentoAttributeToMap */
         $magentoAttributeToMap = $this->baseMagentoProductAttributeRepository->get($command->magentoAttributeCode);
+
+        $this->logger->debug('Syncing SkyLink Attribute to Magento Attribute.', [
+            'SkyLink Attribute Code' => $skyLinkAttributeCode,
+            'Magento Attribute Code' => $magentoAttributeToMap->getAttributeCode(),
+        ]);
 
         // Remap the attribute only if needed
         $this->remapAttributeOnlyIfNeeded($magentoAttributeToMap, $skyLinkAttribute);
@@ -88,7 +103,6 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
         if (null === $alreadyMappedMagentoAttribute ||
             $alreadyMappedMagentoAttribute->getCode() !== $magentoAttributeToMap->getCode()
         ) {
-
             // Map to the new attribute, which removes all old previous mappings
             $this
                 ->magentoAttributeService
@@ -100,15 +114,35 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
         ProductAttributeInterface $magentoAttribute,
         SkyLinkAttribute $skyLinkAttribute
     ) {
-        array_map(function (SkyLinkAttributeOption $skyLinkAttributeOption) use ($magentoAttribute) {
+        $skyLinkAttributeOptions = $skyLinkAttribute->getOptions();
+
+        $this->logger->debug('Mapping SkyLink Attribute Options to Magento Attribute Options.', [
+            'SkyLink Attribute Code' => $skyLinkAttribute->getCode(),
+            'Magento Attribute Code' => $magentoAttribute->getAttributeCode(),
+            'Number of Options' => count($skyLinkAttributeOptions),
+        ]);
+
+        array_map(function (SkyLinkAttributeOption $skyLinkAttributeOption) use ($skyLinkAttribute, $magentoAttribute) {
 
             // Let's see if there's a mapping in place
-            $hasExistingMapping = (bool) $this
+            $mappedMagentoAttributeOption = $this
                 ->magentoAttributeOptionRepository
                 ->getMappedMagentoAttributeOptionForSkyLinkAttributeOption($skyLinkAttributeOption);
 
             // If there's a mapping already, nothing further needs to happen
-            if (true === $hasExistingMapping) {
+            if (null !== $mappedMagentoAttributeOption) {
+
+                $this->logger->debug(
+                    'SkyLink Attribute Option is already mapped to an appropriate Magento Attribute Option.',
+                    [
+                        'SkyLink Attribute Code' => $skyLinkAttribute->getCode(),
+                        'SkyLink Attribute Option ID' => $skyLinkAttributeOption->getId(),
+                        'SkyLink Attribute Option Label' => $skyLinkAttributeOption->getLabel(),
+                        'Magento Attribute Option Value' => $mappedMagentoAttributeOption->getValue(),
+                        'Magento Attribute Option Label' => $mappedMagentoAttributeOption->getLabel(),
+                    ]
+                );
+
                 return;
             }
 
@@ -120,16 +154,38 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
             // Failing this, we'll create a new option
             // @todo move this to the Magento attribute option service
             if (null === $magentoAttributeOptionToMap) {
+
+                $this->logger->debug(
+                    'Couldn\'t find an appropriate Magento Attribute Option to map the SkyLink Attribute Option to, creating a new one.',
+                    [
+                        'SkyLink Attribute Code' => $skyLinkAttribute->getCode(),
+                        'SkyLink Attribute Option ID' => $skyLinkAttributeOption->getId(),
+                        'SkyLink Attribute Option Label' => $skyLinkAttributeOption->getLabel(),
+                    ]
+                );
+
                 $magentoAttributeOptionToMap = $this
                     ->magentoAttributeOptionService
                     ->createMagentoAttributeOptionForSkyLinkAttributeOption($magentoAttribute, $skyLinkAttributeOption);
             }
+
+            $this->logger->debug(
+                'Found an existing, unmapped Magento Attribute Option that was appropriate to map the SkyLink Attribute Option to.',
+                [
+                    'SkyLink Attribute Code' => $skyLinkAttribute->getCode(),
+                    'SkyLink Attribute Option ID' => $skyLinkAttributeOption->getId(),
+                    'SkyLink Attribute Option Label' => $skyLinkAttributeOption->getLabel(),
+                    'Magento Attribute Option Value' => $magentoAttributeOptionToMap->getValue(),
+                    'Magento Attribute Option Label' => $magentoAttributeOptionToMap->getLabel(),
+                ]
+            );
 
             // Now we can set the mapping for our Magento attribute option
             $this->magentoAttributeOptionService->mapMagentoAttributeOptionForSkyLinkAttributeOption(
                 $magentoAttributeOptionToMap,
                 $skyLinkAttributeOption
             );
-        }, $skyLinkAttribute->getOptions());
+
+        }, $skyLinkAttributeOptions);
     }
 }

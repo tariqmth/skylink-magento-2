@@ -91,12 +91,18 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
         /* @var |null $extendedAttributes */
         $extendedAttributes = $parentProduct->getExtensionAttributes();
 
+        // @todo Move the setting of extension attributes back into this "if" statement.
+        // Magento\Catalog\Model\Product::getExtensionAttributes() always returns an
+        // instance it seems, however unlike other implementations does not bind
+        // the instance to the product, meaning it'll never actually do
+        // anything with the extension attributes we provide to it.
+        // It's inconsistent with the contarct too, which sucks.
+        // This is present in Magento 2.1, not 2.0.
         if (null === $extendedAttributes) {
-
             /* @var ProductExtensionInterface $extendedAttributes */
             $extendedAttributes = $this->productExtensionFactory->create();
-            $parentProduct->setExtensionAttributes($extendedAttributes);
         }
+        $parentProduct->setExtensionAttributes($extendedAttributes);
 
         return $extendedAttributes;
     }

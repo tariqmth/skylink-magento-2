@@ -3,6 +3,9 @@
 
 /* @var \Magento\Eav\Api\Data\AttributeSetInterface[] $magentoAttributeSets */
 $magentoAttributeSets = $block->getMagentoAttributeSets();
+
+/* @var \RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption[] $skyLinkProductTypes */
+$skyLinkProductTypes = $block->getSkyLinkProductTypes();
 ?>
 <h3><?=__('Map SkyLink Product Types to Magento Attribute Sets')?></h3>
 <form action="<?php /* @escapeNotVerified */ echo $block->getSaveUrl() ?>" method="post">
@@ -16,7 +19,7 @@ $magentoAttributeSets = $block->getMagentoAttributeSets();
         </thead>
         <tbody>
             <?php /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption $skyLinkProductType */ ?>
-            <?php foreach ($block->getSkyLinkProductTypes() as $skyLinkProductType): ?>
+            <?php foreach ($skyLinkProductTypes as $skyLinkProductType): ?>
                 <?php
                 /* @var \Magento\Eav\Api\Data\AttributeSetInterface|null $chosenAttributeSet */
                 $chosenAttributeSet = $block->getAttributeSetForProductType($skyLinkProductType);

@@ -21,8 +21,9 @@ Merge the contents of your Magento 2 `composer.json` file with the following JSO
         }
     ],
     "require": {
+        "ecomdev/magento-psr6-bridge": "^0.2.1",
         "retail-express/skylink-magento-2": "^1.0",
-        "retail-express/skylink-magento-2-legacy": "^1.0",
+        "retail-express/skylink-magento-2-legacy": "^1.0"
     },
     "config": {
         “secure-http”: false
@@ -33,18 +34,24 @@ Merge the contents of your Magento 2 `composer.json` file with the following JSO
 
 [Update](https://getcomposer.org/doc/03-cli.md#update) your Composer dependencies. You will notice a number of new packages under vendor. We're interested in:
 
-1. `vendor/retail-express/command-bus-magento-2` - Magento 2 [command bus](https://tactician.thephpleague.com) implementation wtih support for queued command handlers.
-2. `vendor/retail-express/skylink-eds` - framework-agnostic package for integrating with Retail Express' Event-Driven Synchronisation functionality.
-3. `vendor/retail-express/skylink-magento-2` - Magento 2 extension to manage synchronisation with Retail Express.
-4. `vendor/retail-express/skylink-magento-2-legacy` - Magento 2 extension to enable synchronisation in legacy-mode (as opposed to the new and improved EDS).
-5. `vendor/retail-express/skylink-sdk` - framework-agnostic SDK package for connecting a PHP application to Retail Express
-6. `vendor/retail-express/skylink-sdk-v2-order-shim` - shim for the V2 API that simulates support for fetching single orders through caching of a bulk order sync.
+1. `ecomdev/magento-psr6-bridge` - A bridge between Magento framework and PSR-6 cache compatible libraries (enhances the SkyLink SDK by connecting it to Magento's cache).
+2. `vendor/retail-express/command-bus-magento-2` - Magento 2 [command bus](https://tactician.thephpleague.com) implementation wtih support for queued command handlers.
+3. `vendor/retail-express/skylink-eds` - framework-agnostic package for integrating with Retail Express' Event-Driven Synchronisation functionality.
+4. `vendor/retail-express/skylink-magento-2` - Magento 2 extension to manage synchronisation with Retail Express.
+5. `vendor/retail-express/skylink-magento-2-legacy` - Magento 2 extension to enable synchronisation in legacy-mode (as opposed to the new and improved EDS).
+6. `vendor/retail-express/skylink-sdk` - framework-agnostic SDK package for connecting a PHP application to Retail Express
+7. `vendor/retail-express/skylink-sdk-v2-order-shim` - shim for the V2 API that simulates support for fetching single orders through caching of a bulk order sync.
 
 Once the code is all in place, you'll want to install SkyLink and update Magento's database with it's prerequisites:
 
 ```bash
-php bin/magento setup:install RetailExpress_SkyLink
-php bin/magento setup:upgrade
+bin/magento module:enable RetailExpress_CommandBus
+bin/magento module:enable RetailExpress_SkyLink
+bin/magento module:enable RetailExpress_SkyLinkLegacy
+bin/magento setup:upgrade
+
+bin/magento module:enable EcomDev_MagentoPsr6Bridge
+bin/magento cache:enable psr6
 ```
 
 ## Configuration

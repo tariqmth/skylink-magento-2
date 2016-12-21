@@ -38,21 +38,24 @@ class MagentoCustomerServiceValidationPlugin
 
             $this->logger->error(__('Validation errors occured while saving a Magento Customer'), [
                 'SkyLink Customer ID' => $skyLinkCustomer->getId(),
+                'Error' => $e->getMessage(),
                 'Validation Errors' => array_map(function (LocalizedException $e) {
                     return $e->getMessage();
                 }, $e->getErrors()),
             ]);
 
+            throw $e;
+
         // Typically caused becuase of a duplicated email
         } catch (InputMismatchException $e) {
-            if (self::DUPLICATE_EMAIL_ERROR !== $e->getRawMessage()) {
-                throw $e;
+            if (self::DUPLICATE_EMAIL_ERROR === $e->getRawMessage()) {
+                $this->logger->error($e->getMessage(), [
+                    'SkyLink Customer ID' => $skyLinkCustomer->getId(),
+                    'SkyLink Email Address' => $skyLinkCustomer->getBillingContact()->getEmailAddress(),
+                ]);
             }
 
-            $this->logger->error($e->getMessage(), [
-                'SkyLink Customer ID' => $skyLinkCustomer->getId(),
-                'SkyLink Email Address' => $skyLinkCustomer->getBillingContact()->getEmailAddress(),
-            ]);
+            throw $e;
         }
     }
 }

@@ -43,7 +43,7 @@ class SyncSkyLinkCustomerToMagentoCustomerHandler
     /**
      * Logger instance.
      *
-     * @var LoggerInterface
+     * @var SkyLinkLoggerInterface
      */
     private $logger;
 

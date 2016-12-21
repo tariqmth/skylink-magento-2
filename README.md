@@ -28,7 +28,7 @@ Merge the contents of your Magento 2 `composer.json` file with the following JSO
     "config": {
         “secure-http”: false
     },
-    "minimum-stability": "beta”
+    "minimum-stability": "alpha"
 }
 ```
 

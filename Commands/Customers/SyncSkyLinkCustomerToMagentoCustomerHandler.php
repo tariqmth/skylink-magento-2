@@ -81,7 +81,7 @@ class SyncSkyLinkCustomerToMagentoCustomerHandler
     {
         $skyLinkCustomerId = new SkyLinkCustomerId($command->skyLinkCustomerId);
 
-        $this->logger->debug('Syncing SkyLink Customer to Magento Customer.', ['SkyLink Customer ID' => $skyLinkCustomerId]);
+        $this->logger->info('Syncing SkyLink Customer to Magento Customer.', ['SkyLink Customer ID' => $skyLinkCustomerId]);
 
         /** @var \RetailExpress\SkyLink\Sdk\Customers\CustomerRepository $skyLinkCustomerRepository */
         $skyLinkCustomerRepository = $this->skyLinkCustomerRepositoryFactory->create();

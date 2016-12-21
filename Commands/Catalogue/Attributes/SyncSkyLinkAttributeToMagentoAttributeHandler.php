@@ -76,7 +76,7 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
         /* @var ProductAttributeInterface $magentoAttributeToMap */
         $magentoAttributeToMap = $this->baseMagentoProductAttributeRepository->get($command->magentoAttributeCode);
 
-        $this->logger->debug('Syncing SkyLink Attribute to Magento Attribute.', [
+        $this->logger->info('Syncing SkyLink Attribute to Magento Attribute.', [
             'SkyLink Attribute Code' => $skyLinkAttributeCode,
             'Magento Attribute Code' => $magentoAttributeToMap->getAttributeCode(),
         ]);

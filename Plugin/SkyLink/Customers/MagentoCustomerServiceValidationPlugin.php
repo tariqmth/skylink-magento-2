@@ -43,18 +43,16 @@ class MagentoCustomerServiceValidationPlugin
                 }, $e->getErrors()),
             ]);
 
-            throw $e;
-
         // Typically caused becuase of a duplicated email
         } catch (InputMismatchException $e) {
-            if (self::DUPLICATE_EMAIL_ERROR === $e->getRawMessage()) {
-                $this->logger->error($e->getMessage(), [
-                    'SkyLink Customer ID' => $skyLinkCustomer->getId(),
-                    'SkyLink Email Address' => $skyLinkCustomer->getBillingContact()->getEmailAddress(),
-                ]);
+            if (self::DUPLICATE_EMAIL_ERROR !== $e->getRawMessage()) {
+                throw $e;
             }
 
-            throw $e;
+            $this->logger->error($e->getMessage(), [
+                'SkyLink Customer ID' => $skyLinkCustomer->getId(),
+                'SkyLink Email Address' => $skyLinkCustomer->getBillingContact()->getEmailAddress(),
+            ]);
         }
     }
 }

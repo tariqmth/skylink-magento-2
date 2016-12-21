@@ -4,7 +4,7 @@ The following is a technical overview of the usage of SkyLink for Magento 2 and 
 
 This document is a constant work-in-progress and should be reviewed after each upgrade of the codebase for changes.
 
-Becuase we are in a pre-release state, things will break. **[Backup Magento](http://devdocs.magento.com/guides/v2.0/install-gde/install/cli/install-cli-backup.html)** early and often.
+Because we are in a pre-release state, things will break. **[Backup Magento](http://devdocs.magento.com/guides/v2.0/install-gde/install/cli/install-cli-backup.html)** early and often.
 
 To get up and running, you should follow the document in it's entirety, from top to bottom. paying particular attention to new concepts, such as **Queued Jobs** and **Initial Sync**.
 

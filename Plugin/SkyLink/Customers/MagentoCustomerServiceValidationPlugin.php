@@ -36,7 +36,7 @@ class MagentoCustomerServiceValidationPlugin
         // Validation errors
         } catch (InputException $e) {
 
-            $this->logger->error(__('Validation errors occured while saving a a Magento Customer'), [
+            $this->logger->error(__('Validation errors occured while saving a Magento Customer'), [
                 'SkyLink Customer ID' => $skyLinkCustomer->getId(),
                 'Validation Errors' => array_map(function (LocalizedException $e) {
                     return $e->getMessage();

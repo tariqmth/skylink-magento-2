@@ -98,9 +98,7 @@ class SyncSkyLinkProductToMagentoProductHandler
             false === $this->compositeProductRerunManager->canProceedWithSync($skyLinkProduct)
         ) {
             $this->logger->info('Skipping syncing SkyLink Product to Magento Product because it is part of a SkyLink Composite Product that was recently synced and does not need to be re-synced yet.', [
-                'SkyLink Product ID' => $skyLinkProduct->getId(),
-                'SkyLink Product SKU' => $skyLinkProduct->getSku(),
-                'SkyLink Product Name' => $skyLinkProduct->getName(),
+                'SkyLink Product ID' => $skyLinkProductId,
             ]);
 
             // We don't need to dispatch an event becuase the reruns do not occur

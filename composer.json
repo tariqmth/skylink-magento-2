@@ -16,7 +16,7 @@
   "repositories": [
     {
       "type": "composer",
-      "url": "http://packages.skystores.com.au/"
+      "url": "http://repo.ecom.retailexpress.com.au/"
     },
     {
       "type": "composer",

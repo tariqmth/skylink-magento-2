@@ -128,4 +128,16 @@
     <preference for="RetailExpress\SkyLink\Api\Sales\Payments\SkyLinkPaymentMethodRepositoryInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\SkyLinkPaymentMethodRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Payments\SkyLinkPaymentMethodServiceInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\SkyLinkPaymentMethodService"/>
 
+    <!-- Add a new console command to bulk sync -->
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="skylinkBulkProductsCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkProductsCommand</item>
+            </argument>
+            <argument name="commands" xsi:type="array">
+                <item name="skylinkBulkCustomersCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkCustomersCommand</item>
+            </argument>
+        </arguments>
+    </type>
+
 </config>

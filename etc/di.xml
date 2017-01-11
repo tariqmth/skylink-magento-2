@@ -33,7 +33,6 @@
     </type>
 
     <!-- Catalogue attribute implementations -->
-    <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\ConfigInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\Config"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeOptionRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeOptionService"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeRepository"/>
@@ -124,7 +123,6 @@
         <plugin name="skylink_shipment_repository" type="RetailExpress\SkyLink\Plugin\Magento\Sales\Shipments\ShipmentRepositoryPlugin" sortOrder="10" disabled="false"/>
     </type>
 
-    <preference for="RetailExpress\SkyLink\Api\Sales\Payments\ConfigInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\Config"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Payments\MagentoPaymentMethodRepositoryInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\MagentoPaymentMethodRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Payments\SkyLinkPaymentBuilderInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\SkyLinkPaymentBuilder"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Payments\SkyLinkPaymentMethodRepositoryInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\SkyLinkPaymentMethodRepository"/>

@@ -14,7 +14,7 @@ use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductRepositoryFactory as SkyLinkProductRepositoryFactory;
 use RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId;
 
-// @todo refactor this, particularly about caring for composite products and removing reruns of composite reruns
+// @todo refactor this, particularly about stock only and removing reruns of composite reruns
 class SyncSkyLinkProductToMagentoProductHandler
 {
     private $skyLinkProductRepositoryFactory;
@@ -79,10 +79,11 @@ class SyncSkyLinkProductToMagentoProductHandler
         $skyLinkProductRepository = $this->skyLinkProductRepositoryFactory->create();
 
         /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Products\Product $skyLinkProduct */
-        $skyLinkProduct = $skyLinkProductRepository->find($skyLinkProductId, $salesChannelId);
-
-        // We'll replace the composite product (if it is one) with the singular version if it is required
-        $skyLinkProduct = $this->replaceCompositeProductIfNecessary($command, $skyLinkProduct, $skyLinkProductId);
+        if (false === $command->stockOnly) {
+            $skyLinkProduct = $skyLinkProductRepository->find($skyLinkProductId, $salesChannelId);
+        } else {
+            $skyLinkProduct = $skyLinkProductRepository->findSpecific($skyLinkProductId, $salesChannelId);
+        }
 
         // @todo should this be located here or in the repository?
         if (null === $skyLinkProduct) {
@@ -96,6 +97,28 @@ class SyncSkyLinkProductToMagentoProductHandler
             throw $e;
         }
 
+        if (true === $command->stockOnly) {
+            $this->handleStockOnlySync($command, $skyLinkProduct);
+
+            return;
+        }
+
+        $magentoProduct = $this->handleFullSync($command, $skyLinkProduct);
+
+        $this->eventManager->dispatch(
+            'retail_express_skylink_skylink_product_was_synced_to_magento_product',
+            [
+                'command' => $command,
+                'skylink_product' => $skyLinkProduct,
+                'magento_product' => $magentoProduct,
+            ]
+        );
+    }
+
+    private function handleFullSync(
+        SyncSkyLinkProductToMagentoProductCommand $command,
+        SkyLinkProduct $skyLinkProduct
+    ) {
         // If we're not allowed to proceed, we'll just
         if (
             $this->caresAboutCompositeProductReruns($command, $skyLinkProduct) &&
@@ -115,7 +138,7 @@ class SyncSkyLinkProductToMagentoProductHandler
                 continue;
             }
 
-            $this->logger->info('Syncing SkyLink Product to Magento Product', [
+            $this->logger->info('Syncing SkyLink Product to Magento Product.', [
                 'SkyLink Product ID' => $skyLinkProduct->getId(),
                 'SkyLink Product SKU' => $skyLinkProduct->getSku(),
                 'Syncer' => $syncer->getName(),
@@ -133,36 +156,36 @@ class SyncSkyLinkProductToMagentoProductHandler
             $this->compositeProductRerunManager->didSync($skyLinkProduct);
         }
 
-        $this->eventManager->dispatch(
-            'retail_express_skylink_skylink_product_was_synced_to_magento_product',
-            [
-                'command' => $command,
-                'skylink_product' => $skyLinkProduct,
-                'magento_product' => $magentoProduct,
-            ]
-        );
+        return $magentoProduct;
     }
 
-    /**
-     * @return SkyLinkProduct
-     */
-    private function replaceCompositeProductIfNecessary(
+    private function handleStockOnlySync(
         SyncSkyLinkProductToMagentoProductCommand $command,
-        SkyLinkProduct $skyLinkProduct,
-        SkyLinkProductId $skyLinkProductId
+        SkyLinkProduct $skyLinkProduct
     ) {
-        // Check that either the product is not composite, or that we're allowed to use composite products
-        if (false === $skyLinkProduct instanceof CompositeSkyLinkProduct || true === $command->useCompositeProducts) {
-            return $skyLinkProduct;
+        foreach ($this->syncers as $syncer) {
+
+            // The syncer must botha accept the SkyLink Product
+            // and be able to sync inventory to continue.
+            if (!$syncer->accepts($skyLinkProduct) ||
+                !$syncer->canSyncSkyLinkInventoryItemToMagentoStockItem()
+            ) {
+                continue;
+            }
+
+            $this->logger->info('Syncing SkyLink Inventory Item to Magento Stock Item.', [
+                'SkyLink Product ID' => $skyLinkProduct->getId(),
+                'SkyLink Product SKU' => $skyLinkProduct->getSku(),
+                'Syncer' => $syncer->getName(),
+            ]);
+
+            // Perform the actual sync
+            $syncer->syncSkyLinkInventoryItemToMagentoStockItem($skyLinkProduct);
+
+            return;
         }
 
-        // @todo should we throw an exception in case the right product isn't there? I don't think it could get this far
-        return array_first(
-            $skyLinkProduct->getProducts(),
-            function ($key, SkyLinkProduct $childSkyLinkProduct) use ($skyLinkProductId) {
-                return $childSkyLinkProduct->getId()->sameValueAs($skyLinkProductId);
-            }
-        );
+        throw new InvalidArgumentException("Could not find inventory syncer for SkyLink Product #{$skyLinkProductId}.");
     }
 
     private function caresAboutCompositeProductReruns(

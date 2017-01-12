@@ -19,6 +19,6 @@ class MagentoSimpleProductStockItemMapper implements MagentoSimpleProductStockIt
 
         $nativeQty = $skyLinkInventoryItem->getQty()->toNative();
         $magentoStockItem->setIsInStock($nativeQty > 0);
-        $magentoStockItem->setQty($nativeQty);
+        $magentoStockItem->setQty($nativeQty >= 0 ? $nativeQty : 0); // Magento doesn't allow qty below 0
     }
 }

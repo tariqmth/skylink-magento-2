@@ -3,10 +3,10 @@
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
 use Magento\CatalogInventory\Api\Data\StockItemInterface;
-use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoStockItemMapperInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductStockItemMapperInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\InventoryItem as SkyLinkInventoryItem;
 
-class MagentoStockItemMapper implements MagentoStockItemMapperInterface
+class MagentoSimpleProductStockItemMapper implements MagentoSimpleProductStockItemMapperInterface
 {
     /**
      * {@inheritdoc}
@@ -16,6 +16,9 @@ class MagentoStockItemMapper implements MagentoStockItemMapperInterface
         SkyLinkInventoryItem $skyLinkInventoryItem
     ) {
         $magentoStockItem->setManageStock($skyLinkInventoryItem->isManaged());
-        $magentoStockItem->setQty($skyLinkInventoryItem->getQty()->toNative());
+
+        $nativeQty = $skyLinkInventoryItem->getQty()->toNative();
+        $magentoStockItem->setIsInStock($nativeQty > 0);
+        $magentoStockItem->setQty($nativeQty);
     }
 }

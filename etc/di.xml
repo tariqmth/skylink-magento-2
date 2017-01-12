@@ -48,10 +48,11 @@
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductLinkManagementInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoConfigurableProductLinkManagement"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoConfigurableProductRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoConfigurableProductService"/>
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductStockItemUpdaterInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoConfigurableProductStockItemUpdater"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoProductMapper"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSimpleProductRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSimpleProductService"/>
-    <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoStockItemMapperInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoStockItemMapper"/>
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductStockItemMapperInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSimpleProductStockItemMapper"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\UrlKeyGeneratorInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\UrlKeyGenerator"/>
 
     <!-- Setup product syncers -->

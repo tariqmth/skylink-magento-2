@@ -10,7 +10,7 @@ use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
-use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoStockItemMapperInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductStockItemMapperInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 use RetailExpress\SkyLink\Api\Catalogue\Products\UrlKeyGeneratorInterface;
@@ -38,7 +38,7 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
 
     public function __construct(
         MagentoProductMapperInterface $magentoProductMapper,
-        MagentoStockItemMapperInterface $magentoStockItemMapper,
+        MagentoSimpleProductStockItemMapperInterface $magentoStockItemMapper,
         ProductInterfaceFactory $magentoProductFactory,
         StockItemInterfaceFactory $magentoStockItemFactory,
         ProductRepositoryInterface $baseMagentoProductRepository,

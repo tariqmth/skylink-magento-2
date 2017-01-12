@@ -5,8 +5,12 @@ namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\Data\ProductInterfaceFactory;
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\CatalogInventory\Api\Data\StockItemInterface;
+use Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory;
+use Magento\CatalogInventory\Api\StockRegistryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductLinkManagementInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductServiceInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductStockItemUpdaterInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Matrix as SkyLinkMatrix;
 use RetailExpress\SkyLink\Api\Catalogue\Products\UrlKeyGeneratorInterface;
@@ -15,6 +19,8 @@ use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableP
 class MagentoConfigurableProductService implements MagentoConfigurableProductServiceInterface
 {
     private $magentoProductMapper;
+
+    private $magentoStockItemUpdater;
 
     private $magentoProductFactory;
 
@@ -29,18 +35,28 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
 
     private $magentoConfigurableProductLinkManagement;
 
+    private $magentoStockItemFactory;
+
+    private $magentoStockRegistry;
+
     public function __construct(
         MagentoProductMapperInterface $magentoProductMapper,
+        MagentoConfigurableProductStockItemUpdaterInterface $magentoStockItemUpdater,
         ProductInterfaceFactory $magentoProductFactory,
         ProductRepositoryInterface $baseMagentoProductRepository,
         UrlKeyGeneratorInterface $urlKeyGenerator,
-        MagentoConfigurableProductLinkManagementInterface $magentoConfigurableProductLinkManagement
+        MagentoConfigurableProductLinkManagementInterface $magentoConfigurableProductLinkManagement,
+        StockItemInterfaceFactory $magentoStockItemFactory,
+        StockRegistryInterface $magentoStockRegistry
     ) {
         $this->magentoProductMapper = $magentoProductMapper;
+        $this->magentoStockItemUpdater = $magentoStockItemUpdater;
         $this->magentoProductFactory = $magentoProductFactory;
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
         $this->urlKeyGenerator = $urlKeyGenerator;
         $this->magentoConfigurableProductLinkManagement = $magentoConfigurableProductLinkManagement;
+        $this->magentoStockItemFactory = $magentoStockItemFactory;
+        $this->magentoStockRegistry = $magentoStockRegistry;
     }
 
     /**
@@ -52,10 +68,13 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
         $magentoConfigurableProduct = $this->magentoProductFactory->create();
         $magentoConfigurableProduct->setTypeId(ConfigurableProductType::TYPE_CODE);
 
+        /* @var StockItemInterface $magentoStockItem */
+        $magentoStockItem = $this->magentoStockItemFactory->create();
+
         $this->mapProduct($magentoConfigurableProduct, $skyLinkMatrix);
         $this->setUrlKeyForMappedProduct($magentoConfigurableProduct);
         $this->linkSimpleProducts($skyLinkMatrix, $magentoConfigurableProduct, $magentoSimpleProducts);
-        $this->save($magentoConfigurableProduct);
+        $this->updateStockAndSave($magentoConfigurableProduct, $magentoStockItem);
 
         return $magentoConfigurableProduct;
     }
@@ -68,9 +87,12 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
         ProductInterface $magentoConfigurableProduct,
         array $magentoSimpleProducts
     ) {
+        /* @var StockItemInterface $magentoStockItem */
+        $magentoStockItem = $this->magentoStockRegistry->getStockItemBySku($magentoConfigurableProduct->getSku());
+
         $this->mapProduct($magentoConfigurableProduct, $skyLinkMatrix);
         $this->linkSimpleProducts($skyLinkMatrix, $magentoConfigurableProduct, $magentoSimpleProducts);
-        $this->save($magentoConfigurableProduct);
+        $this->updateStockAndSave($magentoConfigurableProduct, $magentoStockItem);
     }
 
     private function mapProduct(ProductInterface $magentoConfigurableProduct, SkyLinkMatrix $skyLinkMatrix)
@@ -84,9 +106,13 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
         $magentoConfigurableProduct->setCustomAttribute('url_key', $urlKey);
     }
 
-    private function save(ProductInterface $magentoConfigurableProduct)
-    {
+    private function updateStockAndSave(
+        ProductInterface $magentoConfigurableProduct,
+        StockItemInterface $magentoStockItem
+    ) {
+        $this->magentoStockItemUpdater->updateStockItem($magentoStockItem);
         $this->baseMagentoProductRepository->save($magentoConfigurableProduct);
+        $this->magentoStockRegistry->updateStockItemBySku($magentoConfigurableProduct->getSku(), $magentoStockItem);
     }
 
     private function linkSimpleProducts(

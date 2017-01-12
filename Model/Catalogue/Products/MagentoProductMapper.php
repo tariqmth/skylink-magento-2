@@ -47,7 +47,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
 
         // Use the cubic weight for the given product
         // @todo this should be configuration-based
-        $magentoProduct->setWeight($skyLinkProduct->getPhysicalPackage()->getCubicWeight()->toNative());
+        $magentoProduct->setWeight($skyLinkProduct->getPhysicalPackage()->getWeight()->toNative());
 
         // @todo map inventory, physical package and attributes
         foreach (SkyLinkAttributeCode::getConstants() as $skyLinkAttributeCodeString) {

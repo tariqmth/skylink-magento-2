@@ -2,9 +2,10 @@
 
 namespace RetailExpress\SkyLink\Commands\Catalogue\Products;
 
+use RetailExpress\CommandBus\Api\Queues\NormallyQueuedCommand;
 use RetailExpress\CommandBus\Api\Queues\QueueableCommand;
 
-class SyncSkyLinkProductToMagentoProductCommand implements QueueableCommand
+class SyncSkyLinkProductToMagentoProductCommand extends NormallyQueuedCommand implements QueueableCommand
 {
     /**
      * The SkyLink Product ID.
@@ -26,6 +27,14 @@ class SyncSkyLinkProductToMagentoProductCommand implements QueueableCommand
      * @var string
      */
     public $changeSetId;
+
+    /**
+     * Flag for whether we use composite products, as they can
+     * be returned for a given SkyLink Simple Product ID.
+     *
+     * @var bool
+     */
+    public $useCompositeProducts = true;
 
     /**
      * Flag for whether the sync is a potential composite product rerun (meaning that

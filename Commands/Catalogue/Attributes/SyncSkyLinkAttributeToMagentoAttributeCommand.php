@@ -2,9 +2,10 @@
 
 namespace RetailExpress\SkyLink\Commands\Catalogue\Attributes;
 
+use RetailExpress\CommandBus\Api\Queues\AlwaysQueuedCommand;
 use RetailExpress\CommandBus\Api\Queues\QueueableCommand;
 
-class SyncSkyLinkAttributeToMagentoAttributeCommand implements QueueableCommand
+class SyncSkyLinkAttributeToMagentoAttributeCommand extends AlwaysQueuedCommand implements QueueableCommand
 {
     /**
      * The Magento Attribute Code.

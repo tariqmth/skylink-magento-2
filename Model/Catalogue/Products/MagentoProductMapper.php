@@ -3,6 +3,7 @@
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product\Visibility;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetRepositoryInterface;
@@ -39,6 +40,8 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         // New products require a little more mapping
         if (!$magentoProduct->getId()) {
             $this->mapNewMagentoProduct($magentoProduct, $skyLinkProduct);
+        } else {
+            $this->overrideVisibilityForExistingProduct($magentoProduct);
         }
 
         // Setup pricing for product
@@ -93,6 +96,29 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         $magentoProduct->setCustomAttribute('skylink_product_id', (string) $skyLinkProduct->getId());
 
         $magentoProduct->setName((string) $skyLinkProduct->getName());
+    }
+
+    /**
+     * Looks at an existing Magento Product's visibility and if it's been marked as invisible,
+     * will make it as visible in both catalogue and search. Product who have been adjsuted
+     * to be visible in only catalogue or search will not be modified. This is to account
+     * for products that were in a configurable product that no longer are, they must
+     * become visible.
+     *
+     * @todo Because this is called during the configurable product syncing process, all child
+     *       products will be set to visible, and then back in MagentoConfigurableProductLinkManagement
+     *       set to invisible. See if we can't streamline this without passing an "adjustVisibility"
+     *       paramter through a bunch of classes...
+     *
+     * @param ProductInterface $magentoProduct
+     */
+    private function overrideVisibilityForExistingProduct(ProductInterface $magentoProduct)
+    {
+        $currentVisibility = $magentoProduct->getVisibility();
+
+        if (Visibility::VISIBILITY_NOT_VISIBLE === $currentVisibility) {
+            $magentoProduct->setVisibility(Visibility::VISIBILITY_BOTH);
+        }
     }
 
     /**

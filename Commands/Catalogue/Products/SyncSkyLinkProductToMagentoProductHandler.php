@@ -14,6 +14,7 @@ use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductRepositoryFactory as SkyLinkProductRepositoryFactory;
 use RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId;
 
+// @todo refactor this, particularly about caring for composite products and removing reruns of composite reruns
 class SyncSkyLinkProductToMagentoProductHandler
 {
     private $skyLinkProductRepositoryFactory;
@@ -80,6 +81,9 @@ class SyncSkyLinkProductToMagentoProductHandler
         /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Products\Product $skyLinkProduct */
         $skyLinkProduct = $skyLinkProductRepository->find($skyLinkProductId, $salesChannelId);
 
+        // We'll replace the composite product (if it is one) with the singular version if it is required
+        $skyLinkProduct = $this->replaceCompositeProductIfNecessary($command, $skyLinkProduct, $skyLinkProductId);
+
         // @todo should this be located here or in the repository?
         if (null === $skyLinkProduct) {
             $e = SkyLinkProductDoesNotExistException::withSkyLinkProductId($skyLinkProductId);
@@ -136,6 +140,28 @@ class SyncSkyLinkProductToMagentoProductHandler
                 'skylink_product' => $skyLinkProduct,
                 'magento_product' => $magentoProduct,
             ]
+        );
+    }
+
+    /**
+     * @return SkyLinkProduct
+     */
+    private function replaceCompositeProductIfNecessary(
+        SyncSkyLinkProductToMagentoProductCommand $command,
+        SkyLinkProduct $skyLinkProduct,
+        SkyLinkProductId $skyLinkProductId
+    ) {
+        // Check that either the product is not composite, or that we're allowed to use composite products
+        if (false === $skyLinkProduct instanceof CompositeSkyLinkProduct || true === $command->useCompositeProducts) {
+            return $skyLinkProduct;
+        }
+
+        // @todo should we throw an exception in case the right product isn't there? I don't think it could get this far
+        return array_first(
+            $skyLinkProduct->getProducts(),
+            function ($key, SkyLinkProduct $childSkyLinkProduct) use ($skyLinkProductId) {
+                return $childSkyLinkProduct->getId()->sameValueAs($skyLinkProductId);
+            }
         );
     }
 

@@ -115,7 +115,7 @@ bin/magento retail-express:command-bus:consume-queue --help
 
 > You must run these command-line apps in order to process queued jobs and in turn, sync products or customers. Ideally, [Supervisor](http://supervisord.org) or something similar would be used to mantain an instance of these commands running at all times, however you can utilise options available to you (such as `--max-runtime` to schedule these tasks in your server's cron system.
 
-## Initial sync
+## Initial Sync
 
 In order to trigger the initial sync of your data, a job must be queued for each and every customer and product that will sync from Retail Express to the website. Subsequent syncs will be triggered using EDS.
 
@@ -125,3 +125,7 @@ To create the queued jobs for the initial sync, type:
 bin/magento retail-express:skylink:bulk-products
 bin/magento retail-express:skylink:bulk-customers
 ```
+
+### 4.0 Known Issues
+
+1. **If a product is a child for a configurable product but then is removed, it's visibility isn't automatically set to "catalogue, search".** _The reason for this is because when a product is synced prior to placing an order, only the individual product is synced, not in the context of a configurable product. If the visibility is automatically set to "catalogue, search", any "not visibile individually" product would become visible each time it's ordered._

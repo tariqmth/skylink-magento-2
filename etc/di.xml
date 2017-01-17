@@ -55,6 +55,15 @@
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductStockItemMapperInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSimpleProductStockItemMapper"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\UrlKeyGeneratorInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\UrlKeyGenerator"/>
 
+    <!-- Setup inventory syncer for simple products -->
+    <type name="RetailExpress\SkyLink\Commands\Catalogue\Products\SyncSkyLinkInventoryItemToMagentoStockItemHandler">
+        <arguments>
+            <argument name="syncers" xsi:type="array">
+                <item name="simple" xsi:type="object">RetailExpress\SkyLink\Model\Catalogue\Products\SkyLinkSimpleInventoryItemToMagentoSimpleStockItemSyncer</item>
+            </argument>
+        </arguments>
+    </type>
+
     <!-- Setup product syncers -->
     <type name="RetailExpress\SkyLink\Commands\Catalogue\Products\SyncSkyLinkProductToMagentoProductHandler">
         <arguments>

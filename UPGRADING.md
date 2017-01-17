@@ -1,6 +1,6 @@
 # SkyLink for Magento 2 Upgrade Guide
 
-## Upgrading 1.0.0-beta4 to 1.0.0-beta5
+## Upgrading 1.0.0-beta5 to 1.0.0-beta6
 
 1. **You must be connected to a Retail Express database that runs the latest APIs and EDS functionality**.
 2. Legacy package has been deprecated so remove the line containing `retail-express/skylink-magento-2-legacy` from your `composer.json` file.

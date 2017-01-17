@@ -54,18 +54,20 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
     /**
      * {@inheritdoc}
      */
-    public function canSyncSkyLinkInventoryItemToMagentoStockItem()
-    {
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function sync(Product $skyLinkProduct)
     {
-        /* @var \Magento\Catalog\Api\Data\ProductInterface|null $magentoProduct */
-        $magentoProduct = $this->getMagentoProduct($skyLinkProduct);
+        try {
+            /* @var \Magento\Catalog\Api\Data\ProductInterface $magentoProduct */
+            $magentoProduct = $this->magentoSimpleProductRepository->findBySkyLinkProductId($skyLinkProduct->getId());
+        } catch (TooManyProductMatchesException $e) {
+
+            $this->logger->error($e->getMessage(), [
+                'SkyLink Product ID' => $skyLinkProduct->getId(),
+                'SkyLink Product SKU' => $skyLinkProduct->getSku(),
+            ]);
+
+            throw $e;
+        }
 
         if (null !== $magentoProduct) {
 
@@ -94,53 +96,5 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
         }
 
         return $magentoProduct;
-    }
-
-    public function syncSkyLinkInventoryItemToMagentoStockItem(Product $skyLinkProduct)
-    {
-        /* @var \Magento\Catalog\Api\Data\ProductInterface|null $magentoProduct */
-        $magentoProduct = $this->getMagentoProduct($skyLinkProduct);
-
-        if (null === $magentoProduct) {
-            $skyLinkProductId = $skyLinkProduct->getId();
-
-            $e = ExistingMagentoProductRequiredToSyncSkyLinkInventoryItemToStockItemException::withSkyLinkProductId(
-                $skyLinkProductId
-            );
-
-            $this->logger->error($e->getMessage(), [
-                'SkyLink Product ID' => $skyLinkProductId,
-                'SkyLink Product SKU' => $skyLinkProduct->getSku(),
-            ]);
-
-            throw $e;
-        }
-
-        $this->magentoSimpleProductService->updateMagentoProductStockItem($magentoProduct, $skyLinkProduct);
-
-        $skyLinkInventoryItem = $skyLinkProduct->getInventoryItem();
-        $this->logger->debug('Updated the Magento Product\'s stock.', [
-            'SkyLink Product ID' => $skyLinkProduct->getId(),
-            'SkyLink Product SKU' => $skyLinkProduct->getSku(),
-            'Magento Product ID' => $magentoProduct->getId(),
-            'Magento Product SKU' => $magentoProduct->getSku(),
-            'Stock Is Managed' => $skyLinkInventoryItem->isManaged(),
-            'Qty In Stock' => $skyLinkInventoryItem->getQty(),
-        ]);
-    }
-
-    private function getMagentoProduct(Product $skyLinkProduct)
-    {
-        try {
-            return $this->magentoSimpleProductRepository->findBySkyLinkProductId($skyLinkProduct->getId());
-        } catch (TooManyProductMatchesException $e) {
-
-            $this->logger->error($e->getMessage(), [
-                'SkyLink Product ID' => $skyLinkProduct->getId(),
-                'SkyLink Product SKU' => $skyLinkProduct->getSku(),
-            ]);
-
-            throw $e;
-        }
     }
 }

@@ -61,11 +61,6 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
         return $skyLinkMatrix instanceof Matrix;
     }
 
-    public function canSyncSkyLinkInventoryItemToMagentoStockItem()
-    {
-        return false;
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -124,13 +119,5 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
         }
 
         return $magentoConfigurableProduct;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function syncSkyLinkInventoryItemToMagentoStockItem(Product $skyLinkProduct)
-    {
-        // We don't support
     }
 }

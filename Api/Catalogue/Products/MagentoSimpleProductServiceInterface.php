@@ -23,12 +23,4 @@ interface MagentoSimpleProductServiceInterface
      * @param SkyLinkProduct   $skyLinkProduct
      */
     public function updateMagentoProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct);
-
-    /**
-     * Update the given Magento Product's Stock Item.
-     *
-     * @param ProductInterface $magentoProduct
-     * @param SkyLinkProduct   $skyLinkProduct
-     */
-    public function updateMagentoProductStockItem(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct);
 }

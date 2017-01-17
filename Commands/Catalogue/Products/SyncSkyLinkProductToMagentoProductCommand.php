@@ -29,13 +29,12 @@ class SyncSkyLinkProductToMagentoProductCommand extends NormallyQueuedCommand im
     public $changeSetId;
 
     /**
-     * Flag for whether the sync is stock only.
-     *
-     * Note: This requires a corresponding product to exist in Magento.
+     * Flag for whether we use composite products, as they can
+     * be returned for a given SkyLink Simple Product ID.
      *
      * @var bool
      */
-    public $stockOnly = false;
+    public $useCompositeProducts = true;
 
     /**
      * Flag for whether the sync is a potential composite product rerun (meaning that

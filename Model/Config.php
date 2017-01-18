@@ -4,6 +4,7 @@ namespace RetailExpress\SkyLink\Model;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use RetailExpress\SkyLink\Api\ConfigInterface;
+use RetailExpress\SkyLink\Exceptions\NoSalesChannelIdConfiguredException;
 use RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId;
 use ValueObjects\Identity\UUID as Uuid;
 use ValueObjects\Number\Integer;
@@ -72,10 +73,16 @@ class Config implements ConfigInterface
     /**
      * Get the Sales Channel ID as configured for the current active website.
      *
-     * @return \RetailExpress\SkyLink\ValueObjects\SalesChannelId
+     * @return \RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId
      */
     public function getSalesChannelId()
     {
-        return new SalesChannelId($this->scopeConfig->getValue('skylink/general/sales_channel_id'));
+        $value = $this->scopeConfig->getValue('skylink/general/sales_channel_id');
+
+        if (!is_numeric($value)) {
+            throw NoSalesChannelIdConfiguredException::forGlobalScope();
+        }
+
+        return new SalesChannelId($value);
     }
 }

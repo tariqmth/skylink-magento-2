@@ -143,6 +143,10 @@
     <preference for="RetailExpress\SkyLink\Api\Sales\Payments\SkyLinkPaymentMethodRepositoryInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\SkyLinkPaymentMethodRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Payments\SkyLinkPaymentMethodServiceInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\SkyLinkPaymentMethodService"/>
 
+    <!-- Setup Sales Channel Segregation -->
+    <preference for="RetailExpress\SkyLink\Api\Data\Segregation\SalesChannelGroupInterface" type="RetailExpress\SkyLink\Model\Segregation\SalesChannelGroup"/>
+    <preference for="RetailExpress\SkyLink\Api\Segregation\SalesChannelGroupRepositoryInterface" type="RetailExpress\SkyLink\Model\Segregation\SalesChannelGroupRepository"/>
+
     <!-- Add a new console command to bulk sync -->
     <type name="Magento\Framework\Console\CommandList">
         <arguments>

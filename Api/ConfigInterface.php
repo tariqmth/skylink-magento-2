@@ -40,9 +40,11 @@ interface ConfigInterface
     public function getV2ApiPassword();
 
     /**
-     * Get the Sales Channel ID as configured for the current active website.
+     * Get the Sales Channel ID as configured globally.
      *
      * @return \RetailExpress\SkyLink\ValueObjects\SalesChannelId
+     *
+     * @throws \RetailExpress\SkyLink\Exceptions\NoSalesChannelIdConfiguredException
      */
     public function getSalesChannelId();
 }

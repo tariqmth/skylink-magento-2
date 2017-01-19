@@ -10,7 +10,7 @@ class AttributeNotMappedException extends LocalizedException
     public static function withSkyLinkAttributeCode(SkyLinkAttributeCode $skyLinkAttributeCode)
     {
         return new self(__(
-            'There was no Magento Attribute mapped for SkyLink Attribute %1, please re-sync.',
+            'There was no Magento Attribute mapped for SkyLink Attribute "%1", please re-sync.',
             $skyLinkAttributeCode
         ));
     }

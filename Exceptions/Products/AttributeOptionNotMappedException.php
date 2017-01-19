@@ -10,7 +10,7 @@ class AttributeOptionNotMappedException extends LocalizedException
     public static function withSkyLinkAttributeOption(SkyLinkAttributeOption $skyLinkAttributeOption)
     {
         return new self(__(
-            'There was no Magento Attribute Option mapped for SkyLink Attribute "%1" Option %2, please re-sync.',
+            'There was no Magento Attribute Option mapped for SkyLink Attribute "%1" Option "%2", please re-sync.',
             $skyLinkAttributeOption->getAttribute()->getCode(),
             $skyLinkAttributeOption
         ));

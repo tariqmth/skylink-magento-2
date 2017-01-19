@@ -21,9 +21,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * Get the API version as configured globally.
-     *
-     * @return \ValueObjects\Number\Integer
+     * {@inheritdoc}
      */
     public function getApiVersion()
     {
@@ -31,9 +29,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * Get the V2 API URL as configured globally.
-     *
-     * @return \ValueObjects\Web\Url\Url
+     * {@inheritdoc}
      */
     public function getV2ApiUrl()
     {
@@ -41,9 +37,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * Get the V2 API Client ID as configured globally.
-     *
-     * @return Uuid
+     * {@inheritdoc}
      */
     public function getV2ApiClientId()
     {
@@ -51,9 +45,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * Get the V2 API Username as configured globally.
-     *
-     * @return \ValueObjects\StringLiteral\StringLiteral
+     * {@inheritdoc}
      */
     public function getV2ApiUsername()
     {
@@ -61,9 +53,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * Get the V2 API Password as configured globally.
-     *
-     * @return \ValueObjects\StringLiteral\StringLiteral
+     * {@inheritdoc}
      */
     public function getV2ApiPassword()
     {
@@ -71,9 +61,7 @@ class Config implements ConfigInterface
     }
 
     /**
-     * Get the Sales Channel ID as configured for the current active website.
-     *
-     * @return \RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId
+     * {@inheritdoc}
      */
     public function getSalesChannelId()
     {

@@ -5,7 +5,6 @@ namespace RetailExpress\SkyLink\Observer\Customers;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use RetailExpress\CommandBus\Api\CommandBusInterface;
-use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Commands\Catalogue\Products\SyncSkyLinkProductToMagentoProductCommand;
 use RetailExpress\SkyLink\Commands\Customers\SyncSkyLinkCustomerToMagentoCustomerCommand;
 use RetailExpress\SkyLink\Eds\Entity;
@@ -15,14 +14,9 @@ class WhenEdsChangeSetWasRegistered implements ObserverInterface
 {
     private $commandBus;
 
-    private $config;
-
-    public function __construct(
-        CommandBusInterface $commandBus,
-        ConfigInterface $config
-    ) {
+    public function __construct(CommandBusInterface $commandBus)
+    {
         $this->commandBus = $commandBus;
-        $this->config = $config;
     }
 
     public function execute(Observer $observer)
@@ -59,7 +53,6 @@ class WhenEdsChangeSetWasRegistered implements ObserverInterface
     {
         $command = new SyncSkyLinkProductToMagentoProductCommand();
         $command->skyLinkProductId = $entity->getId()->toNative();
-        $command->salesChannelId = $this->config->getSalesChannelId()->toNative();
 
         return $command;
     }

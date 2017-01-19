@@ -15,13 +15,6 @@ class SyncSkyLinkProductToMagentoProductCommand extends NormallyQueuedCommand im
     public $skyLinkProductId;
 
     /**
-     * The Sales Channel ID.
-     *
-     * @var int
-     */
-    public $salesChannelId;
-
-    /**
      * An optional EDS Change Set ID that this command is associated with.
      *
      * @var string

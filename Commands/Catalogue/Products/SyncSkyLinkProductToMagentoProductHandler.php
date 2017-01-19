@@ -4,6 +4,7 @@ namespace RetailExpress\SkyLink\Commands\Catalogue\Products;
 
 use InvalidArgumentException;
 use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
+use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSyncCompositeProductRerunManagerInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\SkyLinkProductToMagentoProductSyncerInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
@@ -16,6 +17,8 @@ use RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId;
 
 class SyncSkyLinkProductToMagentoProductHandler
 {
+    private $config;
+
     private $skyLinkProductRepositoryFactory;
 
     private $syncers = [];
@@ -39,6 +42,7 @@ class SyncSkyLinkProductToMagentoProductHandler
     /**
      * Create a new Sync SkyLink Product to Magento Product Handler.
      *
+     * @param ConfigInterface                                  $config
      * @param SkyLinkProductRepository                         $skyLinkProductRepositoryFactory
      * @param SkyLinkProductToMagentoProductSyncerInterface[]  $syncers
      * @param MagentoSyncCompositeProductRerunManagerInterface $compositeProductRerunManager
@@ -46,12 +50,14 @@ class SyncSkyLinkProductToMagentoProductHandler
      * @param EventManagerInterface                            $eventManager
      */
     public function __construct(
+        ConfigInterface $config,
         SkyLinkProductRepositoryFactory $skyLinkProductRepositoryFactory,
         array $syncers,
         MagentoSyncCompositeProductRerunManagerInterface $compositeProductRerunManager,
         SkyLinkLoggerInterface $logger,
         EventManagerInterface $eventManager
     ) {
+        $this->config = $config;
         $this->skyLinkProductRepositoryFactory = $skyLinkProductRepositoryFactory;
 
         array_walk($syncers, function (SkyLinkProductToMagentoProductSyncerInterface $syncer) {
@@ -72,7 +78,7 @@ class SyncSkyLinkProductToMagentoProductHandler
     public function handle(SyncSkyLinkProductToMagentoProductCommand $command)
     {
         $skyLinkProductId = new SkyLinkProductId($command->skyLinkProductId);
-        $salesChannelId = new SalesChannelId($command->salesChannelId);
+        $salesChannelId = $this->config->getSalesChannelId();
 
         /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductRepository $skyLinkProductRepository */
         $skyLinkProductRepository = $this->skyLinkProductRepositoryFactory->create();

@@ -50,8 +50,7 @@ class BulkProductsCommand extends Command
 
         $this
             ->setDescription('Gets a list of products from Retail Express and queues a job for each one to sync')
-            ->addOption('since', null, InputOption::VALUE_REQUIRED, 'Only products updated in Retail Express within the specified timeframe (in seconds) will be synced.')
-            ->addOption('sales-channel-id', null, InputOption::VALUE_REQUIRED, 'Custom Sales Channel ID.', (string) $this->getDefaultSalesChannelId());
+            ->addOption('since', null, InputOption::VALUE_REQUIRED, 'Only products updated in Retail Express within the specified timeframe (in seconds) will be synced.');
     }
 
     /**
@@ -77,11 +76,10 @@ class BulkProductsCommand extends Command
         // Loop over our IDs and add dispatch a command to sync each
         array_walk(
             $skyLinkProductIds,
-            function (SkyLinkProductId $skyLinkProductId) use ($salesChannelId, $progressBar) {
+            function (SkyLinkProductId $skyLinkProductId) use ($progressBar) {
 
                 // Create a new command to sync the product
                 $command = new SyncSkyLinkProductToMagentoProductCommand();
-                $command->salesChannelId = (string) $salesChannelId;
                 $command->skyLinkProductId = (string) $skyLinkProductId;
                 $command->potentialCompositeProductRerun = true;
 
@@ -106,20 +104,6 @@ MESSAGE
      * @return SalesChannelId
      */
     private function getSalesChannelId(InputInterface $input)
-    {
-        $customSalesChannelId = $input->getOption('sales-channel-id');
-
-        if (null !== $customSalesChannelId) {
-            return new SalesChannelId($customSalesChannelId);
-        }
-
-        return $this->getDefaultSalesChannelId();
-    }
-
-    /**
-     * @return SalesChannelId
-     */
-    private function getDefaultSalesChannelId()
     {
         return $this->config->getSalesChannelId();
     }

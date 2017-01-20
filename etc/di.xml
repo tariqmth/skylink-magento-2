@@ -108,7 +108,12 @@
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderItemBuilderInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\SkyLinkOrderItemBuilder"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderServiceInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\SkyLinkOrderService"/>
 
-    <!-- Create a plugin for managing SkyLink Order IDs within Magento Orders (extension attributes) -->
+    <!-- Create a plugin for syncing stock prior to placing an order -->
+    <type name="Magento\Sales\Api\OrderManagementInterface">
+        <plugin name="skylink_order_management" type="RetailExpress\SkyLink\Plugin\Magento\Sales\Orders\OrderManagementPlugin" sortOrder="10" disabled="false"/>
+    </type>
+
+    <!-- Create a plugin for creating SkyLink Order and managing their IDs within Magento Orders (extension attributes) -->
     <type name="Magento\Sales\Api\OrderRepositoryInterface">
         <plugin name="skylink_order_repository" type="RetailExpress\SkyLink\Plugin\Magento\Sales\Orders\OrderRepositoryPlugin" sortOrder="10" disabled="false"/>
     </type>

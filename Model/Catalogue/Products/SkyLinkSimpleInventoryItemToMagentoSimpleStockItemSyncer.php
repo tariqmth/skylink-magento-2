@@ -77,8 +77,6 @@ class SkyLinkSimpleInventoryItemToMagentoSimpleStockItemSyncer implements SkyLin
         /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Products\InventoryItem $skyLinkInventoryItem */
         $skyLinkInventoryItem = $skyLinkProduct->getInventoryItem();
 
-        var_dump($skyLinkInventoryItem);
-
         // Map the stock item and save it
         $this->magentoStockItemMapper->mapStockItem($magentoStockItem, $skyLinkInventoryItem);
         $this->magentoStockRegistry->updateStockItemBySku($magentoProduct->getSku(), $magentoStockItem);

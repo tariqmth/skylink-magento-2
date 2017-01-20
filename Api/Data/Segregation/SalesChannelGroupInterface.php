@@ -21,14 +21,28 @@ interface SalesChannelGroupInterface
     public function setSalesChannelId(SalesChannelId $salesChannelId);
 
     /**
-     * Returns the Magento Websites associated with the group.
+     * Gets the Magento Stores associated with the group.
+     *
+     * @return \Magento\Store\Api\Data\StoreInterface[]
+     */
+    public function getMagentoStores();
+
+    /**
+     * Sets the Magento Stores associated with the group.
+     *
+     * @param \Magento\Store\Api\Data\StoreInterface[] $magentoStores
+     */
+    public function setMagentoStores(array $magentoStores);
+
+    /**
+     * Gets the Magento Websites associated with the group.
      *
      * @return \Magento\Store\Api\Data\WebsiteInterface[]
      */
     public function getMagentoWebsites();
 
     /**
-     * Returns the Magento Websites associated with the group.
+     * Sets the Magento Websites associated with the group.
      *
      * @param \Magento\Store\Api\Data\WebsiteInterface[] $magentoWebsites
      */

@@ -2,6 +2,7 @@
 
 namespace RetailExpress\SkyLink\Model\Segregation;
 
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 use RetailExpress\SkyLink\Api\Data\Segregation\SalesChannelGroupInterface;
 use RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId;
@@ -9,6 +10,8 @@ use RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId;
 class SalesChannelGroup implements SalesChannelGroupInterface
 {
     private $salesChannelId;
+
+    private $magentoStores = [];
 
     private $magentoWebsites = [];
 
@@ -34,6 +37,24 @@ class SalesChannelGroup implements SalesChannelGroupInterface
     public function getMagentoWebsites()
     {
         return $this->magentoWebsites;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setMagentoStores(array $magentoStores)
+    {
+        $this->magentoStores = array_map(function (StoreInterface $magentoStore) {
+            return $magentoStore;
+        }, $magentoStores);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMagentoStores()
+    {
+        return $this->magentoStores;
     }
 
     /**

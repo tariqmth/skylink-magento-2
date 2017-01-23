@@ -50,10 +50,8 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
     /**
      * {@inheritdoc}
      */
-    public function sync(SkyLinkProduct $skyLinkProduct, array $magentoWebsites)
+    public function sync(SkyLinkProduct $skyLinkProduct, array $skyLinkProductInSalesChannelGroups)
     {
-        $this->assertMagentoWebsites($magentoWebsites);
-
         try {
             /* @var \Magento\Catalog\Api\Data\ProductInterface $magentoProduct */
             $magentoProduct = $this->magentoSimpleProductRepository->findBySkyLinkProductId($skyLinkProduct->getId());
@@ -93,16 +91,36 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
             ]);
         }
 
-        return $magentoProduct;
-    }
+        if (count($skyLinkProductInSalesChannelGroups) < 1) {
+            return;
+        }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function syncFromSkyLinkProductInSalesChannelGroup(
-        ProductInterface $magentoProduct,
-        SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInsalesChannelGroup
-    ) {
-        //
+        $this->logger->debug('Updating Magento Product data using SkyLink Product data fetched from all configured Sales Channel IDs.', [
+            'SkyLink Product ID' => $skyLinkProduct->getId(),
+            'SkyLink Product SKU' => $skyLinkProduct->getSku(),
+            'Magento Product ID' => $magentoProduct->getId(),
+            'Magento Product SKU' => $magentoProduct->getSku(),
+            'Sales Channel IDs' => array_map(
+                function (SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup) {
+                    return (string) $skyLinkProductInSalesChannelGroup
+                        ->getSalesChannelGroup()
+                        ->getSalesChannelId();
+                },
+                $skyLinkProductInSalesChannelGroups
+            ),
+        ]);
+
+        // Loop through the product in all Sales Channel Groups and update values
+        array_walk(
+            $skyLinkProductInSalesChannelGroups,
+            function (SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup) use ($magentoProduct) {
+                $this->magentoSimpleProductService->updateMagentoProductForSalesChannelGroup(
+                    $magentoProduct,
+                    $skyLinkProductInSalesChannelGroup
+                );
+            }
+        );
+
+        return $magentoProduct;
     }
 }

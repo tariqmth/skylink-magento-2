@@ -2,11 +2,16 @@
 
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
+use InvalidArgumentException;
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Visibility;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Api\Data\WebsiteInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetRepositoryInterface;
+use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
 use RetailExpress\SkyLink\Exceptions\Products\AttributeNotMappedException;
 use RetailExpress\SkyLink\Exceptions\Products\AttributeOptionNotMappedException;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
@@ -44,9 +49,12 @@ class MagentoProductMapper implements MagentoProductMapperInterface
             $this->overrideVisibilityForExistingProduct($magentoProduct);
         }
 
+        // @todo Set the product to be available on the main website, but what if another sales channel uses
+        // the same website? How will we put it on that website? R&D time!
+
         // Setup pricing for product
         $magentoProduct->setPrice($skyLinkProduct->getPricingStructure()->getRegularPrice()->toNative());
-        $magentoProduct->setCustomAttribute('special_price', $skyLinkProduct->getPricingStructure()->getRegularPrice()->toNative());
+        $magentoProduct->setCustomAttribute('special_price', $skyLinkProduct->getPricingStructure()->getSpecialPrice()->toNative());
 
         // Use the cubic weight for the given product
         // @todo this should be configuration-based
@@ -75,6 +83,51 @@ class MagentoProductMapper implements MagentoProductMapperInterface
                 $magentoAttributeOption->getValue()
             );
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function mapMagentoProductForSalesChannelGroup(
+        ProductInterface $magentoProduct,
+        SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup
+    ) {
+        $this->assertImplementationOfProductInterface($magentoProduct);
+
+        $skyLinkProduct = $skyLinkProductInSalesChannelGroup->getSkyLinkProduct();
+        $magentoWebsites = $skyLinkProductInSalesChannelGroup->getSalesChannelGroup()->getMagentoWebsites();
+        $magentoStores = $skyLinkProductInSalesChannelGroup->getSalesChannelGroup()->getMagentoStores();
+
+        // Let's make sure the product is on the given website
+        $magentoProduct->setWebsiteIds(array_merge(
+            $magentoProduct->getWebsiteIds(),
+            array_map(function (WebsiteInterface $magentoWebsite) {
+                return $magentoWebsite->getId();
+            }, $magentoWebsites)
+        ));
+
+        // Now we'll update the product data for each Magento Store
+        array_walk($magentoStores, function (StoreInterface $magentoStore) use ($magentoProduct, $skyLinkProduct) {
+            $magentoStoreId = $magentoStore->getId();
+
+            $magentoProduct->addAttributeUpdate(
+                'name',
+                (string) $skyLinkProduct->getName(),
+                $magentoStoreId
+            );
+
+            $magentoProduct->addAttributeUpdate(
+                'price',
+                $skyLinkProduct->getPricingStructure()->getRegularPrice()->toNative(),
+                $magentoStoreId
+            );
+
+            $magentoProduct->addAttributeUpdate(
+                'special_price',
+                $skyLinkProduct->getPricingStructure()->getSpecialPrice()->toNative(),
+                $magentoStoreId
+            );
+        });
     }
 
     /**
@@ -155,5 +208,15 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         }
 
         return [$magentoAttribute, $magentoAttributeOption];
+    }
+
+    private function assertImplementationOfProductInterface(ProductInterface $product)
+    {
+        if (!$product instanceof Product) {
+            throw new InvalidArgumentException(sprintf(
+                'Updating a Magento Product for a Sales Channel Group requires the Product be an instanceof %s.',
+                Product::class
+            ));
+        }
     }
 }

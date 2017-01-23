@@ -14,6 +14,7 @@ use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductStockItemMa
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 use RetailExpress\SkyLink\Api\Catalogue\Products\UrlKeyGeneratorInterface;
+use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
 
 class MagentoSimpleProductService implements MagentoSimpleProductServiceInterface
 {
@@ -85,6 +86,18 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         $this->mapStockAndSave($magentoProduct, $magentoStockItem, $skyLinkProduct);
     }
 
+    public function updateMagentoProductForSalesChannelGroup(
+        ProductInterface $magentoProduct,
+        SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup
+    ) {
+        $this->magentoProductMapper->mapMagentoProductForSalesChannelGroup(
+            $magentoProduct,
+            $skyLinkProductInSalesChannelGroup
+        );
+
+        $this->save($magentoProduct);
+    }
+
     private function mapProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
     {
         $this->magentoProductMapper->mapMagentoProduct($magentoProduct, $skyLinkProduct);
@@ -102,7 +115,12 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         SkyLinkProduct $skyLinkProduct
     ) {
         $this->magentoStockItemMapper->mapStockItem($magentoStockItem, $skyLinkProduct->getInventoryItem());
-        $this->baseMagentoProductRepository->save($magentoProduct);
+        $this->save($magentoProduct);
         $this->magentoStockRegistry->updateStockItemBySku($magentoProduct->getSku(), $magentoStockItem);
+    }
+
+    private function save(ProductInterface $magentoProduct)
+    {
+        $this->baseMagentoProductRepository->save($magentoProduct);
     }
 }

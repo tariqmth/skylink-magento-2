@@ -131,20 +131,6 @@ class SyncSkyLinkProductToMagentoProductHandler
         /* @var SkyLinkProductInSalesChannelGroupInterface[] $skyLinkProductInSalesChannelGroups */
         $skyLinkProductInSalesChannelGroups = $this->getSkyLinkProductInSalesChannelGroups($skyLinkProductId);
 
-        // // Let's determine the Magento Websites to specify the product to belong to
-        // $magentoWebsites = [];
-        // array_walk(
-        //     $productInSalesChannelGroups,
-        //     function (SkyLinkProductInSalesChannelGroupInterface $productInSalesChannelGroup) use ($magentoWebsites) {
-        //         $magentoWebsites[] = array_merge(
-        //             $magentoWebsites,
-        //             $productInSalesChannelGroup->getSalesChannelGroup()->getMagentoWebsites()
-        //         );
-        //     }
-        // );
-
-        // dd($magentoWebsites);
-
         foreach ($this->syncers as $syncer) {
             if (!$syncer->accepts($skyLinkProduct)) {
                 continue;
@@ -156,17 +142,9 @@ class SyncSkyLinkProductToMagentoProductHandler
                 'Syncer' => $syncer->getName(),
             ]);
 
-            $magentoProduct = $syncer->sync($skyLinkProduct, []);
-
-            // Now we've synced the Magento product, we'll
-            array_walk(
-                $skyLinkProductInSalesChannelGroups,
-                function (SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup) use ($syncer, $magentoProduct) {
-                    $syncer->syncFromSkyLinkProductInSalesChannelGroup(
-                        $magentoProduct,
-                        $skyLinkProductInSalesChannelGroup
-                    );
-                }
+            $magentoProduct = $syncer->sync(
+                $skyLinkProduct,
+                $skyLinkProductInSalesChannelGroups
             );
 
             goto success;

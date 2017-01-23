@@ -3,6 +3,7 @@
 namespace RetailExpress\SkyLink\Api\Catalogue\Products;
 
 use Magento\Catalog\Api\Data\ProductInterface;
+use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 
 interface MagentoSimpleProductServiceInterface
@@ -23,4 +24,16 @@ interface MagentoSimpleProductServiceInterface
      * @param SkyLinkProduct   $skyLinkProduct
      */
     public function updateMagentoProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct);
+
+    /**
+     * Updates the given Magento Product within the context of a SkyLink Product in a Sales Channel Group.
+     *
+     *
+     * @param ProductInterface                           $magentoProduct
+     * @param SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup
+     */
+    public function updateMagentoProductForSalesChannelGroup(
+        ProductInterface $magentoProduct,
+        SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup
+    );
 }

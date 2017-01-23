@@ -60,17 +60,15 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
     /**
      * {@inheritdoc}
      */
-    public function sync(SkyLinkProduct $skyLinkMatrix, array $magentoWebsites)
+    public function sync(SkyLinkProduct $skyLinkMatrix, array $skyLinkProductInSalesChannelGroups)
     {
-        $this->assertMagentoWebsites($magentoWebsites);
-
         $this->logger->debug('Syncing all SkyLink Simple Products contained in the SkyLink Product Matrix.', [
             'SkyLink Product Matrix SKU' => $skyLinkMatrix->getSku(),
         ]);
 
         // We'll sync the simple products in the Matrix
-        $magentoSimpleProducts = array_map(function (SimpleProduct $skyLinkProduct) {
-            return $this->simpleProductSyncer->sync($skyLinkProduct, []);
+        $magentoSimpleProducts = array_map(function (SimpleProduct $skyLinkProduct) use ($skyLinkProductInSalesChannelGroups) {
+            return $this->simpleProductSyncer->sync($skyLinkProduct, $skyLinkProductInSalesChannelGroups);
         }, $skyLinkMatrix->getProducts());
 
         // Grab our SkyLink product IDs
@@ -117,15 +115,5 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
         }
 
         return $magentoConfigurableProduct;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function syncFromSkyLinkProductInSalesChannelGroup(
-        ProductInterface $magentoProduct,
-        SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInsalesChannelGroup
-    ) {
-        dd(__METHOD__);
     }
 }

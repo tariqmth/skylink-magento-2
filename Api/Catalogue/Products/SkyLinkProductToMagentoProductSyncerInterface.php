@@ -27,21 +27,10 @@ interface SkyLinkProductToMagentoProductSyncerInterface
     /**
      * Perform the actual sync of the given SkyLink Product.
      *
-     * @param SkyLinkProduct                             $skyLinkProduct  The SkyLink product being synced
-     * @param \Magento\Store\Api\Data\WebsiteInterface[] $magentoWebsites Websites to enable the product for
+     * @param SkyLinkProduct                                                                                  $skyLinkProduct  The SkyLink product being synced
+     * @param \RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface[] $skyLinkProductInSalesChannelGroups
      *
-     * @return \
+     * @return \Magento\Catalog\Api\Data\ProductInterface
      */
-    public function sync(SkyLinkProduct $skyLinkProduct, array $magentoWebsites);
-
-    /**
-     * Sync the given Magento Product specifics from the SkyLink Product in a Sales Channel Group.
-     *
-     * @param ProductInterface                           $magentoProduct
-     * @param SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInsalesChannelGroup
-     */
-    public function syncFromSkyLinkProductInSalesChannelGroup(
-        ProductInterface $magentoProduct,
-        SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInsalesChannelGroup
-    );
+    public function sync(SkyLinkProduct $skyLinkProduct, array $skyLinkProductInSalesChannelGroups);
 }

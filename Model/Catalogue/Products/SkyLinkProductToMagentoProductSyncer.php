@@ -13,11 +13,4 @@ trait SkyLinkProductToMagentoProductSyncer
     {
         return self::NAME;
     }
-
-    private function assertMagentoWebsites(array $magentoWebsites)
-    {
-        array_walk($magentoWebsites, function (WebsiteInterface $magentoWebsite) {
-            //
-        });
-    }
 }

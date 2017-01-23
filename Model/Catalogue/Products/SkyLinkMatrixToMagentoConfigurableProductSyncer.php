@@ -2,18 +2,22 @@
 
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\SkyLinkProductToMagentoProductSyncerInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductLinkManagementInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductServiceInterface;
+use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Matrix;
-use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product;
+use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\SimpleProduct;
 
 class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductToMagentoProductSyncerInterface
 {
+    use SkyLinkProductToMagentoProductSyncer;
+
     const NAME = 'SkyLink Product Matrix to Magento Configurable Product';
 
     private $magentoConfigurableProductRepository;
@@ -48,15 +52,7 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
     /**
      * {@inheritdoc}
      */
-    public function getName()
-    {
-        return self::NAME;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function accepts(Product $skyLinkMatrix)
+    public function accepts(SkyLinkProduct $skyLinkMatrix)
     {
         return $skyLinkMatrix instanceof Matrix;
     }
@@ -64,15 +60,17 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
     /**
      * {@inheritdoc}
      */
-    public function sync(Product $skyLinkMatrix)
+    public function sync(SkyLinkProduct $skyLinkMatrix, array $magentoWebsites)
     {
+        $this->assertMagentoWebsites($magentoWebsites);
+
         $this->logger->debug('Syncing all SkyLink Simple Products contained in the SkyLink Product Matrix.', [
             'SkyLink Product Matrix SKU' => $skyLinkMatrix->getSku(),
         ]);
 
         // We'll sync the simple products in the Matrix
         $magentoSimpleProducts = array_map(function (SimpleProduct $skyLinkProduct) {
-            return $this->simpleProductSyncer->sync($skyLinkProduct); // @todo prioritise the URL key for the configurable product created later
+            return $this->simpleProductSyncer->sync($skyLinkProduct, []);
         }, $skyLinkMatrix->getProducts());
 
         // Grab our SkyLink product IDs
@@ -119,5 +117,15 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
         }
 
         return $magentoConfigurableProduct;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function syncFromSkyLinkProductInSalesChannelGroup(
+        ProductInterface $magentoProduct,
+        SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInsalesChannelGroup
+    ) {
+        dd(__METHOD__);
     }
 }

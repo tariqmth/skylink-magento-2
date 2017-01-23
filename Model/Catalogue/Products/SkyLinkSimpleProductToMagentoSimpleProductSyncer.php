@@ -2,16 +2,20 @@
 
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\SkyLinkProductToMagentoProductSyncerInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
+use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
 use RetailExpress\SkyLink\Exceptions\Products\TooManyProductMatchesException;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\SimpleProduct;
-use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product;
+use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 
 class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProductToMagentoProductSyncerInterface
 {
+    use SkyLinkProductToMagentoProductSyncer;
+
     const NAME = 'SkyLink Simple Product to Magento Simple Product';
 
     private $magentoSimpleProductRepository;
@@ -38,15 +42,7 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
     /**
      * {@inheritdoc}
      */
-    public function getName()
-    {
-        return self::NAME;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function accepts(Product $skyLinkProduct)
+    public function accepts(SkyLinkProduct $skyLinkProduct)
     {
         return $skyLinkProduct instanceof SimpleProduct;
     }
@@ -54,8 +50,10 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
     /**
      * {@inheritdoc}
      */
-    public function sync(Product $skyLinkProduct)
+    public function sync(SkyLinkProduct $skyLinkProduct, array $magentoWebsites)
     {
+        $this->assertMagentoWebsites($magentoWebsites);
+
         try {
             /* @var \Magento\Catalog\Api\Data\ProductInterface $magentoProduct */
             $magentoProduct = $this->magentoSimpleProductRepository->findBySkyLinkProductId($skyLinkProduct->getId());
@@ -96,5 +94,15 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
         }
 
         return $magentoProduct;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function syncFromSkyLinkProductInSalesChannelGroup(
+        ProductInterface $magentoProduct,
+        SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInsalesChannelGroup
+    ) {
+        //
     }
 }

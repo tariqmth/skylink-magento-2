@@ -2,7 +2,9 @@
 
 namespace RetailExpress\SkyLink\Api\Catalogue\Products;
 
-use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product;
+use Magento\Catalog\Api\Data\ProductInterface;
+use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
+use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 
 interface SkyLinkProductToMagentoProductSyncerInterface
 {
@@ -16,18 +18,30 @@ interface SkyLinkProductToMagentoProductSyncerInterface
     /**
      * Determine if the syncer accepts the given SkyLink Product to sync.
      *
-     * @param Product $skyLinkProduct
+     * @param SkyLinkProduct $skyLinkProduct
      *
      * @return bool
      */
-    public function accepts(Product $skyLinkProduct);
+    public function accepts(SkyLinkProduct $skyLinkProduct);
 
     /**
      * Perform the actual sync of the given SkyLink Product.
      *
-     * @param Product $skyLinkProduct
+     * @param SkyLinkProduct                             $skyLinkProduct  The SkyLink product being synced
+     * @param \Magento\Store\Api\Data\WebsiteInterface[] $magentoWebsites Websites to enable the product for
      *
-     * @return \Magento\Catalog\Api\Data\ProductInterface
+     * @return \
      */
-    public function sync(Product $skyLinkProduct);
+    public function sync(SkyLinkProduct $skyLinkProduct, array $magentoWebsites);
+
+    /**
+     * Sync the given Magento Product specifics from the SkyLink Product in a Sales Channel Group.
+     *
+     * @param ProductInterface                           $magentoProduct
+     * @param SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInsalesChannelGroup
+     */
+    public function syncFromSkyLinkProductInSalesChannelGroup(
+        ProductInterface $magentoProduct,
+        SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInsalesChannelGroup
+    );
 }

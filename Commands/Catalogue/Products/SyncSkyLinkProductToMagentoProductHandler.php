@@ -7,13 +7,17 @@ use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
 use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSyncCompositeProductRerunManagerInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\SkyLinkProductToMagentoProductSyncerInterface;
+use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
+use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterfaceFactory;
+use RetailExpress\SkyLink\Api\Data\Segregation\SalesChannelGroupInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
+use RetailExpress\SkyLink\Api\Segregation\SalesChannelGroupRepositoryInterface;
 use RetailExpress\SkyLink\Exceptions\Products\SkyLinkProductDoesNotExistException;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\CompositeProduct as CompositeSkyLinkProduct;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
+use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductRepository as SkyLinkProductRepository;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductRepositoryFactory as SkyLinkProductRepositoryFactory;
-use RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId;
 
 class SyncSkyLinkProductToMagentoProductHandler
 {
@@ -21,9 +25,15 @@ class SyncSkyLinkProductToMagentoProductHandler
 
     private $skyLinkProductRepositoryFactory;
 
+    private $skyLinkProductRepository;
+
     private $syncers = [];
 
     private $compositeProductRerunManager;
+
+    private $salesChannelGroupRepository;
+
+    private $skyLinkProductInSalesChannelGroupFactory;
 
     /**
      * Event Manager instance.
@@ -42,18 +52,22 @@ class SyncSkyLinkProductToMagentoProductHandler
     /**
      * Create a new Sync SkyLink Product to Magento Product Handler.
      *
-     * @param ConfigInterface                                  $config
-     * @param SkyLinkProductRepository                         $skyLinkProductRepositoryFactory
-     * @param SkyLinkProductToMagentoProductSyncerInterface[]  $syncers
-     * @param MagentoSyncCompositeProductRerunManagerInterface $compositeProductRerunManager
-     * @param SkyLinkLoggerInterface                           $logger
-     * @param EventManagerInterface                            $eventManager
+     * @param ConfigInterface                                   $config
+     * @param SkyLinkProductRepository                          $skyLinkProductRepositoryFactory
+     * @param SkyLinkProductToMagentoProductSyncerInterface[]   $syncers
+     * @param MagentoSyncCompositeProductRerunManagerInterface  $compositeProductRerunManager
+     * @param SalesChannelGroupRepositoryInterface              $salesChannelGroupRepository
+     * @param SkyLinkProductInSalesChannelGroupInterfaceFactory $skyLinkProductInSalesChannelGroupFactory
+     * @param SkyLinkLoggerInterface                            $logger
+     * @param EventManagerInterface                             $eventManager
      */
     public function __construct(
         ConfigInterface $config,
         SkyLinkProductRepositoryFactory $skyLinkProductRepositoryFactory,
         array $syncers,
         MagentoSyncCompositeProductRerunManagerInterface $compositeProductRerunManager,
+        SalesChannelGroupRepositoryInterface $salesChannelGroupRepository,
+        SkyLinkProductInSalesChannelGroupInterfaceFactory $skyLinkProductInSalesChannelGroupFactory,
         SkyLinkLoggerInterface $logger,
         EventManagerInterface $eventManager
     ) {
@@ -65,6 +79,8 @@ class SyncSkyLinkProductToMagentoProductHandler
         });
 
         $this->compositeProductRerunManager = $compositeProductRerunManager;
+        $this->salesChannelGroupRepository = $salesChannelGroupRepository;
+        $this->skyLinkProductInSalesChannelGroupFactory = $skyLinkProductInSalesChannelGroupFactory;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
     }
@@ -78,13 +94,9 @@ class SyncSkyLinkProductToMagentoProductHandler
     public function handle(SyncSkyLinkProductToMagentoProductCommand $command)
     {
         $skyLinkProductId = new SkyLinkProductId($command->skyLinkProductId);
-        $salesChannelId = $this->config->getSalesChannelId();
 
-        /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductRepository $skyLinkProductRepository */
-        $skyLinkProductRepository = $this->skyLinkProductRepositoryFactory->create();
-
-        /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Products\Product $skyLinkProduct */
-        $skyLinkProduct = $skyLinkProductRepository->find($skyLinkProductId, $salesChannelId);
+        /* @var SkyLinkProduct $skyLinkProduct */
+        $skyLinkProduct = $this->getSkyLinkProduct($skyLinkProductId);
 
         // @todo should this be located here or in the repository?
         if (null === $skyLinkProduct) {
@@ -112,6 +124,27 @@ class SyncSkyLinkProductToMagentoProductHandler
             return;
         }
 
+        // We'll now grab the product in the context of any additional Sales Channel Groups. We'll
+        // use this to determine what websites to copy the product across to and also allow the
+        // syncer to work on any specifics for the product in that Sales Channel Group.
+
+        /* @var SkyLinkProductInSalesChannelGroupInterface[] $skyLinkProductInSalesChannelGroups */
+        $skyLinkProductInSalesChannelGroups = $this->getSkyLinkProductInSalesChannelGroups($skyLinkProductId);
+
+        // // Let's determine the Magento Websites to specify the product to belong to
+        // $magentoWebsites = [];
+        // array_walk(
+        //     $productInSalesChannelGroups,
+        //     function (SkyLinkProductInSalesChannelGroupInterface $productInSalesChannelGroup) use ($magentoWebsites) {
+        //         $magentoWebsites[] = array_merge(
+        //             $magentoWebsites,
+        //             $productInSalesChannelGroup->getSalesChannelGroup()->getMagentoWebsites()
+        //         );
+        //     }
+        // );
+
+        // dd($magentoWebsites);
+
         foreach ($this->syncers as $syncer) {
             if (!$syncer->accepts($skyLinkProduct)) {
                 continue;
@@ -123,7 +156,19 @@ class SyncSkyLinkProductToMagentoProductHandler
                 'Syncer' => $syncer->getName(),
             ]);
 
-            $magentoProduct = $syncer->sync($skyLinkProduct);
+            $magentoProduct = $syncer->sync($skyLinkProduct, []);
+
+            // Now we've synced the Magento product, we'll
+            array_walk(
+                $skyLinkProductInSalesChannelGroups,
+                function (SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup) use ($syncer, $magentoProduct) {
+                    $syncer->syncFromSkyLinkProductInSalesChannelGroup(
+                        $magentoProduct,
+                        $skyLinkProductInSalesChannelGroup
+                    );
+                }
+            );
+
             goto success;
         }
 
@@ -151,5 +196,51 @@ class SyncSkyLinkProductToMagentoProductHandler
     ) {
         return $skyLinkProduct instanceof CompositeSkyLinkProduct &&
             true === $command->potentialCompositeProductRerun;
+    }
+
+    private function getSkyLinkProduct(SkyLinkProductId $skyLinkProductId)
+    {
+        /* @var \RetailExpress\SkyLink\ValueObjects\SalesChannelId $salesChannelId */
+        $salesChannelId = $this->config->getSalesChannelId();
+
+        return $this->getSkyLinkProductRepository()->find($skyLinkProductId, $salesChannelId);
+    }
+
+    private function getSkyLinkProductInSalesChannelGroups(SkyLinkProductId $skyLinkProductId)
+    {
+        $salesChannelGroups = $this->salesChannelGroupRepository->getList();
+
+        // We'll loop through the Sales Channel Groups and grab the product in the context of each
+        $productInSalesChannelGroups = [];
+        array_walk(
+            $salesChannelGroups,
+            function (SalesChannelGroupInterface $salesChannelGroup) use ($skyLinkProductId, &$productInSalesChannelGroups) {
+                $skyLinkProduct = $this->getSkyLinkProductRepository()->find(
+                    $skyLinkProductId,
+                    $salesChannelGroup->getSalesChannelId()
+                );
+
+                if (null === $skyLinkProduct) {
+                    return;
+                }
+
+                $productInSalesChannelGroup = $this->skyLinkProductInSalesChannelGroupFactory->create();
+                $productInSalesChannelGroup->setSkyLinkProduct($skyLinkProduct);
+                $productInSalesChannelGroup->setSalesChannelGroup($salesChannelGroup);
+
+                $productInSalesChannelGroups[] = $productInSalesChannelGroup;
+            }
+        );
+
+        return $productInSalesChannelGroups;
+    }
+
+    private function getSkyLinkProductRepository()
+    {
+        if (null === $this->skyLinkProductRepository) {
+            $this->skyLinkProductRepository = $this->skyLinkProductRepositoryFactory->create();
+        }
+
+        return $this->skyLinkProductRepository;
     }
 }

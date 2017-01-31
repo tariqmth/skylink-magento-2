@@ -23,7 +23,7 @@ class InstallSchema implements InstallSchemaInterface
         $this->installOrderAttributes($setup, $context);
         $this->installInvoiceAttributes($setup, $context);
         $this->installShipmentAttributes($setup, $context);
-        $this->installLoggingTables($setup, $context);
+        $this->installLoggingTable($setup, $context);
     }
 
     private function installEds(SchemaSetupInterface $setup, ModuleContextInterface $context)
@@ -373,7 +373,7 @@ class InstallSchema implements InstallSchemaInterface
         $installer->getConnection()->createTable($table);
     }
 
-    private function installLoggingTables(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    private function installLoggingTable(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $installer = $setup;
 

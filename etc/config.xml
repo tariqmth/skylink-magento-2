@@ -1,6 +1,15 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
+        <carriers>
+            <skylink_pickup>
+                <active>0</active>
+                <title>Click and Collect</title>
+                <name>Pickup</name>
+                <specificerrmsg>Unfortunately, this is not available. For more, please your local store.</specificerrmsg>
+                <sallowspecific>0</sallowspecific>
+            </skylink_pickup>
+        </carriers>
         <skylink>
             <api>
                 <version_2_url>https://{{database}}.retailexpress.com.au/dotnet/admin/webservices/v2/webstore/service.asmx?wsdl</version_2_url>

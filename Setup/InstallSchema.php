@@ -23,6 +23,7 @@ class InstallSchema implements InstallSchemaInterface
         $this->installOrderAttributes($setup, $context);
         $this->installInvoiceAttributes($setup, $context);
         $this->installShipmentAttributes($setup, $context);
+        $this->installOutletsTable($setup, $context);
         $this->installLoggingTable($setup, $context);
     }
 
@@ -368,6 +369,84 @@ class InstallSchema implements InstallSchemaInterface
                 'sales_shipment',
                 'entity_id',
                 DdlTable::ACTION_CASCADE
+            );
+
+        $installer->getConnection()->createTable($table);
+    }
+
+    private function installOutletsTable(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    {
+        $installer = $setup;
+        $outletsTable = 'retail_express_skylink_outlets';
+
+        $table = $setup
+            ->getConnection()
+            ->newTable($installer->getTable($outletsTable))
+            ->addColumn(
+                'id',
+                DdlTable::TYPE_INTEGER,
+                null,
+                ['unsigned' => true, 'nullable' => false, 'primary' => true]
+            )
+            ->addColumn(
+                'name',
+                DdlTable::TYPE_TEXT,
+                '255',
+                ['nullable' => false]
+            )
+            ->addColumn(
+                'address_line_1',
+                DdlTable::TYPE_TEXT,
+                '255',
+                ['nullable' => true]
+            )
+            ->addColumn(
+                'address_line_2',
+                DdlTable::TYPE_TEXT,
+                '255',
+                ['nullable' => true]
+            )
+            ->addColumn(
+                'address_line_3',
+                DdlTable::TYPE_TEXT,
+                '255',
+                ['nullable' => true]
+            )
+            ->addColumn(
+                'address_city',
+                DdlTable::TYPE_TEXT,
+                '255',
+                ['nullable' => true]
+            )
+            ->addColumn(
+                'address_state',
+                DdlTable::TYPE_TEXT,
+                '255',
+                ['nullable' => true]
+            )
+            ->addColumn(
+                'address_postcode',
+                DdlTable::TYPE_TEXT,
+                '255',
+                ['nullable' => true]
+            )
+            ->addColumn(
+                'address_country_code',
+                DdlTable::TYPE_TEXT,
+                '255',
+                ['nullable' => true]
+            )
+            ->addColumn(
+                'phone_number',
+                DdlTable::TYPE_TEXT,
+                '255',
+                ['nullable' => true]
+            )
+            ->addColumn(
+                'fax_number',
+                DdlTable::TYPE_TEXT,
+                '255',
+                ['nullable' => true]
             );
 
         $installer->getConnection()->createTable($table);

@@ -2,14 +2,12 @@
 
 namespace RetailExpress\SkyLink\Api\Catalogue\Products;
 
-use Magento\Catalog\Api\Data\ProductInterface;
-use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 
 interface SkyLinkProductToMagentoProductSyncerInterface
 {
     /**
-     * Get the name of the syncer (used for debugging purposes)
+     * Get the name of the syncer (used for debugging purposes).
      *
      * @return string
      */
@@ -27,7 +25,7 @@ interface SkyLinkProductToMagentoProductSyncerInterface
     /**
      * Perform the actual sync of the given SkyLink Product.
      *
-     * @param SkyLinkProduct                                                                                  $skyLinkProduct  The SkyLink product being synced
+     * @param SkyLinkProduct                                                                                  $skyLinkProduct                     The SkyLink product being synced
      * @param \RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface[] $skyLinkProductInSalesChannelGroups
      *
      * @return \Magento\Catalog\Api\Data\ProductInterface

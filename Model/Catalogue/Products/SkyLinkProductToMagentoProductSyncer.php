@@ -2,8 +2,6 @@
 
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
-use Magento\Store\Api\Data\WebsiteInterface;
-
 trait SkyLinkProductToMagentoProductSyncer
 {
     /**

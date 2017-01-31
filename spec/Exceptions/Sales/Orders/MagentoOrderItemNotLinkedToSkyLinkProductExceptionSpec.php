@@ -3,7 +3,6 @@
 namespace spec\RetailExpress\SkyLink\Exceptions\Sales\Orders;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use RetailExpress\SkyLink\Exceptions\Sales\Orders\MagentoOrderItemNotLinkedToSkyLinkProductException;
 
 class MagentoOrderItemNotLinkedToSkyLinkProductExceptionSpec extends ObjectBehavior

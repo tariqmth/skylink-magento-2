@@ -2,8 +2,6 @@
 
 namespace RetailExpress\SkyLink\Console\Command;
 
-use DateTimeImmutable;
-use DateTimeZone;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use RetailExpress\CommandBus\Api\CommandBusInterface;
 use RetailExpress\SkyLink\Api\ConfigInterface;
@@ -13,7 +11,6 @@ use RetailExpress\SkyLink\Sdk\Outlets\OutletRepositoryFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class BulkOutletsCommand extends Command
@@ -77,7 +74,7 @@ class BulkOutletsCommand extends Command
 
         $progressBar->finish();
         $output->writeln('');
-        $output->writeln(sprintf(<<<MESSAGE
+        $output->writeln(sprintf(<<<'MESSAGE'
 <info>%s outlets have had jobs queued to sync them.
 Ensure that an instance of 'retail-express:command-bus:consume-queue outlets' is running to perform the actual sync.</info>
 MESSAGE

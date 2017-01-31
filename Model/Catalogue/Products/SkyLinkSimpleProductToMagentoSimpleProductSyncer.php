@@ -2,7 +2,6 @@
 
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
-use Magento\Catalog\Api\Data\ProductInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\SkyLinkProductToMagentoProductSyncerInterface;
@@ -56,7 +55,6 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
             /* @var \Magento\Catalog\Api\Data\ProductInterface $magentoProduct */
             $magentoProduct = $this->magentoSimpleProductRepository->findBySkyLinkProductId($skyLinkProduct->getId());
         } catch (TooManyProductMatchesException $e) {
-
             $this->logger->error($e->getMessage(), [
                 'SkyLink Product ID' => $skyLinkProduct->getId(),
                 'SkyLink Product SKU' => $skyLinkProduct->getSku(),
@@ -66,7 +64,6 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
         }
 
         if (null !== $magentoProduct) {
-
             $this->logger->debug('Found Simple Product already mapped to the SkyLink Product, updating it.', [
                 'SkyLink Product ID' => $skyLinkProduct->getId(),
                 'SkyLink Product SKU' => $skyLinkProduct->getSku(),

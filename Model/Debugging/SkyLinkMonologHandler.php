@@ -4,13 +4,12 @@ namespace RetailExpress\SkyLink\Model\Debugging;
 
 use Magento\Framework\App\ObjectManager;
 use Monolog\Handler\AbstractProcessingHandler;
-use Monolog\Logger;
 use Monolog\Formatter\NormalizerFormatter;
 use RetailExpress\SkyLink\Api\Debugging\ConfigInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkMonologHandlerInterface;
 
 /**
- * @todo See why dependencies injected through the constructor are breaking the admin login.
+ * @todo See why dependencies injected through the constructor are breaking the admin login
  */
 class SkyLinkMonologHandler extends AbstractProcessingHandler implements SkyLinkMonologHandlerInterface
 {
@@ -47,7 +46,7 @@ class SkyLinkMonologHandler extends AbstractProcessingHandler implements SkyLink
                 'message' => $message,
                 'context' => json_encode($context),
                 'logged_at' => $datetime,
-                'captured' => $this->getConfig()->shouldCaptureLogs()
+                'captured' => $this->getConfig()->shouldCaptureLogs(),
             ]
         );
 

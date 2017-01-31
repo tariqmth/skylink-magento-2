@@ -2,12 +2,10 @@
 
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
-use Magento\Catalog\Api\Data\ProductInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\SkyLinkProductToMagentoProductSyncerInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductLinkManagementInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductServiceInterface;
-use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Matrix;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
@@ -95,7 +93,6 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
                 ->magentoConfigurableProductService
                 ->updateMagentoProduct($skyLinkMatrix, $magentoConfigurableProduct, $magentoSimpleProducts);
         } else {
-
             $this->logger->debug('Couldn\'t find existing Magento Configurable Product appropriate for SkyLink Simple Products in the SkyLink Product Matrix, creating one.', [
                 'SkyLink Product Matrix SKU' => $skyLinkMatrix->getSku(),
                 'SkyLink Simple Product IDs' => array_map(function (SkyLinkProductId $skyLinkProductId) {

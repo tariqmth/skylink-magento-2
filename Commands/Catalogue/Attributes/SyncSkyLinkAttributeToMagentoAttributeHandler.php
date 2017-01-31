@@ -131,7 +131,6 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
 
             // If there's a mapping already, nothing further needs to happen
             if (null !== $mappedMagentoAttributeOption) {
-
                 $this->logger->debug(
                     'SkyLink Attribute Option is already mapped to an appropriate Magento Attribute Option.',
                     [
@@ -154,7 +153,6 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
             // Failing this, we'll create a new option
             // @todo move this to the Magento attribute option service
             if (null === $magentoAttributeOptionToMap) {
-
                 $this->logger->debug(
                     'Couldn\'t find an appropriate Magento Attribute Option to map the SkyLink Attribute Option to, creating a new one.',
                     [
@@ -185,7 +183,6 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
                 $magentoAttributeOptionToMap,
                 $skyLinkAttributeOption
             );
-
         }, $skyLinkAttributeOptions);
     }
 }

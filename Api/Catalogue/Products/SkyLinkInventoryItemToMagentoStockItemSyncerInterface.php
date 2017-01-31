@@ -7,7 +7,7 @@ use Magento\Catalog\Api\Data\ProductInterface;
 interface SkyLinkInventoryItemToMagentoStockItemSyncerInterface
 {
     /**
-     * Get the name of the syncer (used for debugging purposes)
+     * Get the name of the syncer (used for debugging purposes).
      *
      * @return string
      */

@@ -9,7 +9,7 @@ interface MagentoConfigurableProductStockItemUpdaterInterface
     /**
      * Updates a Magento Stock Item for a Magento Configurable Product.
      *
-     * @param StockItemInterface   $magentoStockItem
+     * @param StockItemInterface $magentoStockItem
      */
     public function updateStockItem(StockItemInterface $magentoStockItem);
 }

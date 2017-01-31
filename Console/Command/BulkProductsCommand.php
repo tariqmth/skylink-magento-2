@@ -90,7 +90,7 @@ class BulkProductsCommand extends Command
 
         $progressBar->finish();
         $output->writeln('');
-        $output->writeln(sprintf(<<<MESSAGE
+        $output->writeln(sprintf(<<<'MESSAGE'
 <info>%s products have had jobs queued to sync them.
 Ensure that an instance of 'retail-express:command-bus:consume-queue products' is running to perform the actual sync.</info>
 MESSAGE

@@ -3,7 +3,6 @@
 namespace RetailExpress\SkyLink\Model\Outlets;
 
 use Magento\Framework\App\ResourceConnection;
-use Magento\Framework\Exception\NoSuchEntityException;
 use RetailExpress\SkyLink\Api\Outlets\SkyLinkOutletRepositoryInterface;
 use RetailExpress\SkyLink\Sdk\Outlets\Outlet as SkyLinkOutlet;
 use RetailExpress\SkyLink\Sdk\Outlets\OutletId as SkyLinkOutletId;

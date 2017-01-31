@@ -2,7 +2,6 @@
 
 namespace RetailExpress\SkyLink\Plugin\SkyLink\Customers;
 
-use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\State\InputMismatchException;
@@ -35,7 +34,6 @@ class MagentoCustomerServiceValidationPlugin
 
         // Validation errors
         } catch (InputException $e) {
-
             $this->logger->error(__('Validation errors occured while saving a Magento Customer'), [
                 'SkyLink Customer ID' => $skyLinkCustomer->getId(),
                 'Error' => $e->getMessage(),

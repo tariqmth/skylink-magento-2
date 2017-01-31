@@ -41,6 +41,7 @@ class LogViewer extends Action
 
         $jsonResult = $this->jsonResultFactory->create();
         $jsonResult->setData($logs);
+
         return $jsonResult;
     }
 

@@ -3,7 +3,6 @@
 namespace RetailExpress\SkyLink\Commands\Customers;
 
 use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
-use Magento\Framework\Exception\State\InputMismatchException;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerRepositoryFactory as SkylinkCustomerRepositoryFactory;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerRepositoryInterface;

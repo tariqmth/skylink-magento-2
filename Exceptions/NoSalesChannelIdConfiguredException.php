@@ -3,7 +3,6 @@
 namespace RetailExpress\SkyLink\Exceptions;
 
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Store\Api\Data\WebsiteInterface;
 
 class NoSalesChannelIdConfiguredException extends LocalizedException
 {

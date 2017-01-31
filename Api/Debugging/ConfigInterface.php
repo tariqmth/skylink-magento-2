@@ -5,7 +5,7 @@ namespace RetailExpress\SkyLink\Api\Debugging;
 interface ConfigInterface
 {
     /**
-     * Returns if new log entries should be captured
+     * Returns if new log entries should be captured.
      *
      * @return bool
      */

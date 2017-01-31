@@ -81,7 +81,7 @@ class BulkCustomersCommand extends Command
 
         $progressBar->finish();
         $output->writeln('');
-        $output->writeln(sprintf(<<<MESSAGE
+        $output->writeln(sprintf(<<<'MESSAGE'
 <info>%s customers have had jobs queued to sync them.
 Ensure that an instance of 'retail-express:command-bus:consume-queue customers' is running to perform the actual sync.</info>
 MESSAGE

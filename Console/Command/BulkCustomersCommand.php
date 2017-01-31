@@ -66,7 +66,7 @@ class BulkCustomersCommand extends Command
         $progressBar = new ProgressBar($output);
         $progressBar->start();
 
-        /* @var \\RetailExpress\SkyLink\Sdk\Catalogue\Customers\CustomerId[] $skyLinkCustomerIds */
+        /* @var SkyLinkCustomerId[] $skyLinkCustomerIds */
         $skyLinkCustomerIds = $skyLinkCustomerRepository->allIds($sinceDate);
 
         // Loop over our IDs and add dispatch a command to sync each

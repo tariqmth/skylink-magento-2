@@ -10,7 +10,6 @@ use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Commands\Catalogue\Products\SyncSkyLinkProductToMagentoProductCommand;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductRepositoryFactory;
-use RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
@@ -61,8 +60,8 @@ class BulkProductsCommand extends Command
         /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductRepository $skyLinkProductRepository */
         $skyLinkProductRepository = $this->skyLinkProductRepositoryFactory->create();
 
-        /* @var SalesChannelId $salesChannelId */
-        $salesChannelId = $this->getSalesChannelId($input);
+        /* @var \RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId $salesChannelId */
+        $salesChannelId = $this->config->getSalesChannelId();
 
         /* @var DateTimeImmutable|null $sinceDate */
         $sinceDate = $this->getSinceDate($input);
@@ -70,7 +69,7 @@ class BulkProductsCommand extends Command
         $progressBar = new ProgressBar($output);
         $progressBar->start();
 
-        /* @var \\RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId[] $skyLinkProductIds */
+        /* @var SkyLinkProductId[] $skyLinkProductIds */
         $skyLinkProductIds = $skyLinkProductRepository->allIds($salesChannelId, $sinceDate);
 
         // Loop over our IDs and add dispatch a command to sync each
@@ -98,14 +97,6 @@ MESSAGE
             ,
             count($skyLinkProductIds)
         ));
-    }
-
-    /**
-     * @return SalesChannelId
-     */
-    private function getSalesChannelId(InputInterface $input)
-    {
-        return $this->config->getSalesChannelId();
     }
 
     /**

@@ -10,6 +10,7 @@ use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
+use RetailExpress\SkyLink\Model\Eav\Entity\Attribute\Source\PickupGroup;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 
 class InstallData implements InstallDataInterface
@@ -49,6 +50,7 @@ class InstallData implements InstallDataInterface
         $this->addSkyLinkProductIdsToProducts($eavSetup);
         $this->addSkyLinkAttributeCodesToProducts($eavSetup);
         $this->addManufacturerToAttributeSets($eavSetup);
+        $this->addPickupGroupToProducts($eavSetup);
     }
 
     private function addSkyLinkCustomerIdToCustomers(EavSetup $eavSetup)
@@ -129,6 +131,25 @@ class InstallData implements InstallDataInterface
     private function addManufacturerToAttributeSets(EavSetup $eavSetup)
     {
         $this->addAttributeToDefaultGroupInAllSets($eavSetup, 'manufacturer', Product::ENTITY);
+    }
+
+    private function addPickupGroupToProducts(EavSetup $eavSetup)
+    {
+        $attributeCode = 'pickup_group';
+        $eavSetup->addAttribute(
+            Product::ENTITY,
+            $attributeCode,
+            [
+                'label' => 'Pickup Group',
+                'required' => false,
+                'input' => 'select',
+                'source' => PickupGroup::class,
+                'default' => PickupGroup::VALUE_NONE,
+                'user_defined' => true,
+            ]
+        );
+
+        $this->addAttributeToDefaultGroupInAllSets($eavSetup, $attributeCode, Product::ENTITY);
     }
 
     private function addAttributeToDefaultGroupInAllSets(EavSetup $eavSetup, $magentoAttributeCode, $entityType)

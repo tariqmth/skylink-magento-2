@@ -33,6 +33,8 @@ class ProductRepositoryFactory
         /* @var MatrixPolicyMapper $matrixPolicyMapper */
         $matrixPolicyMapper = $this->matrixPolicyMapperFactory->create();
 
-        return new V2ProductRepository($matrixPolicyMapper, $this->v2ApiFactory->create());
+        $deserializer = new V2ProductDeserializer();
+
+        return new V2ProductRepository($matrixPolicyMapper, $deserializer, $this->v2ApiFactory->create());
     }
 }

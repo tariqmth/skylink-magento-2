@@ -4,8 +4,8 @@
         <carriers>
             <skylink_pickup>
                 <active>0</active>
-                <title>Click and Collect</title>
-                <name>Pickup</name>
+                <model>RetailExpress\SkyLink\Model\Carrier\Pickup</model>
+                <title>Pickup</title>
                 <specificerrmsg>Unfortunately, this is not available. For more, please your local store.</specificerrmsg>
                 <sallowspecific>0</sallowspecific>
             </skylink_pickup>

@@ -11,9 +11,6 @@
                 <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Title</label>
                 </field>
-                <field id="name" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Method Name</label>
-                </field>
                 <field id="group_1_outlets" translate="label" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Group 1 Outlets</label>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\Outlets</source_model>

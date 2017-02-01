@@ -16,7 +16,7 @@
 
      ```sql
      UPDATE `setup_module`
-     SET `schema_version` = "0.0.9"
+     SET `schema_version` = "0.0.9", `data_version` = "0.0.9"
      WHERE `module` = "RetailExpress_SkyLink"
      ```
   2. Re-run `bin/magento setup:upgrade`.

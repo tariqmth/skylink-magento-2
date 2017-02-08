@@ -10,7 +10,8 @@ use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
-use RetailExpress\SkyLink\Model\Eav\Entity\Attribute\Source\PickupGroup;
+use RetailExpress\SkyLink\Model\Eav\Entity\Attribute\Source\PickupGroup as PickupGroupSourceModel;
+use RetailExpress\SkyLink\Model\Outlets\PickupGroup;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 
 class InstallData implements InstallDataInterface
@@ -143,8 +144,8 @@ class InstallData implements InstallDataInterface
                 'label' => 'Pickup Group',
                 'required' => false,
                 'input' => 'select',
-                'source' => PickupGroup::class,
-                'default' => PickupGroup::VALUE_NONE,
+                'source' => PickupGroupSourceModel::class,
+                'default' => (string) PickupGroup::getDefault(),
                 'user_defined' => true,
             ]
         );

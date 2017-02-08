@@ -11,12 +11,12 @@
                 <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Title</label>
                 </field>
-                <field id="group_1_outlets" translate="label" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="group_one_outlets" translate="label" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Group 1 Outlets</label>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\Outlets</source_model>
                     <comment><![CDATA[If <strong>any items</strong> in the cart can only be picked up from Group 1 Outlets, then only the Outlets you select here will be available to be available during the checkout process.]]></comment>
                 </field>
-                <field id="group_2_outlets" translate="label" type="multiselect" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="group_two_outlets" translate="label" type="multiselect" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Group 2 Outlets</label>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\Outlets</source_model>
                     <comment><![CDATA[If <strong>all items</strong> in the cart can only be picked up from Group 1 Outlets or Group 2 Outlets, then only the Outlets you select here will be available to be available during the checkout process.]]></comment>

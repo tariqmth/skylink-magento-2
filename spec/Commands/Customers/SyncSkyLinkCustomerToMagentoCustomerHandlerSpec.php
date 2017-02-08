@@ -5,13 +5,14 @@ namespace spec\RetailExpress\SkyLink\Commands\Customers;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
 use PhpSpec\ObjectBehavior;
+use RetailExpress\SkyLink\Api\Customers\MagentoCustomerRepositoryInterface;
+use RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface;
+use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerNotFoundException;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerRepository as SkyLinkCustomerRepository;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerRepositoryFactory as SkylinkCustomerRepositoryFactory;
-use RetailExpress\SkyLink\Api\Customers\MagentoCustomerRepositoryInterface;
-use RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface;
 use RetailExpress\SkyLink\Commands\Customers\SyncSkyLinkCustomerToMagentoCustomerCommand;
 use RetailExpress\SkyLink\Commands\Customers\SyncSkyLinkCustomerToMagentoCustomerHandler;
 
@@ -29,6 +30,8 @@ class SyncSkyLinkCustomerToMagentoCustomerHandlerSpec extends ObjectBehavior
 
     private $eventManager;
 
+    private $logger;
+
     private $skyLinkCustomerId;
 
     private $command;
@@ -38,19 +41,22 @@ class SyncSkyLinkCustomerToMagentoCustomerHandlerSpec extends ObjectBehavior
         SkyLinkCustomerRepository $skyLinkCustomerRepository,
         MagentoCustomerRepositoryInterface $magentoCustomerRepository,
         MagentoCustomerServiceInterface $magentoCustomerService,
-        EventManagerInterface $eventManager
+        EventManagerInterface $eventManager,
+        SkyLinkLoggerInterface $logger
     ) {
         $this->skyLinkCustomerRepositoryFactory = $skyLinkCustomerRepositoryFactory;
         $this->skyLinkCustomerRepository = $skyLinkCustomerRepository;
         $this->magentoCustomerRepository = $magentoCustomerRepository;
         $this->magentoCustomerService = $magentoCustomerService;
         $this->eventManager = $eventManager;
+        $this->logger = $logger;
 
         $this->beConstructedWith(
             $this->skyLinkCustomerRepositoryFactory,
             $this->magentoCustomerRepository,
             $this->magentoCustomerService,
-            $this->eventManager
+            $this->eventManager,
+            $this->logger
         );
 
         $this->skyLinkCustomerRepositoryFactory->create()->willReturn($this->skyLinkCustomerRepository);

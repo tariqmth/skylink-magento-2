@@ -55,7 +55,7 @@
                 </field>
                 <field id="version_2_url" translate="label" type="text" sortOrder="200" showInDefault="1">
                     <label>URL</label>
-                    <comment><![CDATA[Your database url must begin with <code>https://</code>]]></comment>
+                    <comment><![CDATA[Your database url must begin with <code>https://</code>.]]></comment>
                     <depends>
                         <field id="version">2</field>
                     </depends>

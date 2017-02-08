@@ -2,7 +2,9 @@
 
 namespace RetailExpress\SkyLink\Model\Carrier;
 
+use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Quote\Api\Data\CartItemInterface;
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory as RateErrorFactory;
 use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory as RateMethodFactory;
@@ -10,7 +12,9 @@ use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\ResultFactory as RateResultFactory;
 use Psr\Log\LoggerInterface;
+use RetailExpress\SkyLink\Api\Outlets\MagentoPickupGroupChooserInterface;
 use RetailExpress\SkyLink\Api\Outlets\SkyLinkOutletRepositoryInterface;
+use RetailExpress\SkyLink\Model\Outlets\PickupGroup;
 use RetailExpress\SkyLink\Sdk\Outlets\Outlet as SkyLinkOutlet;
 
 class Pickup extends AbstractCarrier implements CarrierInterface
@@ -27,6 +31,10 @@ class Pickup extends AbstractCarrier implements CarrierInterface
 
     private $skyLinkOutletRepository;
 
+    private $magentoProductRepository;
+
+    private $magentoPickupGroupChooser;
+
     private $rateResultFactory;
 
     private $rateMethodFactory;
@@ -36,11 +44,15 @@ class Pickup extends AbstractCarrier implements CarrierInterface
         RateErrorFactory $rateErrorFactory,
         LoggerInterface $logger,
         SkyLinkOutletRepositoryInterface $skyLinkOutletRepository,
+        ProductRepositoryInterface $magentoProductRepository,
+        MagentoPickupGroupChooserInterface $magentoPickupGroupChooser,
         RateResultFactory $rateResultFactory,
         RateMethodFactory $rateMethodFactory,
         array $data = []
     ) {
         $this->skyLinkOutletRepository = $skyLinkOutletRepository;
+        $this->magentoProductRepository = $magentoProductRepository;
+        $this->magentoPickupGroupChooser = $magentoPickupGroupChooser;
         $this->rateResultFactory = $rateResultFactory;
         $this->rateMethodFactory = $rateMethodFactory;
 
@@ -65,8 +77,20 @@ class Pickup extends AbstractCarrier implements CarrierInterface
             return false;
         }
 
+        // Let's determine the pickup group
+        $magentoProducts = $this->getMagentoProducts($request);
+        $pickupGroup = $this->magentoPickupGroupChooser->choosePickupGroup($magentoProducts);
+
+        // If we got a "none" Pickup Group, we can't offer this method
+        if ($pickupGroup->sameValueAs(PickupGroup::get('none'))) {
+            return false;
+        }
+
         /* @var \Magento\Shipping\Model\Rate\Result $result */
         $result = $this->rateResultFactory->create();
+
+        // Grab appropriate outlets for the pickup group
+        $outlets = $this->skyLinkOutletRepository->getListForPickupGroup($pickupGroup);
 
         array_map(function (SkyLinkOutlet $skyLinkOutlet) use ($result) {
 
@@ -88,8 +112,21 @@ class Pickup extends AbstractCarrier implements CarrierInterface
 
             $result->append($method);
 
-        }, $this->skyLinkOutletRepository->getList());
+        }, $outlets);
 
         return $result;
+    }
+
+    private function getMagentoProducts(RateRequest $request)
+    {
+        return array_map(function (CartItemInterface $cartItem) {
+            $sku = $cartItem->getSku();
+
+            if (null === $sku) {
+                // @todo throw exception?
+            }
+
+            return $this->magentoProductRepository->get($sku);
+        }, $request->getAllItems());
     }
 }

@@ -2,6 +2,8 @@
 
 namespace RetailExpress\SkyLink\Model\Outlets;
 
+use InvalidArgumentException;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ResourceConnection;
 use RetailExpress\SkyLink\Api\Outlets\SkyLinkOutletRepositoryInterface;
 use RetailExpress\SkyLink\Sdk\Outlets\Outlet as SkyLinkOutlet;
@@ -11,14 +13,18 @@ class SkyLinkOutletRepository implements SkyLinkOutletRepositoryInterface
 {
     private $connection;
 
+    private $scopeConfig;
+
     public function __construct(
-        ResourceConnection $resourceConnection
+        ResourceConnection $resourceConnection,
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->connection = $resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
-     * @return RetailExpress\SkyLink\Sdk\Outlets\Outlet
+     * {@inheritdoc}
      */
     public function getList()
     {
@@ -31,6 +37,20 @@ class SkyLinkOutletRepository implements SkyLinkOutletRepositoryInterface
         return array_map(function (array $row) {
             return $this->buildOutlet($row);
         }, $rows);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getListForPickupGroup(PickupGroup $pickupGroup)
+    {
+        $matchingIds = $this->getConfiguredSkyLinkOutletIds($pickupGroup);
+
+        $skyLinkOutlets = array_filter($this->getList(), function (SkyLinkOutlet $skyLinkOutlet) use ($matchingIds) {
+            return in_array((string) $skyLinkOutlet->getId(), $matchingIds);
+        });
+
+        return array_values($skyLinkOutlets);
     }
 
     public function save(SkyLinkOutlet $skyLinkOutlet)
@@ -108,6 +128,28 @@ class SkyLinkOutletRepository implements SkyLinkOutletRepositoryInterface
                 ->from($this->getOutletsTable())
                 ->where('id = ?', $skyLinkOutletId)
         );
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getConfiguredSkyLinkOutletIds(PickupGroup $pickupGroup)
+    {
+        $value = $pickupGroup->getValue();
+
+        switch ($value) {
+            case 'one':
+            case 'two':
+                $outletIds = $this->scopeConfig->getValue("carriers/skylink_pickup/group_{$value}_outlets");
+                break;
+
+            default:
+                throw new InvalidArgumentException("Unsupported Pickup Group provided.");
+        }
+
+        return array_map(function ($outletId) {
+            return $outletId;
+        }, explode(',', $outletIds));
     }
 
     private function getOutletsTable()

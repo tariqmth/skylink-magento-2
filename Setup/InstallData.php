@@ -7,6 +7,7 @@ use Magento\Customer\Model\Customer;
 use Magento\Eav\Model\Config as EavConfig;
 use Magento\Eav\Setup\EavSetup;
 use Magento\Eav\Setup\EavSetupFactory;
+use Magento\Framework\App\Config\MutableScopeConfigInterface;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
@@ -19,6 +20,8 @@ class InstallData implements InstallDataInterface
     private $eavSetupFactory;
 
     private $eavConfig;
+
+    private $scopeConfig;
 
     /**
      * @todo rework this with \RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeRepository
@@ -33,10 +36,12 @@ class InstallData implements InstallDataInterface
 
     public function __construct(
         EavSetupFactory $eavSetupFactory,
-        EavConfig $eavConfig
+        EavConfig $eavConfig,
+        MutableScopeConfigInterface $scopeConfig
     ) {
         $this->eavSetupFactory = $eavSetupFactory;
         $this->eavConfig = $eavConfig;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -52,6 +57,7 @@ class InstallData implements InstallDataInterface
         $this->addSkyLinkAttributeCodesToProducts($eavSetup);
         $this->addManufacturerToAttributeSets($eavSetup);
         $this->addPickupGroupToProducts($eavSetup);
+        $this->disableConfiguredMultishipping($setup);
     }
 
     private function addSkyLinkCustomerIdToCustomers(EavSetup $eavSetup)
@@ -151,6 +157,17 @@ class InstallData implements InstallDataInterface
         );
 
         $this->addAttributeToDefaultGroupInAllSets($eavSetup, $attributeCode, Product::ENTITY);
+    }
+
+    private function disableConfiguredMultishipping(ModuleDataSetupInterface $setup)
+    {
+        // Remove any multishipping config values from the database
+        $setup->getConnection()->delete(
+            $setup->getTable('core_config_data'),
+            [
+                'path = ?' => 'multishipping/options/checkout_multiple',
+            ]
+        );
     }
 
     private function addAttributeToDefaultGroupInAllSets(EavSetup $eavSetup, $magentoAttributeCode, $entityType)

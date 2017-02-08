@@ -10,6 +10,11 @@
                 <sallowspecific>0</sallowspecific>
             </skylink_pickup>
         </carriers>
+        <multishipping>
+            <options>
+                <checkout_multiple>0</checkout_multiple>
+            </options>
+        </multishipping>
         <skylink>
             <api>
                 <version_2_url>https://{{database}}.retailexpress.com.au/dotnet/admin/webservices/v2/webstore/service.asmx?wsdl</version_2_url>

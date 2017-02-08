@@ -43,6 +43,14 @@
                 </field>
             </group>
         </section>
+        <section id="multishipping">
+            <group id="options">
+                <field id="checkout_multiple">
+                    <comment>Shipping to multiple addresses is incompatible with SkyLink.</comment>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\No</source_model>
+                </field>
+            </group>
+        </section>
         <section id="skylink" translate="label" type="text" sortOrder="400" showInDefault="1" showInWebsite="1">
             <label>SkyLink</label>
             <tab>service</tab>

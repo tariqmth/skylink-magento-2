@@ -35,7 +35,7 @@ class MagentoAttributeService implements MagentoAttributeServiceInterface
         if ($this->mappingExists($skylinkAttributeCode)) {
             $this->connection->delete(
                 $this->getAttributesTable(),
-                ['skylink_attribute_code = ? ' => $skylinkAttributeCode->getValue()]
+                ['skylink_attribute_code = ?' => $skylinkAttributeCode->getValue()]
             );
         }
 

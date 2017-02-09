@@ -2,8 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
     <menu>
         <add id="RetailExpress_SkyLink::skylink" title="SkyLink" module="RetailExpress_SkyLink" sortOrder="45" dependsOnModule="RetailExpress_SkyLink" parent="Magento_Backend::stores" resource="RetailExpress_SkyLink::skylink" />
-        <add id="RetailExpress_SkyLink::skylink_dashboard" title="Dashboard" module="RetailExpress_SkyLink" sortOrder="10" dependsOnModule="RetailExpress_SkyLink" parent="RetailExpress_SkyLink::skylink" resource="RetailExpress_SkyLink::skylink_dashboard" />
-        <add id="RetailExpress_SkyLink::skylink_logging" title="Logging" module="RetailExpress_SkyLink" sortOrder="20" dependsOnModule="RetailExpress_SkyLink" parent="RetailExpress_SkyLink::skylink" action="skylink/debugging/logging/" resource="RetailExpress_SkyLink::skylink_logging" />
-        <add id="RetailExpress_SkyLink::skylink_setup" title="Setup" module="RetailExpress_SkyLink" sortOrder="30" dependsOnModule="RetailExpress_SkyLink" parent="RetailExpress_SkyLink::skylink" action="skylink/setup/index/" resource="RetailExpress_SkyLink::skylink_setup" />
+        <add id="RetailExpress_SkyLink::skylink_logging" title="Logging" module="RetailExpress_SkyLink" sortOrder="10" dependsOnModule="RetailExpress_SkyLink" parent="RetailExpress_SkyLink::skylink" action="skylink/debugging/logging/" resource="RetailExpress_SkyLink::skylink_logging" />
+        <add id="RetailExpress_SkyLink::skylink_setup" title="Setup" module="RetailExpress_SkyLink" sortOrder="20" dependsOnModule="RetailExpress_SkyLink" parent="RetailExpress_SkyLink::skylink" action="skylink/setup/index/" resource="RetailExpress_SkyLink::skylink_setup" />
     </menu>
 </config>

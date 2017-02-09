@@ -4,6 +4,7 @@ namespace RetailExpress\SkyLink\Api\Outlets;
 
 use RetailExpress\SkyLink\Model\Outlets\PickupGroup;
 use RetailExpress\SkyLink\Sdk\Outlets\Outlet as SkyLinkOutlet;
+use RetailExpress\SkyLink\Sdk\Outlets\OutletId as SkyLinkOutletId;
 
 interface SkyLinkOutletRepositoryInterface
 {
@@ -15,9 +16,20 @@ interface SkyLinkOutletRepositoryInterface
     /**
      * @todo should this be here? It's specific to shipping wheras this repository is not...
      *
-     * @return RetailExpress\SkyLink\Sdk\Outlets\Outlet[]
+     * @return SkyLinkOutlet[]
      */
     public function getListForPickupGroup(PickupGroup $pickupGroup);
+
+    /**
+     * Gets the given SkyLink Outlet.
+     *
+     * @param SkyLinkOutletId $skyLinkOutletId
+     *
+     * @return SkyLinkOutlet
+     *
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function get(SkyLinkOutletId $skyLinkOutletId);
 
     /**
      * Saves the given Outlet.

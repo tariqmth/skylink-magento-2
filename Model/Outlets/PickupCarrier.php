@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Model\Carrier;
+namespace RetailExpress\SkyLink\Model\Outlets;
 
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -13,17 +13,13 @@ use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\ResultFactory as RateResultFactory;
 use Psr\Log\LoggerInterface;
 use RetailExpress\SkyLink\Api\Outlets\MagentoPickupGroupChooserInterface;
+use RetailExpress\SkyLink\Api\Outlets\PickupManagementInterface;
 use RetailExpress\SkyLink\Api\Outlets\SkyLinkOutletRepositoryInterface;
 use RetailExpress\SkyLink\Model\Outlets\PickupGroup;
 use RetailExpress\SkyLink\Sdk\Outlets\Outlet as SkyLinkOutlet;
 
-class Pickup extends AbstractCarrier implements CarrierInterface
+class PickupCarrier extends AbstractCarrier implements CarrierInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected $_code = 'skylink_pickup';
-
     /**
      * {@inheritdoc}
      */
@@ -34,6 +30,8 @@ class Pickup extends AbstractCarrier implements CarrierInterface
     private $magentoProductRepository;
 
     private $magentoPickupGroupChooser;
+
+    private $pickupManagement;
 
     private $rateResultFactory;
 
@@ -46,6 +44,7 @@ class Pickup extends AbstractCarrier implements CarrierInterface
         SkyLinkOutletRepositoryInterface $skyLinkOutletRepository,
         ProductRepositoryInterface $magentoProductRepository,
         MagentoPickupGroupChooserInterface $magentoPickupGroupChooser,
+        PickupManagementInterface $pickupManagement,
         RateResultFactory $rateResultFactory,
         RateMethodFactory $rateMethodFactory,
         array $data = []
@@ -53,8 +52,12 @@ class Pickup extends AbstractCarrier implements CarrierInterface
         $this->skyLinkOutletRepository = $skyLinkOutletRepository;
         $this->magentoProductRepository = $magentoProductRepository;
         $this->magentoPickupGroupChooser = $magentoPickupGroupChooser;
+        $this->pickupManagement = $pickupManagement;
         $this->rateResultFactory = $rateResultFactory;
         $this->rateMethodFactory = $rateMethodFactory;
+
+        // Set our code
+        $this->_code = $this->pickupManagement->getMagentoShippingCarrierCode();
 
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
     }
@@ -64,7 +67,7 @@ class Pickup extends AbstractCarrier implements CarrierInterface
      */
     public function getAllowedMethods()
     {
-        return ['skylink_pickup' => $this->getConfigData('name')];
+        return [$this->_code => $this->getConfigData('name')];
     }
 
     /**
@@ -97,15 +100,11 @@ class Pickup extends AbstractCarrier implements CarrierInterface
             /* @var \Magento\Quote\Model\Quote\Address\RateResult\Method $method */
             $method = $this->rateMethodFactory->create();
 
-            $method->setCarrier('skylink_pickup');
+            $method->setCarrier($this->_code);
             $method->setCarrierTitle($this->getConfigData('title'));
 
-            $method->setMethod(sprintf('outlet_%s', $skyLinkOutlet->getId()));
-            $method->setMethodTitle(sprintf(
-                '%s - %s',
-                $skyLinkOutlet->getName(),
-                $skyLinkOutlet->getAddress()
-            ));
+            $method->setMethod($this->pickupManagement->getMagentoShippingMethodCode($skyLinkOutlet));
+            $method->setMethodTitle($this->pickupManagement->getMagentoShippingMethodTitle($skyLinkOutlet));
 
             $method->setPrice(0);
             $method->setCost(0);

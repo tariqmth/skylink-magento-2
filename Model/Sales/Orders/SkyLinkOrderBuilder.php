@@ -3,9 +3,11 @@
 namespace RetailExpress\SkyLink\Model\Sales\Orders;
 
 use DateTimeImmutable;
+use InvalidArgumentException;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Model\Order as MagentoOrder;
+use RetailExpress\SkyLink\Api\Outlets\PickupManagementInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderAddressExtractorInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkContactBuilderInterface as SkyLinkOrderContactBuilderInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkCustomerIdServiceInterface;
@@ -26,6 +28,8 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
     private $skyLinkOrderContactBuilder;
 
     private $skyLinkOrderItemBuilder;
+
+    private $pickupManagement;
 
     /**
      * Returns the Magento State to SkyLink Status mappings.
@@ -55,12 +59,14 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
         SkyLinkCustomerIdServiceInterface $skyLinkCustomerIdService,
         MagentoOrderAddressExtractorInterface $magentoOrderAddressExtractor,
         SkyLinkOrderContactBuilderInterface $skyLinkOrderContactBuilder,
-        SkyLinkOrderItemBuilderInterface $skyLinkOrderItemBuilder
+        SkyLinkOrderItemBuilderInterface $skyLinkOrderItemBuilder,
+        PickupManagementInterface $pickupManagement
     ) {
         $this->skyLinkCustomerIdService = $skyLinkCustomerIdService;
         $this->magentoOrderAddressExtractor = $magentoOrderAddressExtractor;
         $this->skyLinkOrderContactBuilder = $skyLinkOrderContactBuilder;
         $this->skyLinkOrderItemBuilder = $skyLinkOrderItemBuilder;
+        $this->pickupManagement = $pickupManagement;
     }
 
     /**
@@ -77,8 +83,14 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
             $this->getShippingCharge($magentoOrder)
         );
 
-        if (null !== $magentoOrder->getCustomerNote()) {
-            $skyLinkOrder = $skyLinkOrder->withPublicComments(new StringLiteral($magentoOrder->getCustomerNote()));
+        $publicComments = $magentoOrder->getCustomerNote();
+        if (null !== $publicComments) {
+            $skyLinkOrder = $skyLinkOrder->withPublicComments(new StringLiteral($publicComments));
+        }
+
+        $pickupOutlet = $this->determinePickupOutlet($magentoOrder);
+        if (null !== $pickupOutlet) {
+            $skyLinkOrder = $skyLinkOrder->fulfillFromOutletId($pickupOutlet->getId());
         }
 
         // Add order items
@@ -128,9 +140,31 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
 
     private function getShippingCharge(OrderInterface $magentoOrder)
     {
-        return ShippingCharge::fromNative(
-            $magentoOrder->getShippingAmount(),
-            $magentoOrder->getShippingTaxAmount() / $magentoOrder->getShippingAmount() // @todo is this right??
-        );
+        $price = $magentoOrder->getShippingAmount();
+
+        if ($price > 0) {
+            $taxRate = $magentoOrder->getShippingTaxAmount() / $price;
+        } else {
+            $taxRate = 0;
+        }
+
+        return ShippingCharge::fromNative($price, $taxRate);
+    }
+
+    private function determinePickupOutlet(OrderInterface $magentoOrder)
+    {
+        $this->assertImplementationOfOrder($magentoOrder);
+
+        return $this->pickupManagement->determineSkyLinkOutletToPickupFrom($magentoOrder);
+    }
+
+    private function assertImplementationOfOrder(OrderInterface $magentoOrder)
+    {
+        if (!$magentoOrder instanceof MagentoOrder) {
+            throw new InvalidArgumentException(sprintf(
+                'Determining a Pickup Outlet requires a Magento Order be an instance of %s.',
+                magentoOrder::class
+            ));
+        }
     }
 }

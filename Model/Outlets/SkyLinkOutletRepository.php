@@ -5,6 +5,7 @@ namespace RetailExpress\SkyLink\Model\Outlets;
 use InvalidArgumentException;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\Exception\NoSuchEntityException;
 use RetailExpress\SkyLink\Api\Outlets\SkyLinkOutletRepositoryInterface;
 use RetailExpress\SkyLink\Sdk\Outlets\Outlet as SkyLinkOutlet;
 use RetailExpress\SkyLink\Sdk\Outlets\OutletId as SkyLinkOutletId;
@@ -51,6 +52,22 @@ class SkyLinkOutletRepository implements SkyLinkOutletRepositoryInterface
         });
 
         return array_values($skyLinkOutlets);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function get(SkyLinkOutletId $skyLinkOutletId)
+    {
+        return array_first(
+            $this->getList(),
+            function ($key, SkyLinkOutlet $skyLinkOutlet) use ($skyLinkOutletId) {
+                return $skyLinkOutlet->getId()->sameValueAs($skyLinkOutletId);
+            },
+            function () use ($skyLinkOutletId) {
+                throw NoSuchEntityException::singleField('id', (string) $skyLinkOutletId);
+            }
+        );
     }
 
     public function save(SkyLinkOutlet $skyLinkOutlet)

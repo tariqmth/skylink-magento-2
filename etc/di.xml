@@ -100,6 +100,7 @@
 
     <!-- Outlet implementations -->
     <preference for="RetailExpress\SkyLink\Api\Outlets\MagentoPickupGroupChooserInterface" type="RetailExpress\SkyLink\Model\Outlets\MagentoPickupGroupChooser"/>
+    <preference for="RetailExpress\SkyLink\Api\Outlets\PickupManagementInterface" type="RetailExpress\SkyLink\Model\Outlets\PickupManagement"/>
     <preference for="RetailExpress\SkyLink\Api\Outlets\SkyLinkOutletRepositoryInterface" type="RetailExpress\SkyLink\Model\Outlets\SkyLinkOutletRepository"/>
 
     <!-- Sales order implementations -->

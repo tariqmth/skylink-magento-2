@@ -42,16 +42,6 @@ class OrderRepositoryFactory
 
         $api = $this->v2ApiFactory->create();
 
-        // Setup a filesystem storage that points to /var/tmp
-        $storage = new FilesystemStorage(new StringLiteral(
-            $this->directoryList->getPath(DirectoryList::TMP)
-        ));
-
-        $bulkOrderCacher = new DefaultBulkOrderCacher($api, $storage);
-
-        /* @var \RetailExpress\SkyLink\Sdk\V2OrderShim\RecacheThreshold $recacheThreshold */
-        $recacheThreshold = $this->orderConfig->getBulkOrderRecacheThreshold();
-
-        return new OrderRepository($api, $bulkOrderCacher, $recacheThreshold);
+        return new V2OrderRepository($api);
     }
 }

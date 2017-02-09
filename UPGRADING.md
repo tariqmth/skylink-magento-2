@@ -16,7 +16,14 @@
 
      ```sql
      UPDATE `setup_module`
-     SET `schema_version` = "0.0.9", `data_version` = "0.0.9"
+     SET `schema_version` = null, `data_version` = null
      WHERE `module` = "RetailExpress_SkyLink"
      ```
-  2. Re-run `bin/magento setup:upgrade`.
+  2. Re-run `bin/magento setup:upgrade`. If you see an error that contains `Duplicate entry 'RetailExpress_SkyLink' for key 'PRIMARY'`, you have successfully ran the migrations, however the database has not been restored.
+  1. Run the following SQL command to complete manual migration:
+
+     ```sql
+     UPDATE `setup_module`
+     SET `schema_version` = "0.1.0", `data_version` = null
+     WHERE `module` = "RetailExpress_SkyLink"
+     ```

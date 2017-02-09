@@ -32,6 +32,6 @@ class OrderManagementPlugin
             $this->commandBus->handle($command);
         }, $magentoOrder->getItems());
 
-        return $magentoOrder;
+        return [$magentoOrder];
     }
 }

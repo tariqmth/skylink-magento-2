@@ -5,10 +5,6 @@ namespace RetailExpress\SkyLink\Sdk\Sales\Orders;
 use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Sdk\Apis\V2Factory as V2ApiFactory;
 use RetailExpress\SkyLink\Model\Factory;
-use RetailExpress\SkyLink\Sdk\V2OrderShim\DefaultBulkOrderCacher;
-use RetailExpress\SkyLink\Sdk\V2OrderShim\OrderRepository;
-use RetailExpress\SkyLink\Sdk\V2OrderShim\Storage\FilesystemStorage;
-use ValueObjects\StringLiteral\StringLiteral;
 
 class OrderRepositoryFactory
 {

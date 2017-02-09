@@ -161,7 +161,7 @@ class SkyLinkOutletRepository implements SkyLinkOutletRepositoryInterface
                 break;
 
             default:
-                throw new InvalidArgumentException("Unsupported Pickup Group provided.");
+                throw new InvalidArgumentException('Unsupported Pickup Group provided.');
         }
 
         return array_map(function ($outletId) {

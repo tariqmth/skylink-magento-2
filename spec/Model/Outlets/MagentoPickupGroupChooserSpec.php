@@ -3,7 +3,6 @@
 namespace spec\RetailExpress\SkyLink\Model\Outlets;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Api\AttributeInterface;
 use RetailExpress\SkyLink\Model\Outlets\MagentoPickupGroupChooser;

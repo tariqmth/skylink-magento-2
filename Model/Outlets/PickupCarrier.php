@@ -15,7 +15,6 @@ use Psr\Log\LoggerInterface;
 use RetailExpress\SkyLink\Api\Outlets\MagentoPickupGroupChooserInterface;
 use RetailExpress\SkyLink\Api\Outlets\PickupManagementInterface;
 use RetailExpress\SkyLink\Api\Outlets\SkyLinkOutletRepositoryInterface;
-use RetailExpress\SkyLink\Model\Outlets\PickupGroup;
 use RetailExpress\SkyLink\Sdk\Outlets\Outlet as SkyLinkOutlet;
 
 class PickupCarrier extends AbstractCarrier implements CarrierInterface
@@ -63,7 +62,7 @@ class PickupCarrier extends AbstractCarrier implements CarrierInterface
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
      */
     public function getAllowedMethods()
     {
@@ -71,8 +70,7 @@ class PickupCarrier extends AbstractCarrier implements CarrierInterface
     }
 
     /**
-     * @param RateRequest $request
-     * @return bool|Result
+     * {@inheritdoc}
      */
     public function collectRates(RateRequest $request)
     {
@@ -110,7 +108,6 @@ class PickupCarrier extends AbstractCarrier implements CarrierInterface
             $method->setCost(0);
 
             $result->append($method);
-
         }, $outlets);
 
         return $result;

@@ -12,7 +12,7 @@ class PickupGroup extends Enum
     const BOTH = 'both';
 
     /**
-     * Get the default Pickup Group
+     * Get the default Pickup Group.
      *
      * @return PickupGroup
      */
@@ -22,7 +22,7 @@ class PickupGroup extends Enum
     }
 
     /**
-     * Get the user selectable values - user cannot select Pickup Group 2
+     * Get the user selectable values - user cannot select Pickup Group 2.
      */
     public static function getUserSelectableValues()
     {

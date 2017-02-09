@@ -15,16 +15,12 @@ class SkyLinkPaymentMethodRepository implements SkyLinkPaymentMethodRepositoryIn
 {
     use SkyLinkPaymentMethodHelpers;
 
-    private $config;
-
     private $basePaymentMethodRepositoryFactory;
 
     public function __construct(
-        ConfigInterface $config,
         BasePaymentMethodRepositoryFactory $basePaymentMethodRepositoryFactory,
         ResourceConnection $resourceConnection
     ) {
-        $this->config = $config;
         $this->basePaymentMethodRepositoryFactory = $basePaymentMethodRepositoryFactory;
         $this->connection = $resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
     }
@@ -37,7 +33,7 @@ class SkyLinkPaymentMethodRepository implements SkyLinkPaymentMethodRepositoryIn
         /* @var \RetailExpress\SkyLink\Sdk\Sales\Payments\PaymentMethodRepository $basePaymentMethodRepository */
         $basePaymentMethodRepository = $this->basePaymentMethodRepositoryFactory->create();
 
-        return $basePaymentMethodRepository->all($this->config->getSalesChannelId());
+        return $basePaymentMethodRepository->all();
     }
 
     public function getById(SkyLinkPaymentMethodId $paymentMethodId)

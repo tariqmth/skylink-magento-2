@@ -104,7 +104,6 @@
     <preference for="RetailExpress\SkyLink\Api\Outlets\SkyLinkOutletRepositoryInterface" type="RetailExpress\SkyLink\Model\Outlets\SkyLinkOutletRepository"/>
 
     <!-- Sales order implementations -->
-    <preference for="RetailExpress\SkyLink\Api\Sales\Orders\ConfigInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\Config"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderAddressExtractorInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\MagentoOrderAddressExtractor"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderRepositoryInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\MagentoOrderRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkContactBuilderInterface" type="RetailExpress\SkyLink\Model\Customers\SkyLinkContactBuilder"/>

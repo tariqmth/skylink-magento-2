@@ -5,7 +5,7 @@
 
     <!-- Add a SkyLink Order ID to Magento Orders -->
     <extension_attributes for="Magento\Sales\Api\Data\OrderInterface">
-        <attribute code="skylink_order_id" type="RetailExpress\SkyLink\Api\Data\Sales\Orders\SkyLinkOrderIdInterface">
+        <attribute code="skylink_order_id" type="RetailExpress\SkyLink\Sdk\Sales\Orders\OrderId">
             <resources>
                 <resource ref="RetailExpress_SkyLink::skylink"/>
             </resources>
@@ -14,7 +14,7 @@
 
     <!-- Add a SkyLink Payment ID to Magento Invoices -->
     <extension_attributes for="Magento\Sales\Api\Data\InvoiceInterface">
-        <attribute code="skylink_payment_id" type="RetailExpress\SkyLink\Api\Data\Sales\Invoices\SkyLinkPaymentIdInterfae">
+        <attribute code="skylink_payment_id" type="RetailExpress\SkyLink\Sdk\Sales\Payments\PaymentId">
             <resources>
                 <resource ref="RetailExpress_SkyLink::skylink"/>
             </resources>
@@ -23,7 +23,7 @@
 
     <!-- Add a SkyLink Fulfillment Batch ID to Magento Shipments -->
     <extension_attributes for="Magento\Sales\Api\Data\ShipmentInterface">
-        <attribute code="skylink_fulfillment_batch_id" type="RetailExpress\SkyLink\Api\Data\Sales\Shipments\SkyLinkFulfillmentBatchIdInterface">
+        <attribute code="skylink_fulfillment_batch_id" type="RetailExpress\SkyLink\Sdk\Sales\Fulfillments\BatchId">
             <resources>
                 <resource ref="RetailExpress_SkyLink::skylink"/>
             </resources>

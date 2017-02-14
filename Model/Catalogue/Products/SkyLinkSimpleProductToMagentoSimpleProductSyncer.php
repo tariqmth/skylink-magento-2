@@ -88,8 +88,9 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
             ]);
         }
 
+        // If there were no variations in different sales channel groups, we can end now
         if (count($skyLinkProductInSalesChannelGroups) < 1) {
-            return;
+            return $magentoProduct;
         }
 
         $this->logger->debug('Updating Magento Product data using SkyLink Product data fetched from all configured Sales Channel IDs.', [

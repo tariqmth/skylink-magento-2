@@ -2,6 +2,7 @@
 
 namespace RetailExpress\SkyLink\Controller\Eds;
 
+use InvalidArgumentException;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory as JsonResultFactory;
@@ -33,14 +34,29 @@ class Notify extends Action
 
     public function execute()
     {
-        // Firstly, parse the body that's been sent through
-        $payload = $this->getRequest()->getContent();
-        $changeSets = $this->changeSetDeserialiser->deserialise($payload);
-
+        /* @var \Magento\Framework\Controller\Result\Json $jsonResult */
         $jsonResult = $this->jsonResultFactory->create();
 
-        $responses = [];
+        if (!$this->getRequest()->isPut()) {
+            return $jsonResult
+                ->setHttpResponseCode(405)
+                ->setData(['message' => 'Only PUT requests are allowed.']);
+        }
 
+        // Firstly, parse the body that's been sent through
+        $payload = $this->getRequest()->getContent();
+
+        try {
+            $changeSets = $this->changeSetDeserialiser->deserialise($payload);
+        } catch (InvalidArgumentException $e) {
+            return $jsonResult
+                ->setHttpResponseCode(422)
+                ->setData([
+                    'message' => $e->getMessage(),
+                ]);
+        }
+
+        $responses = [];
         array_walk($changeSets, function (ChangeSet $changeSet) use (&$responses) {
             try {
                 $this->changeSetRepository->find($changeSet->getId());

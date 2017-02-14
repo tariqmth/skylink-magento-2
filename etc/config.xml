@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
+        <cataloginventory>
+            <options>
+                <eta>0</eta>
+            </options>
+        </cataloginventory>
         <carriers>
             <skylink_pickup>
                 <active>0</active>
@@ -18,7 +23,7 @@
         <skylink>
             <api>
                 <version>2</version>
-                <version_2_url>https://{{database}}.retailexpress.com.au/dotnet/admin/webservices/v2/webstore/service.asmx?wsdl</version_2_url>
+                <version_2_url>https://{{database}}.retailexpress.com.au/dotnet/admin/webservices/EDS/webstore/service.asmx?wsdl</version_2_url>
             </api>
             <general>
                 <sales_channel_id>1</sales_channel_id>

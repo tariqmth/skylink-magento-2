@@ -42,6 +42,9 @@
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\SkyLinkAttributeCodeRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\SkyLinkAttributeCodeRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\SkyLinkProductTypeRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\SkyLinkProductTypeRepository"/>
 
+    <!-- Catalogue eta implementations -->
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Eta\ConfigInterface" type="RetailExpress\SkyLink\Model\Catalogue\Eta\Config"/>
+
     <!-- Catalogue product implementations -->
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\ConfigInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\Config"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSyncCompositeProductRerunManagerInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSyncCompositeProductRerunManager"/>

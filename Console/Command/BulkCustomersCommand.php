@@ -102,7 +102,7 @@ MESSAGE
         }
 
         // @see BulkProductCommand
-        $timezone = new DatetimeZone($this->timezone->getConfigTimezone());
+        $timezone = new DateTimeZone($this->timezone->getConfigTimezone());
         $nowDate = new DateTimeImmutable('now', $timezone);
 
         return $nowDate->modify(sprintf('-%d seconds', $sinceSeconds));

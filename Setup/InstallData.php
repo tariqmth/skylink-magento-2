@@ -58,6 +58,7 @@ class InstallData implements InstallDataInterface
         $this->addManufacturerToAttributeSets($eavSetup);
         $this->addPickupGroupToProducts($eavSetup);
         $this->disableConfiguredMultishipping($setup);
+        $this->addQtyOnOrderToProducts($eavSetup);
     }
 
     private function addSkyLinkCustomerIdToCustomers(EavSetup $eavSetup)
@@ -168,6 +169,23 @@ class InstallData implements InstallDataInterface
                 'path = ?' => 'multishipping/options/checkout_multiple',
             ]
         );
+    }
+
+    private function addQtyOnOrderToProducts(EavSetup $eavSetup)
+    {
+        $attributeCode = 'qty_on_order';
+
+        $eavSetup->addAttribute(
+            Product::ENTITY,
+            $attributeCode,
+            [
+                'label' => 'Qty On Order',
+                'required' => false,
+                'user_defined' => true,
+            ]
+        );
+
+        $this->addAttributeToDefaultGroupInAllSets($eavSetup, $attributeCode, Product::ENTITY);
     }
 
     private function addAttributeToDefaultGroupInAllSets(EavSetup $eavSetup, $magentoAttributeCode, $entityType)

@@ -60,6 +60,11 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         // @todo this should be configuration-based
         $magentoProduct->setWeight($skyLinkProduct->getPhysicalPackage()->getWeight()->toNative());
 
+        // Until we extend the stock item itself, we are storing the qty on order against the product itself
+        if ($skyLinkProduct->getInventoryItem()->hasQtyOnOrder()) {
+            $magentoProduct->setCustomAttribute('qty_on_order', $skyLinkProduct->getInventoryItem()->getQtyOnOrder()->toNative());
+        }
+
         // @todo map inventory, physical package and attributes
         foreach (SkyLinkAttributeCode::getConstants() as $skyLinkAttributeCodeString) {
             $skyLinkAttributeCode = SkyLinkAttributeCode::get($skyLinkAttributeCodeString);

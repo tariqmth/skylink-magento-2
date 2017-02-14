@@ -1,6 +1,25 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
+        <section id="cataloginventory">
+            <group id="options">
+
+                <!-- Magento was daft and didn't leave any spacing in the sort order for us -->
+                <field id="stock_threshold_qty" sortOrder="5"/>
+
+                <!-- Shove this right in below the backorders dropdown -->
+                <field id="eta" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>ETA Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>If a product is on order in Retail Express, show a button to check it's ETA.</comment>
+                    <depends>
+                        <field id="show_out_of_stock" negative="1">0</field>
+                        <field id="display_product_stock_status">1</field>
+                    </depends>
+                </field>
+
+            </group>
+        </section>
         <section id="carriers">
             <group id="skylink_pickup" translate="label" type="text" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Click and Collect</label>

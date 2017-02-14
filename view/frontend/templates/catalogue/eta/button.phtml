@@ -1,0 +1,24 @@
+<?php if ($block->canShow()): ?>
+    <div id="eta-button">
+        <button id="eta-button-button" class="action eta-button">
+            <?=__('Check ETA')?>
+        </button>
+        <p id="eta-button-response-wrapper" class="eta-button-response-wrapper not-ready">
+            <?=__('ETA:')?> <span id="eta-button-response-date"></span>
+        </p>
+    </div>
+
+    <script type="text/x-magento-init">
+        {
+            "#eta-button": {
+                "skyLinkEtaButton": {
+                    "check_waiting_text": "<?=__('Checking ETA...')?>",
+                    "eta_url": "<?=$block->escapeHtml($block->getEtaUrl())?>",
+                    "button": "#eta-button-button",
+                    "response_wrapper": "#eta-button-response-wrapper",
+                    "response_date": "#eta-button-response-date"
+                }
+            }
+        }
+    </script>
+<?php endif ?>

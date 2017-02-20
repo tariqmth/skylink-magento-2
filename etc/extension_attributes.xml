@@ -3,6 +3,15 @@
 <!-- @todo Maybe use more specific ACL nodes? -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Api/etc/extension_attributes.xsd">
 
+    <!-- Add a SkyLink Price Group Key to Magento Customer Groups -->
+    <extension_attributes for="Magento\Customer\Api\Data\GroupInterface">
+        <attribute code="skylink_price_group_key" type="RetailExpress\SkyLink\Sdk\Customers\PriceGroups\PriceGroupKey">
+            <resources>
+                <resource ref="RetailExpress_SkyLink::skylink"/>
+            </resources>
+        </attribute>
+    </extension_attributes>
+
     <!-- Add a SkyLink Order ID to Magento Orders -->
     <extension_attributes for="Magento\Sales\Api\Data\OrderInterface">
         <attribute code="skylink_order_id" type="RetailExpress\SkyLink\Sdk\Sales\Orders\OrderId">

@@ -23,6 +23,7 @@ class InstallSchema implements InstallSchemaInterface
         $this->installOrderAttributes($setup, $context);
         $this->installInvoiceAttributes($setup, $context);
         $this->installShipmentAttributes($setup, $context);
+        $this->installCustomerGroupAttributes($setup, $context);
         $this->installOutletsTable($setup, $context);
         $this->installLoggingTable($setup, $context);
     }
@@ -368,6 +369,66 @@ class InstallSchema implements InstallSchemaInterface
                 'magento_shipment_id',
                 'sales_shipment',
                 'entity_id',
+                DdlTable::ACTION_CASCADE
+            );
+
+        $installer->getConnection()->createTable($table);
+    }
+
+    private function installCustomerGroupAttributes(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    {
+        $installer = $setup;
+
+        $customerGroupsPriceGroupsTable = 'retail_express_skylink_customer_groups_price_groups';
+        $table = $setup
+            ->getConnection()
+            ->newTable($installer->getTable($customerGroupsPriceGroupsTable))
+            ->addColumn(
+                'magento_customer_group_id',
+                DdlTable::TYPE_SMALLINT,
+                null,
+                ['unsigned' => true, 'nullable' => false]
+            )
+            ->addColumn(
+                'skylink_price_group_type',
+                DdlTable::TYPE_TEXT,
+                8,
+                ['nullable' => false]
+            )
+            ->addColumn(
+                'skylink_price_group_id',
+                DdlTable::TYPE_INTEGER,
+                null,
+                ['unsigned' => true, 'nullable' => false]
+            )
+            ->addIndex(
+                $installer->getIdxName(
+                    $customerGroupsPriceGroupsTable,
+                    ['magento_customer_group_id', 'skylink_price_group_type', 'skylink_price_group_id'],
+                    DbAdapterInterface::INDEX_TYPE_PRIMARY
+                ),
+                ['magento_customer_group_id', 'skylink_price_group_type', 'skylink_price_group_id'],
+                DbAdapterInterface::INDEX_TYPE_PRIMARY
+            )
+            ->addIndex(
+                $installer->getIdxName(
+                    $customerGroupsPriceGroupsTable,
+                    ['magento_customer_group_id', 'skylink_price_group_type'],
+                    DbAdapterInterface::INDEX_TYPE_UNIQUE
+                ),
+                ['magento_customer_group_id', 'skylink_price_group_type'],
+                DbAdapterInterface::INDEX_TYPE_UNIQUE
+            )
+            ->addForeignKey(
+                $installer->getFkName(
+                    $customerGroupsPriceGroupsTable,
+                    'magento_customer_group_id',
+                    'customer_group',
+                    'customer_group_id'
+                ),
+                'magento_customer_group_id',
+                'customer_group',
+                'customer_group_id',
                 DdlTable::ACTION_CASCADE
             );
 

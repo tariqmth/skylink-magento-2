@@ -32,6 +32,11 @@
         <plugin name="skylink_magento_customer_service_validation" type="RetailExpress\SkyLink\Plugin\SkyLink\Customers\MagentoCustomerServiceValidationPlugin" sortOrder="10" disabled="false"/>
     </type>
 
+    <!-- Create a plugin to attach Price Group Keys to Magento Customer Groups -->
+    <type name="Magento\Customer\Api\GroupRepositoryInterface">
+        <plugin name="skylink_group_repository" type="RetailExpress\SkyLink\Plugin\Magento\Customers\GroupRepositoryPlugin" sortOrder="10" disabled="false"/>
+    </type>
+
     <!-- Catalogue attribute implementations -->
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeOptionRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeOptionService"/>

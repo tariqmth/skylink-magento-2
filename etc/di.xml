@@ -164,6 +164,9 @@
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
+                <item name="skylinkBulkCustomerGroupsCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkCustomerGroupsCommand</item>
+            </argument>
+            <argument name="commands" xsi:type="array">
                 <item name="skylinkBulkCustomersCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkCustomersCommand</item>
             </argument>
             <argument name="commands" xsi:type="array">

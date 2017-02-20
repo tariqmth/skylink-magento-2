@@ -58,7 +58,7 @@ class ShipmentRepositoryPlugin
         $magentoShipmentId = $magentoShipment->getEntityId();
 
         // Update
-        if (true === $this->mappingExists($magentoShipmentId, $skyLinkFulfillmentBatchId)) {
+        if (true === $this->mappingExists($magentoShipmentId)) {
             $this->connection->update(
                 $this->getShipmentsFulfillmentBatchesTable(),
                 [
@@ -81,12 +81,12 @@ class ShipmentRepositoryPlugin
         }
     }
 
-    private function mappingExists($magentoShipmentId, SkyLinkFulfillmentBatchId $skyLinkFulfillmentBatchId)
+    private function mappingExists($magentoShipmentId)
     {
         return (bool) $this->connection->fetchOne(
             $this->connection
                 ->select()
-                ->from($this->getShipmentsFulfillmentBatchesTable(), 'skylink_fulfillment_batch_id')
+                ->from($this->getShipmentsFulfillmentBatchesTable())
                 ->where('magento_shipment_id = ?', $magentoShipmentId)
         );
     }

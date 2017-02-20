@@ -219,7 +219,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
     {
         if (!$product instanceof Product) {
             throw new InvalidArgumentException(sprintf(
-                'Updating a Magento Product for a Sales Channel Group requires the Product be an instanceof %s.',
+                'Updating a Magento Product for a Sales Channel Group requires the Product be an instance of %s.',
                 Product::class
             ));
         }

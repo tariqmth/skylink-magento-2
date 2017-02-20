@@ -272,7 +272,7 @@ class InstallSchema implements InstallSchemaInterface
                 'skylink_order_id',
                 DdlTable::TYPE_TEXT,
                 11,
-                ['unsigned' => true, 'nullable' => false]
+                ['nullable' => false]
             )
             ->addIndex(
                 $installer->getIdxName(
@@ -312,7 +312,7 @@ class InstallSchema implements InstallSchemaInterface
                 'skylink_payment_id',
                 DdlTable::TYPE_TEXT,
                 32,
-                ['unsigned' => true, 'nullable' => false]
+                ['nullable' => false]
             )
             ->addIndex(
                 $installer->getIdxName(
@@ -352,7 +352,7 @@ class InstallSchema implements InstallSchemaInterface
                 'skylink_fulfillment_batch_id',
                 DdlTable::TYPE_TEXT,
                 32,
-                ['unsigned' => true, 'nullable' => false]
+                ['nullable' => false]
             )
             ->addIndex(
                 $installer->getIdxName(

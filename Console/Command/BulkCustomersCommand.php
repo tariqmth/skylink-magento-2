@@ -6,7 +6,6 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use RetailExpress\CommandBus\Api\CommandBusInterface;
-use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Commands\Customers\SyncSkyLinkCustomerToMagentoCustomerCommand;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerRepositoryFactory;
@@ -18,8 +17,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class BulkCustomersCommand extends Command
 {
-    private $config;
-
     private $skyLinkCustomerRepositoryFactory;
 
     private $commandBus;
@@ -27,12 +24,10 @@ class BulkCustomersCommand extends Command
     private $timezone;
 
     public function __construct(
-        ConfigInterface $config,
         CustomerRepositoryFactory $skyLinkCustomerRepositoryFactory,
         CommandBusInterface $commandBus,
         TimezoneInterface $timezone
     ) {
-        $this->config = $config;
         $this->skyLinkCustomerRepositoryFactory = $skyLinkCustomerRepositoryFactory;
         $this->commandBus = $commandBus;
         $this->timezone = $timezone;

@@ -109,6 +109,13 @@
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\SalesChannelId</source_model>
                 </field>
             </group>
+            <group id="customers" translate="label" type="text" sortOrder="300" showInDefault="1" showInWebsite="1">
+                <label>Customers</label>
+                <field id="customer_group_tax_class_id" translate="label" type="select" sortOrder="100" showInDefault="1" canRestore="1">
+                    <label>Tax Class for New Customer Groups</label>
+                    <source_model>Magento\Tax\Model\TaxClass\Source\Customer</source_model>
+                </field>
+            </group>
         </section>
     </system>
 </config>

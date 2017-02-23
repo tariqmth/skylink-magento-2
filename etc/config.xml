@@ -28,6 +28,9 @@
             <general>
                 <sales_channel_id>1</sales_channel_id>
             </general>
+            <customers>
+                <customer_group_tax_class_id>3</customer_group_tax_class_id>
+            </customers>
             <products>
                 <configurable_product_match_threshold>0.5</configurable_product_match_threshold>
                 <composite_product_sync_rerun_threshold>300</composite_product_sync_rerun_threshold>

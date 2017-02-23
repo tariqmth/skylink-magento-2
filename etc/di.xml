@@ -12,12 +12,17 @@
     <preference for="RetailExpress\SkyLink\Api\Eds\ChangeSetServiceInterface" type="RetailExpress\SkyLink\Model\Eds\ChangeSetService"/>
 
     <!-- Customer implementations -->
+    <preference for="RetailExpress\SkyLink\Api\Customers\ConfigInterface" type="RetailExpress\SkyLink\Model\Customers\Config"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\SkyLinkContactBuilderInterface" type="RetailExpress\SkyLink\Model\Customers\SkyLinkContactBuilder"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerRepositoryInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerService"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerMapper"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\SkyLinkCustomerBuilderInterface" type="RetailExpress\SkyLink\Model\Customers\SkyLinkCustomerBuilder"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\SkyLinkCustomerServiceInterface" type="RetailExpress\SkyLink\Model\Customers\SkyLinkCustomerService"/>
+
+    <!-- Customer Group implementations -->
+    <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerGroupRepositoryInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerGroupRepository"/>
+    <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerGroupServiceInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerGroupService"/>
 
     <!-- Create a plugin to tap into customer persistence -->
     <type name="Magento\Customer\Api\AddressRepositoryInterface">

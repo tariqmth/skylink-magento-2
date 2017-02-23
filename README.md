@@ -125,3 +125,16 @@ To create the queued jobs for the initial sync, type:
 bin/magento retail-express:skylink:bulk-products
 bin/magento retail-express:skylink:bulk-customers
 ```
+
+## Temporary Logging Workaround
+
+Due to the way Magento [sets up it's logging](https://github.com/magento/magento2/issues/2529) and that it [explicitly requires an old version of Monolog (the logging tool)](https://github.com/magento/magento2/blob/2.1/composer.json#L40), an extra step is required to make SkyLink logging (or any third party logging) work properly. This is a [known issue](https://github.com/magento/magento2/issues/2529) that Magento have not resolved.
+
+To do this, merge the following with your `composer.json` file:
+
+```json
+{
+    "require": {
+        "monolog/monolog": "1.18.0 as 1.16.0"
+    }
+}

@@ -38,7 +38,6 @@ class SyncSkyLinkPriceGroupToMagentoCustomerGroupHandler
         /* @var \Magento\Customer\Api\Data\GroupInterface|null $magentoCustomerGroup */
         $magentoCustomerGroup = $this->magentoCustomerGroupRepository->findBySkyLinkPriceGroupKey($skyLinkPriceGroupKey);
 
-
         if (null === $magentoCustomerGroup) {
             $magentoCustomerGroup = $this->magentoCustomerGroupService->createMagentoCustomerGroup($skyLinkPriceGroup);
         }

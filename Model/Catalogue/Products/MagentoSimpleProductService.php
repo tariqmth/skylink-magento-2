@@ -10,6 +10,7 @@ use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductCustomerGroupPriceServiceInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductStockItemMapperInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
@@ -37,6 +38,8 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
 
     private $urlKeyGenerator;
 
+    private $magentoCustomerGroupPriceService;
+
     public function __construct(
         MagentoProductMapperInterface $magentoProductMapper,
         MagentoSimpleProductStockItemMapperInterface $magentoStockItemMapper,
@@ -44,7 +47,8 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         StockItemInterfaceFactory $magentoStockItemFactory,
         ProductRepositoryInterface $baseMagentoProductRepository,
         StockRegistryInterface $magentoStockRegistry,
-        UrlKeyGeneratorInterface $urlKeyGenerator
+        UrlKeyGeneratorInterface $urlKeyGenerator,
+        MagentoSimpleProductCustomerGroupPriceServiceInterface $magentoCustomerGroupPriceService
     ) {
         $this->magentoProductMapper = $magentoProductMapper;
         $this->magentoStockItemMapper = $magentoStockItemMapper;
@@ -53,6 +57,7 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
         $this->magentoStockRegistry = $magentoStockRegistry;
         $this->urlKeyGenerator = $urlKeyGenerator;
+        $this->magentoCustomerGroupPriceService = $magentoCustomerGroupPriceService;
     }
 
     /**
@@ -114,9 +119,12 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         StockItemInterface $magentoStockItem,
         SkyLinkProduct $skyLinkProduct
     ) {
+        $magentoProductSku = $magentoProduct->getSku();
+
         $this->magentoStockItemMapper->mapStockItem($magentoStockItem, $skyLinkProduct->getInventoryItem());
         $this->save($magentoProduct);
-        $this->magentoStockRegistry->updateStockItemBySku($magentoProduct->getSku(), $magentoStockItem);
+        $this->magentoStockRegistry->updateStockItemBySku($magentoProductSku, $magentoStockItem);
+        $this->magentoCustomerGroupPriceService->syncCustomerGroupPrices($magentoProductSku, $skyLinkProduct->getPricingStructure());
     }
 
     private function save(ProductInterface $magentoProduct)

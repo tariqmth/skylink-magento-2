@@ -72,7 +72,7 @@ class SkyLinkPaymentBuilder implements SkyLinkPaymentBuilderInterface
     {
         /* @var \Magento\Sales\Api\Data\OrderExtensionInterface $extendedAttributes */
         $extendedAttributes = $this->getOrderExtensionAttributes($magentoOrder);
-        $skyLinkOrderId = $extendedAttributes->getSkyLinkOrderId();
+        $skyLinkOrderId = $extendedAttributes->getSkylinkOrderId(); // Note the lowercase "l"
 
         if (null === $skyLinkOrderId) {
             throw SkyLinkOrderIdRequiredForMagentoOrderException::withMagentoOrder($magentoOrder);

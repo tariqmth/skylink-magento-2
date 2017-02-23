@@ -61,7 +61,7 @@ class MagentoShipmentService implements MagentoShipmentServiceInterface
 
         /* @var \Magento\Sales\Api\Data\ShipmentExtensionInterface $extendedAttributes */
         $extendedAttributes = $this->getShipmentExtensionAttributes($magentoShipment);
-        $extendedAttributes->setSkylinkFulfillmentBatchId($skyLinkFulfillmentBatch->getId());
+        $extendedAttributes->setSkylinkFulfillmentBatchId($skyLinkFulfillmentBatch->getId()); // Note lowercase "l"
 
         $this->baseMagentoShipmentRepository->save($magentoShipment);
 

@@ -109,11 +109,16 @@
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\SalesChannelId</source_model>
                 </field>
             </group>
-            <group id="customers" translate="label" type="text" sortOrder="300" showInDefault="1" showInWebsite="1">
+            <group id="customers" translate="label" type="text" sortOrder="300" showInDefault="1">
                 <label>Customers</label>
                 <field id="customer_group_tax_class_id" translate="label" type="select" sortOrder="100" showInDefault="1" canRestore="1">
                     <label>Tax Class for New Customer Groups</label>
                     <source_model>Magento\Tax\Model\TaxClass\Source\Customer</source_model>
+                </field>
+                <field id="price_group_type" translate="label" type="select" sortOrder="200" showInDefault="1" canRestore="1">
+                    <label>Price Group Type</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\PriceGroupType</source_model>
+                    <comment><![CDATA[In Retail Express, a Customer can belong to both a Standard and Fixed Price Group. In Magento, a Customer can only belong to one Customer Group. You must choose if Magento Customers are placed in a Customer Group based on their Standard or Fixed Price Groups from Retail Express. <strong>Note, there is no fallback for the chosen option; for example, if you choose Fixed Price Groups but the Retail Express Customer only belongs to a Standard Price Group, the Magneto Customer will not belong to any Customer Groups.</strong>]]></comment>
                 </field>
             </group>
         </section>

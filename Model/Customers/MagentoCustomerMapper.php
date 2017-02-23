@@ -4,13 +4,28 @@ namespace RetailExpress\SkyLink\Model\Customers;
 
 use Magento\Customer\Api\Data\AddressInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
+use RetailExpress\SkyLink\Api\Customers\MagentoCustomerGroupRepositoryInterface;
+use RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface;
+use RetailExpress\SkyLink\Api\Customers\ConfigInterface;
+use RetailExpress\SkyLink\Exceptions\Customers\CustomerGroupNotSyncedException;
 use RetailExpress\SkyLink\Sdk\Customers\BillingContact as SkyLinkBillingContact;
 use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
 use RetailExpress\SkyLink\Sdk\Customers\ShippingContact as SkyLinkShippingContact;
-use RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface;
 
 class MagentoCustomerMapper implements MagentoCustomerMapperInterface
 {
+    private $customerConfig;
+
+    private $magentoCustomerGroupRepository;
+
+    public function __construct(
+        ConfigInterface $customerConfig,
+        MagentoCustomerGroupRepositoryInterface $magentoCustomerGroupRepository
+    ) {
+        $this->customerConfig = $customerConfig;
+        $this->magentoCustomerGroupRepository = $magentoCustomerGroupRepository;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -34,6 +49,8 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
 
         $this->mapBasicInfo($magentoCustomer, $skyLinkBillingContact);
 
+        $this->mapCustomerGroup($magentoCustomer, $skyLinkCustomer);
+
         $this->mapBillingAddress(
             $magentoBillingAddress,
             $skyLinkBillingContact
@@ -51,6 +68,32 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
             ->setFirstname((string) $skyLinkBillingContact->getName()->getFirstName())
             ->setLastname((string) $skyLinkBillingContact->getName()->getLastName())
             ->setEmail((string) $skyLinkBillingContact->getEmailAddress());
+    }
+
+    private function mapCustomerGroup(CustomerInterface $magentoCustomer, SkyLinkCustomer $skyLinkCustomer)
+    {
+        /* @var \RetailExpress\SkyLink\Sdk\Customers\PriceGroups\PriceGroupType $skyLinkPriceGroupType */
+        $skyLinkPriceGroupType = $this->customerConfig->getSkyLinkPriceGroupType();
+
+        // If the SkyLink Customer has a Price Group Key for the given Price Group Type, we'll find
+        // our own mapping for that and set a property on the Magenot Customer accordingly.
+        if (!$skyLinkCustomer->hasPriceGroupKey($skyLinkPriceGroupType)) {
+            $magentoCustomer->setGroupId($this->customerConfig->getDefaultCustomerGroupId());
+
+            return;
+        }
+
+        /* @var \RetailExpress\SkyLink\Sdk\Customers\PriceGroups\PriceGroupKey $skyLinkPriceGroupKey */
+        $skyLinkPriceGroupKey = $skyLinkCustomer->getPriceGroupKey($skyLinkPriceGroupType);
+
+        /* @var \Magento\Customer\Api\Data\GroupInterface|null $magentoCustomerGroup */
+        $magentoCustomerGroup = $this->magentoCustomerGroupRepository->findBySkyLinkPriceGroupKey($skyLinkPriceGroupKey);
+
+        if (null === $magentoCustomerGroup) {
+            throw CustomerGroupNotSyncedException::withSkyLinkPriceGroupKey($skyLinkPriceGroupKey);
+        }
+
+        $magentoCustomer->setGroupId($magentoCustomerGroup->getId());
     }
 
     private function mapBillingAddress(AddressInterface $magentoBillingAddress, SkyLinkBillingContact $skyLinkBillingContact)

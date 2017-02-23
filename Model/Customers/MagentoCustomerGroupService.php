@@ -40,12 +40,12 @@ class MagentoCustomerGroupService implements MagentoCustomerGroupServiceInterfac
         $magentoCustomerGroup = $this->magentoCustomerGroupFactory->create();
 
         // Setup the basic info for the Magento Customer Group
-        $magentoCustomerGroup->setCode((string) $skyLinkPriceGroup->getTypeWithName());
+        $magentoCustomerGroup->setCode((string) $skyLinkPriceGroup->getNameWithType());
         $magentoCustomerGroup->setTaxClassId($this->customerConfig->getCustomerGroupTaxClassId());
 
         // Add our custom attribute
         $extendedAttributes = $this->getCustomerGroupExtensionAttributes($magentoCustomerGroup);
-        $extendedAttributes->setSkyLinkPriceGroupKey($skyLinkPriceGroup->getKey());
+        $extendedAttributes->setSkylinkPriceGroupKey($skyLinkPriceGroup->getKey());
 
         // Save and return
         $this->baseMagentoCustomerGroupRepository->save($magentoCustomerGroup);

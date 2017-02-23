@@ -39,15 +39,19 @@ class GroupRepositoryPlugin
         return $magentoCustomerGroup;
     }
 
-    public function afterSave(GroupRepositoryInterface $subject, GroupInterface $magentoCustomerGroup)
+    /**
+     * @todo switch this to an "after" method when possible, however the extended attibutes are wiped when doing it that way...
+     */
+    public function aroundSave(GroupRepositoryInterface $subject, callable $proceed, GroupInterface $magentoCustomerGroup)
     {
-        // Until we can get around Magento trying to convert our object to an array, we'll just manually modify the data
-
         /* @var \Magento\Customer\Api\Data\GroupExtensionInterface $extendedAttributes */
         $extendedAttributes = $this->getCustomerGroupExtensionAttributes($magentoCustomerGroup);
 
         /* @var SkyLinkPriceGroupKey|null $skyLinkPriceGroupKey */
         $skyLinkPriceGroupKey = $extendedAttributes->getSkyLinkPriceGroupKey();
+
+        // Call our parent function
+        $magentoCustomerGroup = $proceed($magentoCustomerGroup);
 
         if (null === $skyLinkPriceGroupKey) {
             return $magentoCustomerGroup;

@@ -11,12 +11,12 @@ use Magento\Store\Api\Data\WebsiteInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetRepositoryInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
 use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
 use RetailExpress\SkyLink\Exceptions\Products\AttributeNotMappedException;
 use RetailExpress\SkyLink\Exceptions\Products\AttributeOptionNotMappedException;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
-use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 
 class MagentoProductMapper implements MagentoProductMapperInterface

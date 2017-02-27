@@ -91,11 +91,12 @@ These jobs are executed using the `magento` command-line app:
 bin/magento retail-express:command-bus:consume-queue name_of_queue
 ```
 
-There are three queues and these would be used as such:
+There are four queues and these would be used as such:
 
 1. `attributes` - `bin/magento retail-express:command-bus:consume-queue attributes`
 2. `products` - `bin/magento retail-express:command-bus:consume-queue products`
-3. `customers` - `bin/magento retail-express:command-bus:consume-queue name_of_queue`
+3. `customer grouups` - `bin/magento retail-express:command-bus:consume-queue customer_groups`
+3. `customers` - `bin/magento retail-express:command-bus:consume-queue customers`
 
 This starts a continuous script that watches the `retail_express_command_bus_messages` table for any jobs that appear, executes them and then marks them off.
 
@@ -123,7 +124,9 @@ To create the queued jobs for the initial sync, type:
 
 ```bash
 bin/magento retail-express:skylink:bulk-products
+bin/magento retail-express:skylink:bulk-customer-groups
 bin/magento retail-express:skylink:bulk-customers
+bin/magento retail-express:skylink:bulk-outlets
 ```
 
 ## Temporary Logging Workaround

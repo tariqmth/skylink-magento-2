@@ -2,6 +2,7 @@
 
 namespace RetailExpress\SkyLink\Plugin\SkyLink\Customers;
 
+use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\State\InputMismatchException;
@@ -25,32 +26,58 @@ class MagentoCustomerServiceValidationPlugin
         callable $proceed,
         SkyLinkCustomer $skyLinkCustomer
     ) {
+        return $this->handelValidationErrors(
+            function () use ($proceed, $skyLinkCustomer) {
+                return $proceed($skyLinkCustomer);
+            },
+            $skyLinkCustomer
+        );
+    }
+
+    public function aroundUpdateMagentoCustomer(
+        MagentoCustomerServiceInterface $subject,
+        callable $proceed,
+        CustomerInterface $magentoCustomer,
+        SkyLinkCustomer $skyLinkCustomer
+    ) {
+        return $this->handelValidationErrors(
+            function () use ($proceed, $magentoCustomer, $skyLinkCustomer) {
+                return $proceed($magentoCustomer, $skyLinkCustomer);
+            },
+            $skyLinkCustomer
+        );
+    }
+
+    private function handelValidationErrors(
+        callable $callback,
+        SkyLinkCustomer $skyLinkCustomer,
+        CustomerInterface $magentoCustomer = null
+    ) {
+        $payload = ['SkyLink Customer ID' => $skyLinkCustomer->getId()];
+        if (null !== $magentoCustomer) {
+            $payload['Magento Customer ID'] = $magentoCustomer->getId();
+        }
+
         try {
-
-            /* @var \Magento\Customer\Api\Data\CustomerInterface $magentoCustomer */
-            $magentoCustomer = $proceed($skyLinkCustomer);
-
-            return $magentoCustomer;
+            return $callback();
 
         // Validation errors
         } catch (InputException $e) {
-            $this->logger->error(__('Validation errors occured while saving a Magento Customer'), [
-                'SkyLink Customer ID' => $skyLinkCustomer->getId(),
-                'Error' => $e->getMessage(),
-                'Validation Errors' => array_map(function (LocalizedException $e) {
-                    return $e->getMessage();
-                }, $e->getErrors()),
-            ]);
+            $payload['Error'] = $e->getMessage();
+            $payload['Validation Errors'] = array_map(function (LocalizedException $e) {
+                return $e->getMessage();
+            }, $e->getErrors());
+
+            $this->logger->error(__('Validation errors occured while saving a Magento Customer'), $payload);
 
             throw $e;
 
         // Typically caused becuase of a duplicated email
         } catch (InputMismatchException $e) {
             if (self::DUPLICATE_EMAIL_ERROR === $e->getRawMessage()) {
-                $this->logger->error($e->getMessage(), [
-                    'SkyLink Customer ID' => $skyLinkCustomer->getId(),
-                    'SkyLink Email Address' => $skyLinkCustomer->getBillingContact()->getEmailAddress(),
-                ]);
+                $payload['SkyLink Email Address'] = $skyLinkCustomer->getBillingContact()->getEmailAddress();
+
+                $this->logger->error($e->getMessage(), $payload);
             }
 
             throw $e;

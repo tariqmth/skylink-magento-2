@@ -2,9 +2,6 @@
 
 namespace RetailExpress\SkyLink\Console\Command;
 
-use DateTimeImmutable;
-use DateTimeZone;
-use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use RetailExpress\CommandBus\Api\CommandBusInterface;
 use RetailExpress\SkyLink\Commands\Customers\SyncSkyLinkCustomerToMagentoCustomerCommand;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
@@ -21,16 +18,12 @@ class BulkCustomersCommand extends Command
 
     private $commandBus;
 
-    private $timezone;
-
     public function __construct(
         CustomerRepositoryFactory $skyLinkCustomerRepositoryFactory,
-        CommandBusInterface $commandBus,
-        TimezoneInterface $timezone
+        CommandBusInterface $commandBus
     ) {
         $this->skyLinkCustomerRepositoryFactory = $skyLinkCustomerRepositoryFactory;
         $this->commandBus = $commandBus;
-        $this->timezone = $timezone;
 
         parent::__construct('retail-express:skylink:bulk-customers');
     }
@@ -42,9 +35,7 @@ class BulkCustomersCommand extends Command
     {
         parent::configure();
 
-        $this
-            ->setDescription('Gets a list of customers from Retail Express and queues a job for each one to sync')
-            ->addOption('since', null, InputOption::VALUE_REQUIRED, 'Only customers updated in Retail Express within the specified timeframe (in seconds) will be synced.');
+        $this->setDescription('Gets a list of customers from Retail Express and queues a job for each one to sync');
     }
 
     /**
@@ -55,14 +46,11 @@ class BulkCustomersCommand extends Command
         /* @var \RetailExpress\SkyLink\Sdk\Customers\CustomerRepository $skyLinkCustomerRepository */
         $skyLinkCustomerRepository = $this->skyLinkCustomerRepositoryFactory->create();
 
-        /* @var DateTimeImmutable|null $sinceDate */
-        $sinceDate = $this->getSinceDate($input);
-
         $progressBar = new ProgressBar($output);
         $progressBar->start();
 
         /* @var SkyLinkCustomerId[] $skyLinkCustomerIds */
-        $skyLinkCustomerIds = $skyLinkCustomerRepository->allIds($sinceDate);
+        $skyLinkCustomerIds = $skyLinkCustomerRepository->allIds();
 
         // Loop over our IDs and add dispatch a command to sync each
         array_walk($skyLinkCustomerIds, function (SkyLinkCustomerId $skyLinkCustomerId) use ($progressBar) {
@@ -83,23 +71,5 @@ MESSAGE
             ,
             count($skyLinkCustomerIds)
         ));
-    }
-
-    /**
-     * @return DateTimeImmutable|null
-     */
-    private function getSinceDate(InputInterface $input)
-    {
-        $sinceSeconds = $input->getOption('since');
-
-        if (null === $sinceSeconds) {
-            return null;
-        }
-
-        // @see BulkProductCommand
-        $timezone = new DateTimeZone($this->timezone->getConfigTimezone());
-        $nowDate = new DateTimeImmutable('now', $timezone);
-
-        return $nowDate->modify(sprintf('-%d seconds', $sinceSeconds));
     }
 }

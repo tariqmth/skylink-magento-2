@@ -121,6 +121,24 @@
                     <comment><![CDATA[In Retail Express, a Customer can belong to both a Standard and Fixed Price Group. In Magento, a Customer can only belong to one Customer Group. You must choose if Magento Customers are placed in a Customer Group based on their Standard or Fixed Price Groups from Retail Express. <strong>Note, there is no fallback for the chosen option; for example, if you choose Fixed Price Groups but the Retail Express Customer only belongs to a Standard Price Group, the Magneto Customer will not belong to any Customer Groups.</strong>]]></comment>
                 </field>
             </group>
+            <group id="products" translate="label" type="text" sortOrder="400" showInDefault="1" showInWebsite="1">
+                <label>Products</label>
+                <field id="name_attribute" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Name Attribute</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ProductNameAttribute</source_model>
+                    <comment><![CDATA[Choose the attribute in Retail Express to map to a product's name <strong>(falling back to <kbd>Description</kbd> if your chosen attribute is not available for a given product)</strong>.]]></comment>
+                </field>
+                <field id="regular_price_attribute" translate="label" type="select" sortOrder="200" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Regular Price Attribute</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ProductPriceAttribute</source_model>
+                    <comment><![CDATA[Choose the attribute in Retail Express to map to a product's regular price attribute <strong>(falling back to <kbd>Default Price</kbd> if your chosen attribute is not available for a given product)</strong>.]]></comment>
+                </field>
+                <field id="special_price_attribute" translate="label" type="select" sortOrder="300" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Special Price Attribute</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ProductPriceAttribute</source_model>
+                    <comment><![CDATA[Choose the attribute in Retail Express to map to a product's regular price attribute <strong>(falling back to <kbd>Discounted Price</kbd> if your chosen attribute is not available for a given product)</strong>.]]></comment>
+                </field>
+            </group>
         </section>
     </system>
 </config>

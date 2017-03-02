@@ -5,6 +5,27 @@ namespace RetailExpress\SkyLink\Api\Catalogue\Products;
 interface ConfigInterface
 {
     /**
+     * Returns the name attribute used for mapping product names.
+     *
+     * @return \RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductNameAttribute
+     */
+    public function getNameAttribute();
+
+    /**
+     * Returns the name attribute used for mapping regular prices.
+     *
+     * @return \RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductPriceAttribute
+     */
+    public function getRegularPriceAttribute();
+
+    /**
+     * Returns the name attribute used for mapping special prices.
+     *
+     * @return \RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductPriceAttribute
+     */
+    public function getSpecialPriceAttribute();
+
+    /**
      * Returns the threshold used to match configurable products.
      *
      * @return \RetailExpress\SkyLink\ValueObjects\ConfigurableProductMatchThreshold

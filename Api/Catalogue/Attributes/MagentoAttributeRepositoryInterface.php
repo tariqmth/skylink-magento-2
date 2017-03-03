@@ -7,6 +7,20 @@ use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttri
 interface MagentoAttributeRepositoryInterface
 {
     /**
+     * Return an array of  Magento Attributes, grouped by their type
+     *
+     * [
+     *   [
+     *     "type" => \RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeType,
+     *     "attributes" => \Magento\Eav\Api\Data\AttributeInterface[],
+     *   ]
+     * ]
+     *
+     * @return array
+     */
+    public function getMagentoAttributesByType();
+
+    /**
      * Get the Attribute used for the given SkyLink Attribute Code. If there is no
      * mapping defined, "null" is returend.
      *

@@ -11,6 +11,7 @@ use Magento\Store\Api\Data\WebsiteInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetRepositoryInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeTypeManagerInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
 use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
 use RetailExpress\SkyLink\Exceptions\Products\AttributeNotMappedException;
@@ -25,15 +26,19 @@ class MagentoProductMapper implements MagentoProductMapperInterface
 
     private $attributeRepository;
 
+    private $attributeTypeManager;
+
     private $attributeOptionRepository;
 
     public function __construct(
         MagentoAttributeSetRepositoryInterface $attributeSetRepository,
         MagentoAttributeRepositoryInterface $attributeRepository,
+        MagentoAttributeTypeManagerInterface $attributeTypeManager,
         MagentoAttributeOptionRepositoryInterface $attributeOptionRepository
     ) {
         $this->attributeSetRepository = $attributeSetRepository;
         $this->attributeRepository = $attributeRepository;
+        $this->attributeTypeManager = $attributeTypeManager;
         $this->attributeOptionRepository = $attributeOptionRepository;
     }
 
@@ -65,29 +70,8 @@ class MagentoProductMapper implements MagentoProductMapperInterface
             $magentoProduct->setCustomAttribute('qty_on_order', $skyLinkProduct->getInventoryItem()->getQtyOnOrder()->toNative());
         }
 
-        // @todo map inventory, physical package and attributes
-        foreach (SkyLinkAttributeCode::getConstants() as $skyLinkAttributeCodeString) {
-            $skyLinkAttributeCode = SkyLinkAttributeCode::get($skyLinkAttributeCodeString);
-            $skyLinkAttributeOption = $skyLinkProduct->getAttributeOption($skyLinkAttributeCode);
-
-            // @todo deal with orphaned options?
-            if (null === $skyLinkAttributeOption) {
-                continue;
-            }
-
-            /* @var \Magento\Catalog\Api\Data\ProductAttributeInterface $magentoAttribute */
-            /* @var \Magento\Eav\Api\Data\AttributeOptionInterface $magentoAttributeOption */
-            list($magentoAttribute, $magentoAttributeOption) = $this
-                ->getMagentoAttributeAndOptionFromSkyLinkCounterparts(
-                    $skyLinkAttributeCode, $skyLinkAttributeOption
-                );
-
-            // @todo Do we validate the attribute in the product's attribute set?
-            $magentoProduct->setCustomAttribute(
-                $magentoAttribute->getAttributeCode(),
-                $magentoAttributeOption->getValue()
-            );
-        }
+        // All other attributes
+        $this->mapAttributes($magentoProduct, $skyLinkProduct);
     }
 
     /**
@@ -179,22 +163,66 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         }
     }
 
+    private function mapAttributes(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
+    {
+        foreach (SkyLinkAttributeCode::getConstants() as $skyLinkAttributeCodeString) {
+            $skyLinkAttributeCode = SkyLinkAttributeCode::get($skyLinkAttributeCodeString);
+
+            /* @var \Magento\Catalog\Api\Data\ProductAttributeInterface $magentoAttribute */
+            $magentoAttribute = $this->getMagentoAttributeForSkyLinkAttributeCode($skyLinkAttributeCode);
+
+            /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption $skyLinkAttributeOption */
+            $skyLinkAttributeOption = $skyLinkProduct->getAttributeOption($skyLinkAttributeCode);
+
+            // If there's no value for the SkyLink Attribute Option, we'll wipe the custom attribute value
+            if (null === $skyLinkAttributeOption) {
+                $magentoProduct->setCustomAttribute($magentoAttribute->getAttributeCode(), null);
+                continue;
+            }
+
+            /* @var \RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeType $magentoAttributeType */
+            $magentoAttributeType = $this->attributeTypeManager->getType($magentoAttribute);
+
+            // If we use options, we'll grab the mapped option
+            if ($magentoAttributeType->usesOptions()) {
+                $magentoAttributeValue = $this
+                    ->getMagentoAttributeOptionFromSkyLinkAttributeOption($skyLinkAttributeOption)
+                    ->getValue();
+            // Otherweise, we'll use the label for the SkyLink Attribute Option
+            } else {
+                $magentoAttributeValue = $skyLinkAttributeOption->getLabel()->toNative();
+            }
+
+            // Now we'll set the custom attribute value
+            $magentoProduct->setCustomAttribute(
+                $magentoAttribute->getAttributeCode(),
+                $magentoAttributeValue
+            );
+
+            // if (!$magentoAttributeType->usesOptions()) {
+            //     dd(
+            //         $magentoAttribute->getAttributeCode(),
+            //         $magentoAttributeValue,
+            //         $magentoProduct->getData(),
+            //         $magentoProduct->getCustomAttributes()
+            //     );
+            // }
+        }
+    }
+
     /**
-     * Get the Magento Attriubte and Option for the given SkyLink counterparts.
+     * Get the Magento Attribute for the given SkyLink Attribute Code.
      *
      * @param SkyLinkAttributeCode   $skyLinkAttributeCode
      * @param SkyLinkAttributeOption $skyLinkAttributeOption
      *
-     * @return [\Magento\Catalog\Api\Data\ProductAttributeInterface, \Magento\Eav\Api\Data\AttributeOptionInterface]
+     * @return \Magento\Catalog\Api\Data\ProductAttributeInterface
      *
      * @throws AttributeNotMappedException       When there is no Attribute mapping
-     * @throws AttributeOptionNotMappedException When there is no Attribute Option mapping
      */
-    private function getMagentoAttributeAndOptionFromSkyLinkCounterparts(
-        SkyLinkAttributeCode $skyLinkAttributeCode,
-        SkyLinkAttributeOption $skyLinkAttributeOption
-    ) {
-        // Find the corresponding Magento attribute
+    private function getMagentoAttributeForSkyLinkAttributeCode(SkyLinkAttributeCode $skyLinkAttributeCode)
+    {
+        /* @var \Magento\Catalog\Api\Data\ProductAttributeInterface|null $magentoAttribute */
         $magentoAttribute = $this
             ->attributeRepository
             ->getMagentoAttributeForSkyLinkAttributeCode($skyLinkAttributeCode);
@@ -204,6 +232,21 @@ class MagentoProductMapper implements MagentoProductMapperInterface
             throw AttributeNotMappedException::withSkyLinkAttributeCode($skyLinkAttributeCode);
         }
 
+        return $magentoAttribute;
+    }
+
+    /**
+     * Get the Magento Attribute Option for the given SkyLink Attribute Option.
+     *
+     * @param SkyLinkAttributeOption $skyLinkAttributeOption
+     *
+     * @return \Magento\Eav\Api\Data\AttributeOptionInterface
+     *
+     * @throws AttributeOptionNotMappedException When there is no Attribute Option mapping
+     */
+    private function getMagentoAttributeOptionFromSkyLinkAttributeOption(
+        SkyLinkAttributeOption $skyLinkAttributeOption
+    ) {
         $magentoAttributeOption = $this
             ->attributeOptionRepository
             ->getMappedMagentoAttributeOptionForSkyLinkAttributeOption($skyLinkAttributeOption);
@@ -212,7 +255,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
             throw AttributeOptionNotMappedException::withSkyLinkAttributeOption($skyLinkAttributeOption);
         }
 
-        return [$magentoAttribute, $magentoAttributeOption];
+        return $magentoAttributeOption;
     }
 
     private function assertImplementationOfProductInterface(ProductInterface $product)

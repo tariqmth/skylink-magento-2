@@ -4,8 +4,8 @@
 /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode[] $skyLinkAttributeCodes */
 $skyLinkAttributeCodes = $block->getSkyLinkAttributeCodes();
 
-/* @var \Magento\Catalog\Api\Data\ProductAttributeInterface[] $magentoAttributes */
-$magentoAttributes = $block->getMagentoAttributes();
+/* @var array[] $magentoAttributesByType */
+$magentoAttributesByType = $block->getMagentoAttributesByType();
 ?>
 <h3><?=__('Map SkyLink Attributes to Magento Attributes')?></h3>
 <form action="<?php /* @escapeNotVerified */ echo $block->getSaveUrl() ?>" method="post">
@@ -32,14 +32,20 @@ $magentoAttributes = $block->getMagentoAttributes();
                     <td>
                         <select name="magento_attribute_mappings[<?php /* @escapeNotVerified */ echo $skyLinkAttributeCode->getValue() ?>]">
                             <?php /* @var \Magento\Catalog\Api\Data\ProductAttributeInterface $magentoAttribute */ ?>
-                            <?php foreach ($magentoAttributes as $magentoAttribute): ?>
-                                <option
-                                    value="<?php /* @escapeNotVerified */ echo $magentoAttribute->getAttributeCode() ?>"
-                                    <?php if ($selectedAttribute->getAttributeCode() === $magentoAttribute->getAttributeCode()): ?>
-                                        selected
-                                    <?php endif ?>
-                                >
-                                    <?=$block->escapeHtml($magentoAttribute->getDefaultFrontendLabel())?>
+                            <?php foreach ($magentoAttributesByType as $magentoAttributeByType): ?>
+                                <optgroup label="<?php /* @escapeNotVerified */ echo $magentoAttributeByType['type']->getLabel() ?>">
+                                    <?php foreach ($magentoAttributeByType['attributes'] as $magentoAttribute): ?>
+                                        <option
+                                            value="<?php /* @escapeNotVerified */ echo $magentoAttribute->getAttributeCode() ?>"
+                                            <?php if ($selectedAttribute->getAttributeCode() === $magentoAttribute->getAttributeCode()): ?>
+                                                selected
+                                            <?php endif ?>
+                                        >
+                                            <?=$block->escapeHtml($magentoAttribute->getDefaultFrontendLabel())?>
+                                        </option>
+                                    <?php endforeach ?>
+                                </optgroup>
+
                             <?php endforeach ?>
                         </select>
                     </td>

@@ -3,9 +3,13 @@
 namespace RetailExpress\SkyLink\Model\Catalogue\Attributes;
 
 use Magento\Catalog\Api\ProductAttributeRepositoryInterface;
+use Magento\Framework\Api\SortOrderBuilder;
 use Magento\Framework\App\ResourceConnection;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeTypeManagerInterface;
+use RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeType;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
+use Zend_Db_Expr;
 
 class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
 {
@@ -18,6 +22,20 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
      * @var ProductAttributeRepositoryInterface
      */
     private $magentoProductAttributeRepository;
+
+    /**
+     * The Magento Attribute Type Manger instance.
+     *
+     * @var MagentoAttributeTypeManagerInterface
+     */
+    private $magentoAttributeTypeManager;
+
+    /**
+     * The Sort Order Builder, used for applying sort orders to Search Criteria Builders.
+     *
+     * @var SortOrderBuilder
+     */
+    private $sortOrderBuilder;
 
     /**
      * Chosen Attribute Mappings.
@@ -45,21 +63,51 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
      *
      * @param ResourceConnection                  $resourceConnection
      * @param ProductAttributeRepositoryInterface $magentoProductAttributeRepository
+     * @param SortOrderBuilder                    $sortOrderBuilder
      * @param array|null                          $attributeMappings
      */
     public function __construct(
         ResourceConnection $resourceConnection,
         ProductAttributeRepositoryInterface $magentoProductAttributeRepository,
+        MagentoAttributeTypeManagerInterface $magentoAttributeTypeManager,
+        SortOrderBuilder $sortOrderBuilder,
         array $attributeMappings = null
     ) {
         $this->connection = $resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
         $this->magentoProductAttributeRepository = $magentoProductAttributeRepository;
+        $this->magentoAttributeTypeManager = $magentoAttributeTypeManager;
+        $this->sortOrderBuilder = $sortOrderBuilder;
 
         if (null === $attributeMappings) {
             $attributeMappings = $this->getDefaultAttributeMappings();
         }
 
         $this->attributeMappings = $attributeMappings;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMagentoAttributesByType()
+    {
+        return array_values(array_map(function ($type) {
+            $type = MagentoAttributeType::get($type);
+
+            /* @var \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder */
+            $searchCriteriaBuilder = $this->magentoAttributeTypeManager->getSearchCriteriaBuilder($type);
+
+            // Sort all of our attributes by name
+            $nameSortOrder = $this->sortOrderBuilder->setField('frontend_label')->setAscendingDirection()->create();
+            $searchCriteriaBuilder->addSortOrder($nameSortOrder);
+
+            /* @var \Magento\Framework\Api\SearchCriteria $saerchCriteria */
+            $searchCriteria = $searchCriteriaBuilder->create();
+            $searchResults = $this->magentoProductAttributeRepository->getList($searchCriteria);
+
+            $attributes = $searchResults->getItems();
+
+            return compact('type', 'attributes');
+        }, MagentoAttributeType::getConstants()));
     }
 
     /**

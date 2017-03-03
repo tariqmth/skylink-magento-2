@@ -129,6 +129,7 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
 
     private function save(ProductInterface $magentoProduct)
     {
+        // @todo Look at \Magento\Catalog\Model\Product\TierPriceManagement:L140, I think this is triggering a bug in Magento that causes product custom attributes to reset...
         $this->baseMagentoProductRepository->save($magentoProduct);
     }
 }

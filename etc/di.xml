@@ -49,6 +49,7 @@
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeService"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeSetRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeSetService"/>
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeTypeManagerInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeTypeManager"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\SkyLinkAttributeCodeRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\SkyLinkAttributeCodeRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\SkyLinkProductTypeRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\SkyLinkProductTypeRepository"/>
 

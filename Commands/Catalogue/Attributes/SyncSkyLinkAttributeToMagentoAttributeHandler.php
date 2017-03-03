@@ -8,6 +8,7 @@ use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionReposit
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionServiceInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeServiceInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeTypeManagerInterface;
 use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeRepositoryFactory;
@@ -28,6 +29,8 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
 
     private $magentoAttributeService;
 
+    private $magentoAttributeTypeManager;
+
     private $magentoAttributeOptionRepository;
 
     private $magentoAttributeOptionService;
@@ -45,6 +48,7 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
         BaseProductAttributeRepositoryInterface $baseMagentoProductAttributeRepository,
         MagentoAttributeRepositoryInterface $magentoAttributeRepository,
         MagentoAttributeServiceInterface $magentoAttributeService,
+        MagentoAttributeTypeManagerInterface $magentoAttributeTypeManager,
         MagentoAttributeOptionRepositoryInterface $magentoAttributeOptionRepository,
         MagentoAttributeOptionServiceInterface $magentoAttributeOptionService,
         SkyLinkLoggerInterface $logger
@@ -54,6 +58,7 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
         $this->baseMagentoProductAttributeRepository = $baseMagentoProductAttributeRepository;
         $this->magentoAttributeRepository = $magentoAttributeRepository;
         $this->magentoAttributeService = $magentoAttributeService;
+        $this->magentoAttributeTypeManager = $magentoAttributeTypeManager;
         $this->magentoAttributeOptionRepository = $magentoAttributeOptionRepository;
         $this->magentoAttributeOptionService = $magentoAttributeOptionService;
         $this->logger = $logger;
@@ -84,6 +89,18 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
         // Remap the attribute only if needed
         $this->remapAttributeOnlyIfNeeded($magentoAttributeToMap, $skyLinkAttribute);
 
+        /* @var \RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeType $magentoAttributeType */
+        $magentoAttributeType = $this->magentoAttributeTypeManager->getType($magentoAttributeToMap);
+
+        if (!$magentoAttributeType->usesOptions()) {
+            $this->logger->info('Magento Attribute Does does not use options, finishing sync.', [
+                'SkyLink Attribute Code' => $skyLinkAttributeCode,
+                'Magento Attribute Code' => $magentoAttributeToMap->getAttributeCode(),
+            ]);
+
+            return;
+        }
+
         // And sync our new attribute mappings
         $this->syncAttributeOptionMappings($magentoAttributeToMap, $skyLinkAttribute);
     }
@@ -101,7 +118,7 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
             ->getMagentoAttributeForSkyLinkAttributeCode($skyLinkAttributeCode);
 
         if (null === $alreadyMappedMagentoAttribute ||
-            $alreadyMappedMagentoAttribute->getCode() !== $magentoAttributeToMap->getCode()
+            $alreadyMappedMagentoAttribute->getAttributeCode() !== $magentoAttributeToMap->getAttributeCode()
         ) {
             // Map to the new attribute, which removes all old previous mappings
             $this

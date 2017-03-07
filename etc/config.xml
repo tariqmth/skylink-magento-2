@@ -23,7 +23,7 @@
         <skylink>
             <api>
                 <version>2</version>
-                <version_2_url>http://api-test.retailexpress.com.au/API/ecommerce.svc?wsdl</version_2_url>
+                <version_2_url>https://api-test.retailexpress.com.au/API/ecommerce.svc?singleWsdl</version_2_url>
             </api>
             <general>
                 <sales_channel_id>1</sales_channel_id>

@@ -76,7 +76,7 @@
             <resource>RetailExpress_SkyLink::system_config</resource>
             <group id="api" translate="label" type="text" sortOrder="100" showInDefault="1">
                 <label>API</label>
-                <field id="version_2_url" translate="label" type="text" sortOrder="200" showInDefault="1">
+                <field id="version_2_url" translate="label" type="text" sortOrder="200" showInDefault="1" canRestore="1">
                     <label>URL</label>
                     <comment><![CDATA[Your database url must begin with <code>https://</code>.]]></comment>
                     <depends>

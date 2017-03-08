@@ -6,6 +6,7 @@ use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\Exception\InputException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\State\InputMismatchException;
+use Magento\Framework\Validator\Exception as ValidatorException;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
@@ -61,14 +62,22 @@ class MagentoCustomerServiceValidationPlugin
         try {
             return $callback();
 
-        // Validation errors
+        // Specific customer errors
         } catch (InputException $e) {
             $payload['Error'] = $e->getMessage();
             $payload['Validation Errors'] = array_map(function (LocalizedException $e) {
                 return $e->getMessage();
             }, $e->getErrors());
 
-            $this->logger->error(__('Validation errors occured while saving a Magento Customer'), $payload);
+            $this->addValidationError($payload);
+
+            throw $e;
+
+        // Generic validation errors
+        } catch (ValidatorException $e) {
+            $payload['Error'] = $e->getMessage();
+
+            $this->addValidationError($payload);
 
             throw $e;
 
@@ -82,5 +91,10 @@ class MagentoCustomerServiceValidationPlugin
 
             throw $e;
         }
+    }
+
+    private function addValidationError(array $payload)
+    {
+        $this->logger->error(__('Validation errors occured while saving a Magento Customer'), $payload);
     }
 }

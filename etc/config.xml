@@ -3,7 +3,9 @@
     <default>
         <cataloginventory>
             <options>
-                <eta>0</eta>
+                <eta_enabled>0</eta_enabled>
+                <eta_button_title>Check ETA</eta_button_title>
+                <eta_button_disclaimer>This date is when we expect to receive the product in our warehouse, then we will ship it to you.</eta_button_disclaimer>
             </options>
         </cataloginventory>
         <carriers>

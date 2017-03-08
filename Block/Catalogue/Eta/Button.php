@@ -43,6 +43,21 @@ class Button extends Template
             false == $this->getMagentoStockItem()->getIsInStock();
     }
 
+    public function getTitle()
+    {
+        return $this->etaConfig->getButtonTitle();
+    }
+
+    public function hasDisclaimer()
+    {
+        return strlen($this->getDisclaimer()) > 0;
+    }
+
+    public function getDisclaimer()
+    {
+        return $this->etaConfig->getButtonDisclaimer();
+    }
+
     public function getEtaUrl()
     {
         return sprintf(

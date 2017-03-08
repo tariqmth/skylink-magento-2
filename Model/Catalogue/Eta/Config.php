@@ -25,9 +25,25 @@ class Config implements ConfigInterface
             $this->isEnabled();
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function getButtonTitle()
+    {
+        return $this->scopeConfig->getValue('cataloginventory/options/eta_button_title');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getButtonDisclaimer()
+    {
+        return $this->scopeConfig->getValue('cataloginventory/options/eta_button_disclaimer');
+    }
+
     private function isEnabled()
     {
-        return 1 == $this->scopeConfig->getValue('cataloginventory/options/eta');
+        return 1 == $this->scopeConfig->getValue('cataloginventory/options/eta_enabled');
     }
 
     private function outOfStockAreShown()

@@ -1,11 +1,16 @@
 <?php if ($block->canShow()): ?>
     <div id="eta-button">
         <button id="eta-button-button" class="action eta-button">
-            <?=__('Check ETA')?>
+            <?=$block->escapeHtml($block->getTitle())?>
         </button>
-        <p id="eta-button-response-wrapper" class="eta-button-response-wrapper not-ready">
-            <?=__('ETA:')?> <span id="eta-button-response-date"></span>
-        </p>
+        <div id="eta-button-response-wrapper" class="eta-button-response-wrapper not-ready">
+            <p>
+                <?=__('ETA:')?> <span id="eta-button-response-date"></span>
+            </p>
+            <?php if ($block->hasDisclaimer()): ?>
+                <p class="eta-button-disclaimer"><em><?=$block->escapeHtml($block->getDisclaimer())?></em></p>
+            <?php endif ?>
+        </div>
     </div>
 
     <script type="text/x-magento-init">

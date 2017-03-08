@@ -11,6 +11,9 @@
                 <p class="eta-button-disclaimer"><em><?=$block->escapeHtml($block->getDisclaimer())?></em></p>
             <?php endif ?>
         </div>
+        <p id="eta-button-failed-response-wrapper" class="eta-button-failed-response-wrapper not-ready">
+            <?=__('An error occured while checking the ETA')?>
+        </p>
     </div>
 
     <script type="text/x-magento-init">
@@ -18,10 +21,12 @@
             "#eta-button": {
                 "skyLinkEtaButton": {
                     "check_waiting_text": "<?=__('Checking ETA...')?>",
+                    "no_eta_text": "<?=__('Unknown ETA')?>",
                     "eta_url": "<?=$block->escapeHtml($block->getEtaUrl())?>",
                     "button": "#eta-button-button",
                     "response_wrapper": "#eta-button-response-wrapper",
-                    "response_date": "#eta-button-response-date"
+                    "response_date": "#eta-button-response-date",
+                    "failed_response_wrapper": "#eta-button-failed-response-wrapper"
                 }
             }
         }

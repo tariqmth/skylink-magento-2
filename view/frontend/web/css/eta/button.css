@@ -1,4 +1,5 @@
 .eta-button.checked,
-.eta-button-response-wrapper.not-ready {
+.eta-button-response-wrapper.not-ready,
+.eta-button-failed-response-wrapper.not-ready {
   display: none;
 }

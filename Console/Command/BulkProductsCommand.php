@@ -66,11 +66,13 @@ class BulkProductsCommand extends Command
         /* @var DateTimeImmutable|null $sinceDate */
         $sinceDate = $this->getSinceDate($input);
 
-        $progressBar = new ProgressBar($output);
-        $progressBar->start();
+        $output->writeln('Fetching Product IDs from Retail Express...');
 
         /* @var SkyLinkProductId[] $skyLinkProductIds */
         $skyLinkProductIds = $skyLinkProductRepository->allIds($salesChannelId, $sinceDate);
+
+        $progressBar = new ProgressBar($output, count($skyLinkProductIds));
+        $progressBar->start();
 
         // Loop over our IDs and add dispatch a command to sync each
         array_walk(

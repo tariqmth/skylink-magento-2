@@ -46,11 +46,13 @@ class BulkCustomersCommand extends Command
         /* @var \RetailExpress\SkyLink\Sdk\Customers\CustomerRepository $skyLinkCustomerRepository */
         $skyLinkCustomerRepository = $this->skyLinkCustomerRepositoryFactory->create();
 
-        $progressBar = new ProgressBar($output);
-        $progressBar->start();
+        $output->writeln('Fetching Customer IDs from Retail Express...');
 
         /* @var SkyLinkCustomerId[] $skyLinkCustomerIds */
         $skyLinkCustomerIds = $skyLinkCustomerRepository->allIds();
+
+        $progressBar = new ProgressBar($output, count($skyLinkCustomerIds));
+        $progressBar->start();
 
         // Loop over our IDs and add dispatch a command to sync each
         array_walk($skyLinkCustomerIds, function (SkyLinkCustomerId $skyLinkCustomerId) use ($progressBar) {

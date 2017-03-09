@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Block\Adminhtml\Setup;
+namespace RetailExpress\SkyLink\Block\Adminhtml\Mappings;
 
 use Magento\Catalog\Api\AttributeSetRepositoryInterface as BaseMagentoAttributeSetRepositoryInterface;
 use Magento\Framework\Api\SearchCriteriaBuilder;

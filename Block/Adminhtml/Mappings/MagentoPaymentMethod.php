@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Block\Adminhtml\Setup;
+namespace RetailExpress\SkyLink\Block\Adminhtml\Mappings;
 
 use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context as TemplateContext;

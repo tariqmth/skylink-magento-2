@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Controller\Adminhtml\Setup;
+namespace RetailExpress\SkyLink\Controller\Adminhtml\Mappings;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;

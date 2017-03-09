@@ -142,12 +142,17 @@
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ProductNameAttribute</source_model>
                     <comment><![CDATA[Choose the attribute in Retail Express to map to a product's name <strong>(falling back to <kbd>Description</kbd> if your chosen attribute is not available for a given product)</strong>.]]></comment>
                 </field>
-                <field id="regular_price_attribute" translate="label" type="select" sortOrder="200" showInDefault="1" showInWebsite="1" canRestore="1">
+                <field id="name_sync_strategy" translate="label" type="select" sortOrder="200" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Name Sync Strategy</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\SyncStrategy</source_model>
+                    <comment><![CDATA[Choose when the <kbd>Name</kbd> attribute syncs from Retail Express back to Magento.]]></comment>
+                </field>
+                <field id="regular_price_attribute" translate="label" type="select" sortOrder="300" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Regular Price Attribute</label>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ProductPriceAttribute</source_model>
                     <comment><![CDATA[Choose the attribute in Retail Express to map to a product's regular price attribute <strong>(falling back to <kbd>POS Price [Without Discounts]</kbd> if your chosen attribute is not available for a given product)</strong>.]]></comment>
                 </field>
-                <field id="special_price_attribute" translate="label" type="select" sortOrder="300" showInDefault="1" showInWebsite="1" canRestore="1">
+                <field id="special_price_attribute" translate="label" type="select" sortOrder="400" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Special Price Attribute</label>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ProductPriceAttribute</source_model>
                     <comment><![CDATA[Choose the attribute in Retail Express to map to a product's regular price attribute <strong>(falling back to <kbd>POS Price [With Discounts]</kbd> if your chosen attribute is not available for a given product)</strong>.]]></comment>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="content">
+            <block class="RetailExpress\SkyLink\Block\Adminhtml\Mappings\MagentoAttribute" name="retail_express_skylink_mappings_magento_attribute" template="mappings/magento_attribute.phtml"/>
+            <block class="RetailExpress\SkyLink\Block\Adminhtml\Mappings\MagentoAttributeSet" name="retail_express_skylink_mappings_magento_attribute_set" template="mappings/magento_attribute_set.phtml"/>
+            <block class="RetailExpress\SkyLink\Block\Adminhtml\Mappings\MagentoPaymentMethod" name="retail_express_skylink_mappings_magento_payment_method" template="mappings/magento_payment_method.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

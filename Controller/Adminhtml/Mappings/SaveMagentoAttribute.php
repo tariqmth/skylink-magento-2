@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Controller\Adminhtml\Setup;
+namespace RetailExpress\SkyLink\Controller\Adminhtml\Mappings;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
@@ -32,7 +32,10 @@ class SaveMagentoAttribute extends Action
             $this->commandBus->handle($command);
         });
 
-        $this->messageManager->addSuccess(__('Queued the mapping SkyLink Attributes to Magento Attributes. Your mapped attributes selection will update once the background task has completed (@todo make selections update immediately).'));
+        $this
+            ->messageManager
+            ->addSuccess(__('Succesfully mapped SkyLink Attributes to Magento Attributes.'))
+            ->addNotice(__('Queued a background task to sync SkyLink Attribute Options to Magento Attribute Options.'));
 
         $resultRedirect = $this->resultRedirectFactory->create();
         $resultRedirect->setPath('*/*/index');

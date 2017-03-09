@@ -17,14 +17,11 @@ Merge the contents of your Magento 2 `composer.json` file with the following JSO
     "repositories": [
         {
             "type": "composer",
-            "url": "http://repo.ecom.retailexpress.com.au"
+            "url": "https://repo.ecom.retailexpress.com.au"
         }
     ],
     "require": {
         "retail-express/skylink-magento-2": "^1.0"
-    },
-    "config": {
-        “secure-http”: false
     },
     "minimum-stability": "alpha"
 }

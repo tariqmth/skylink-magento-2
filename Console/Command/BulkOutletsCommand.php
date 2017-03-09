@@ -65,7 +65,7 @@ class BulkOutletsCommand extends Command
         // Loop over our IDs and add dispatch a command to sync each
         array_walk($skyLinkOutlets, function (SkyLinkOutlet $skyLinkOutlet) use ($progressBar) {
             $command = new SyncSkyLinkOutletCommand();
-            $command->outletId = (string) $skyLinkOutlet->getId();
+            $command->skyLinkOutletId = (string) $skyLinkOutlet->getId();
 
             $this->commandBus->handle($command);
 

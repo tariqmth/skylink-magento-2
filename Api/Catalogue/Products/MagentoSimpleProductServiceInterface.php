@@ -26,6 +26,14 @@ interface MagentoSimpleProductServiceInterface
     public function updateMagentoProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct);
 
     /**
+     * Assigns the given product to the given Magento Websites.
+     *
+     * @param ProductInterface                           $magentoProduct
+     * @param \Magento\Store\Api\Data\WebsiteInterface[] $magentoWebsites
+     */
+    public function assignMagentoProductToWebsites(ProductInterface $magentoProduct, array $magentoWebsites);
+
+    /**
      * Updates the given Magento Product within the context of a SkyLink Product in a Sales Channel Group.
      *
      *

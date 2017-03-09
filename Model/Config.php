@@ -4,6 +4,7 @@ namespace RetailExpress\SkyLink\Model;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use RetailExpress\SkyLink\Api\ConfigInterface;
+use RetailExpress\SkyLink\Exceptions\SalesChannelIdMisconfiguredException;
 use RetailExpress\SkyLink\Exceptions\NoSalesChannelIdConfiguredException;
 use RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId;
 use ValueObjects\Identity\UUID as Uuid;
@@ -13,6 +14,8 @@ use ValueObjects\Web\Url;
 
 class Config implements ConfigInterface
 {
+    const SALES_CHANNEL_ID_CONFIG_PATH = 'skylink/general/sales_channel_id';
+
     private $scopeConfig;
 
     public function __construct(ScopeConfigInterface $scopeConfig)
@@ -65,10 +68,24 @@ class Config implements ConfigInterface
      */
     public function getSalesChannelId()
     {
-        $value = $this->scopeConfig->getValue('skylink/general/sales_channel_id');
+        $value = $this->scopeConfig->getValue(self::SALES_CHANNEL_ID_CONFIG_PATH);
 
         if (!is_numeric($value)) {
             throw NoSalesChannelIdConfiguredException::forGlobalScope();
+        }
+
+        return new SalesChannelId($value);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getSalesChannelIdForWebsite($websiteCode)
+    {
+        $value = $this->scopeConfig->getValue(self::SALES_CHANNEL_ID_CONFIG_PATH, 'website', $websiteCode);
+
+        if (!is_numeric($value)) {
+            throw SalesChannelIdMisconfiguredException::forWebsiteWithConfigValue($websiteCode, $value);
         }
 
         return new SalesChannelId($value);

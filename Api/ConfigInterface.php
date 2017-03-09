@@ -47,4 +47,15 @@ interface ConfigInterface
      * @throws \RetailExpress\SkyLink\Exceptions\NoSalesChannelIdConfiguredException
      */
     public function getSalesChannelId();
+
+    /**
+     * Get the Sales Channel ID as configured for the given website.
+     *
+     * @param string $websiteCode
+     *
+     * @return \RetailExpress\SkyLink\ValueObjects\SalesChannelId
+     *
+     * @throws \RetailExpress\SkyLink\Exceptions\SalesChannelIdMisconfiguredException
+     */
+    public function getSalesChannelIdForWebsite($websiteCode);
 }

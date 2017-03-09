@@ -6,20 +6,20 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Api\StoreRepositoryInterface;
 use Magento\Store\Api\WebsiteRepositoryInterface;
+use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
+use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Api\Data\Segregation\SalesChannelGroupInterfaceFactory;
 use RetailExpress\SkyLink\Api\Segregation\SalesChannelGroupRepositoryInterface;
-use RetailExpress\SkyLink\Exceptions\Segregation\SalesChannelIdMisconfiguredException;
 use RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId;
 
 class SalesChannelGroupRepository implements SalesChannelGroupRepositoryInterface
 {
     const CONFIG_VALUE = 'skylink/general/sales_channel_id';
-    const ADMIN_WEBSITE_CODE = 'admin';
+
+    private $config;
 
     private $storeManager;
-
-    private $scopeConfig;
 
     private $storeRepository;
 
@@ -28,14 +28,14 @@ class SalesChannelGroupRepository implements SalesChannelGroupRepositoryInterfac
     private $salesChannelGroupFactory;
 
     public function __construct(
+        ConfigInterface $config,
         StoreManagerInterface $storeManager,
-        ScopeConfigInterface $scopeConfig,
         StoreRepositoryInterface $storeRepository,
         WebsiteRepositoryInterface $websiteRepository,
         SalesChannelGroupInterfaceFactory $salesChannelGroupFactory
     ) {
+        $this->config = $config;
         $this->storeManager = $storeManager;
-        $this->scopeConfig = $scopeConfig;
         $this->storeRepository = $storeRepository;
         $this->websiteRepository = $websiteRepository;
         $this->salesChannelGroupFactory = $salesChannelGroupFactory;
@@ -57,17 +57,13 @@ class SalesChannelGroupRepository implements SalesChannelGroupRepositoryInterfac
         $valuesToGroups = [];
 
         array_walk($groups, function (array $group) use (&$valuesToGroups) {
-            $value = $this->scopeConfig->getValue(self::CONFIG_VALUE, 'website', $group['website']->getCode());
-
-            if (!is_numeric($value)) {
-                throw SalesChannelIdMisconfiguredException::forStoreWithConfigValue($group['website'], $value);
-            }
-
+            $value = $this->config->getSalesChannelIdForWebsite($group['website']->getCode())->toNative();
             $valuesToGroups[$value][] = $group;
         });
 
         // We'll make sure we remove any values to websites that match the global config value
-        $valuesToGroups = array_diff_key($valuesToGroups, array_flip([$this->getGlobalConfigValue()]));
+        $globalConfigValue = $this->config->getSalesChannelId()->toNative();
+        $valuesToGroups = array_diff_key($valuesToGroups, array_flip([$globalConfigValue]));
 
         // Now we'll convert our payload to the requested group
         $salesChannelGroups = [];
@@ -104,7 +100,7 @@ class SalesChannelGroupRepository implements SalesChannelGroupRepositoryInterfac
         array_walk($storesByWebsite, function (array $stores, $websiteId) use (&$groups) {
             $website = $this->websiteRepository->getById($websiteId);
 
-            if (self::ADMIN_WEBSITE_CODE === $website->getCode()) {
+            if (Store::ADMIN_CODE === $website->getCode()) {
                 return;
             }
 
@@ -112,10 +108,5 @@ class SalesChannelGroupRepository implements SalesChannelGroupRepositoryInterfac
         });
 
         return $groups;
-    }
-
-    private function getGlobalConfigValue()
-    {
-        return $this->scopeConfig->getValue(self::CONFIG_VALUE);
     }
 }

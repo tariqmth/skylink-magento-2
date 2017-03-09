@@ -2,9 +2,7 @@
 
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
-use InvalidArgumentException;
 use Magento\Catalog\Api\Data\ProductInterface;
-use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
@@ -12,16 +10,22 @@ use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionReposit
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeTypeManagerInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Products\ConfigInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
 use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
 use RetailExpress\SkyLink\Exceptions\Products\AttributeNotMappedException;
 use RetailExpress\SkyLink\Exceptions\Products\AttributeOptionNotMappedException;
+use RetailExpress\SkyLink\Model\Catalogue\SyncStrategy;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 
 class MagentoProductMapper implements MagentoProductMapperInterface
 {
+    use ProductInterfaceAsserter;
+
+    private $productConfig;
+
     private $attributeSetRepository;
 
     private $attributeRepository;
@@ -31,11 +35,13 @@ class MagentoProductMapper implements MagentoProductMapperInterface
     private $attributeOptionRepository;
 
     public function __construct(
+        ConfigInterface $productConfig,
         MagentoAttributeSetRepositoryInterface $attributeSetRepository,
         MagentoAttributeRepositoryInterface $attributeRepository,
         MagentoAttributeTypeManagerInterface $attributeTypeManager,
         MagentoAttributeOptionRepositoryInterface $attributeOptionRepository
     ) {
+        $this->productConfig = $productConfig;
         $this->attributeSetRepository = $attributeSetRepository;
         $this->attributeRepository = $attributeRepository;
         $this->attributeTypeManager = $attributeTypeManager;
@@ -44,6 +50,9 @@ class MagentoProductMapper implements MagentoProductMapperInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @todo Set the product to be available on the main website, but what if another sales channel uses
+     * the same website? How will we put it on that website? R&D time!
      */
     public function mapMagentoProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
     {
@@ -54,8 +63,11 @@ class MagentoProductMapper implements MagentoProductMapperInterface
             $this->overrideVisibilityForExistingProduct($magentoProduct);
         }
 
-        // @todo Set the product to be available on the main website, but what if another sales channel uses
-        // the same website? How will we put it on that website? R&D time!
+        // Product name
+        $this->mapName($magentoProduct, $skyLinkProduct);
+
+        // SKU
+        $magentoProduct->setSku((string) $skyLinkProduct->getSku());
 
         // Setup pricing for product
         $magentoProduct->setPrice($skyLinkProduct->getPricingStructure()->getRegularPrice()->toNative());
@@ -100,12 +112,6 @@ class MagentoProductMapper implements MagentoProductMapperInterface
             $magentoStoreId = $magentoStore->getId();
 
             $magentoProduct->addAttributeUpdate(
-                'name',
-                (string) $skyLinkProduct->getName(),
-                $magentoStoreId
-            );
-
-            $magentoProduct->addAttributeUpdate(
                 'price',
                 $skyLinkProduct->getPricingStructure()->getRegularPrice()->toNative(),
                 $magentoStoreId
@@ -134,10 +140,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
                 ->getAttributeSetForProductType($skyLinkProduct->getProductType())->getId()
         );
 
-        $magentoProduct->setSku((string) $skyLinkProduct->getSku());
         $magentoProduct->setCustomAttribute('skylink_product_id', (string) $skyLinkProduct->getId());
-
-        $magentoProduct->setName((string) $skyLinkProduct->getName());
     }
 
     /**
@@ -160,6 +163,16 @@ class MagentoProductMapper implements MagentoProductMapperInterface
 
         if (Visibility::VISIBILITY_NOT_VISIBLE === $currentVisibility) {
             $magentoProduct->setVisibility(Visibility::VISIBILITY_BOTH);
+        }
+    }
+
+    private function mapName(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
+    {
+        $syncStrategy = $this->productConfig->getNameSyncStrategy();
+
+        // If the product is new or we always sync the name, we'll sync it now
+        if (!$magentoProduct->getId() || $syncStrategy->sameValueAs(SyncStrategy::get('always'))) {
+            $magentoProduct->setName((string) $skyLinkProduct->getName());
         }
     }
 
@@ -198,15 +211,6 @@ class MagentoProductMapper implements MagentoProductMapperInterface
                 $magentoAttribute->getAttributeCode(),
                 $magentoAttributeValue
             );
-
-            // if (!$magentoAttributeType->usesOptions()) {
-            //     dd(
-            //         $magentoAttribute->getAttributeCode(),
-            //         $magentoAttributeValue,
-            //         $magentoProduct->getData(),
-            //         $magentoProduct->getCustomAttributes()
-            //     );
-            // }
         }
     }
 
@@ -258,13 +262,5 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         return $magentoAttributeOption;
     }
 
-    private function assertImplementationOfProductInterface(ProductInterface $product)
-    {
-        if (!$product instanceof Product) {
-            throw new InvalidArgumentException(sprintf(
-                'Updating a Magento Product for a Sales Channel Group requires the Product be an instance of %s.',
-                Product::class
-            ));
-        }
-    }
+
 }

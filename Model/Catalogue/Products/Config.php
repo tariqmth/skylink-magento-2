@@ -4,6 +4,7 @@ namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\ConfigInterface;
+use RetailExpress\SkyLink\Model\Catalogue\SyncStrategy;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductNameAttribute as SkyLinkProductNameAttribute;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductPriceAttribute as SkyLinkProductPriceAttribute;
 use ValueObjects\Number\Integer;
@@ -24,6 +25,13 @@ class Config implements ConfigInterface
     {
         return SkyLinkProductNameAttribute::get(
             $this->scopeConfig->getValue('skylink/products/name_attribute')
+        );
+    }
+
+    public function getNameSyncStrategy()
+    {
+        return SyncStrategy::get(
+            $this->scopeConfig->getValue('skylink/products/name_sync_strategy')
         );
     }
 

@@ -12,6 +12,13 @@ interface ConfigInterface
     public function getNameAttribute();
 
     /**
+     * Returns the sync strategy used for mapping product names.
+     *
+     * @return \RetailExpress\SkyLink\Model\Catalogue\Products\SyncStrategy
+     */
+    public function getNameSyncStrategy();
+
+    /**
      * Returns the name attribute used for mapping regular prices.
      *
      * @return \RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductPriceAttribute

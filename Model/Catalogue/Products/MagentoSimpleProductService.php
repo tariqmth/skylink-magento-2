@@ -4,11 +4,14 @@ namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\Data\ProductInterfaceFactory;
+use Magento\Catalog\Api\Data\ProductWebsiteLinkInterfaceFactory;
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Api\ProductWebsiteLinkRepositoryInterface;
 use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\CatalogInventory\Api\Data\StockItemInterface;
 use Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
+use Magento\Store\Api\Data\WebsiteInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductCustomerGroupPriceServiceInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductStockItemMapperInterface;
@@ -19,6 +22,8 @@ use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChann
 
 class MagentoSimpleProductService implements MagentoSimpleProductServiceInterface
 {
+    use ProductInterfaceAsserter;
+
     private $magentoProductMapper;
 
     private $magentoStockItemMapper;
@@ -34,6 +39,10 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
      */
     private $baseMagentoProductRepository;
 
+    private $magentoProductWebsiteLinkRepository;
+
+    private $magentoProductWebsiteLinkFactory;
+
     private $magentoStockRegistry;
 
     private $urlKeyGenerator;
@@ -46,6 +55,8 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         ProductInterfaceFactory $magentoProductFactory,
         StockItemInterfaceFactory $magentoStockItemFactory,
         ProductRepositoryInterface $baseMagentoProductRepository,
+        ProductWebsiteLinkRepositoryInterface $magentoProductWebsiteLinkRepository,
+        ProductWebsiteLinkInterfaceFactory $magentoProductWebsiteLinkFactory,
         StockRegistryInterface $magentoStockRegistry,
         UrlKeyGeneratorInterface $urlKeyGenerator,
         MagentoSimpleProductCustomerGroupPriceServiceInterface $magentoCustomerGroupPriceService
@@ -55,6 +66,8 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         $this->magentoProductFactory = $magentoProductFactory;
         $this->magentoStockItemFactory = $magentoStockItemFactory;
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
+        $this->magentoProductWebsiteLinkRepository = $magentoProductWebsiteLinkRepository;
+        $this->magentoProductWebsiteLinkFactory = $magentoProductWebsiteLinkFactory;
         $this->magentoStockRegistry = $magentoStockRegistry;
         $this->urlKeyGenerator = $urlKeyGenerator;
         $this->magentoCustomerGroupPriceService = $magentoCustomerGroupPriceService;
@@ -91,6 +104,46 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         $this->mapStockAndSave($magentoProduct, $magentoStockItem, $skyLinkProduct);
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function assignMagentoProductToWebsites(ProductInterface $magentoProduct, array $magentoWebsites)
+    {
+        $this->assertImplementationOfProductInterface($magentoProduct);
+
+        $existingIds = array_map('intval', $magentoProduct->getWebsiteIds());
+        $newIds = array_map(function (WebsiteInterface $magentoWebsite) {
+            return (int) $magentoWebsite->getId();
+        }, $magentoWebsites);
+
+        // Determine the IDs to remove and add
+        $idsToRemove = array_diff($existingIds, $newIds);
+        $idsToAdd = array_diff($newIds, $existingIds);
+
+        // Remove from websites
+        array_walk($idsToRemove, function ($idToRemove) use ($magentoProduct) {
+            $result = $this->magentoProductWebsiteLinkRepository->deleteById(
+                $magentoProduct->getSku(),
+                $idToRemove
+            );
+        });
+
+        // Add to websites
+        array_walk($idsToAdd, function ($idToAdd) use ($magentoProduct) {
+            $magentoProductWebsiteLink = $this->magentoProductWebsiteLinkFactory->create();
+            $magentoProductWebsiteLink
+                ->setSku($magentoProduct->getSku())
+                ->setWebsiteId($idToAdd);
+
+            $this->magentoProductWebsiteLinkRepository->save($magentoProductWebsiteLink);
+        });
+
+        $this->saveDirectly($magentoProduct);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function updateMagentoProductForSalesChannelGroup(
         ProductInterface $magentoProduct,
         SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup
@@ -129,7 +182,13 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
 
     private function save(ProductInterface $magentoProduct)
     {
-        // @todo Look at \Magento\Catalog\Model\Product\TierPriceManagement:L140, I think this is triggering a bug in Magento that causes product custom attributes to reset...
         $this->baseMagentoProductRepository->save($magentoProduct);
+    }
+
+    private function saveDirectly(ProductInterface $magentoProduct)
+    {
+        $this->assertImplementationOfProductInterface($magentoProduct);
+
+        $magentoProduct->save();
     }
 }

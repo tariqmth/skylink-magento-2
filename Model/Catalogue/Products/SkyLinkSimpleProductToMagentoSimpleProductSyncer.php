@@ -2,11 +2,13 @@
 
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
+use Magento\Store\Api\Data\WebsiteInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\SkyLinkProductToMagentoProductSyncerInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
+use RetailExpress\SkyLink\Api\Segregation\MagentoWebsiteRepositoryInterface;
 use RetailExpress\SkyLink\Exceptions\Products\TooManyProductMatchesException;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\SimpleProduct;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
@@ -21,6 +23,8 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
 
     private $magentoSimpleProductService;
 
+    private $magentoWebsiteRepository;
+
     /**
      * Logger instance.
      *
@@ -31,10 +35,12 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
     public function __construct(
         MagentoSimpleProductRepositoryInterface $magentoSimpleProductRepository,
         MagentoSimpleProductServiceInterface $magentoSimpleProductService,
+        MagentoWebsiteRepositoryInterface $magentoWebsiteRepository,
         SkyLinkLoggerInterface $logger
     ) {
         $this->magentoSimpleProductRepository = $magentoSimpleProductRepository;
         $this->magentoSimpleProductService = $magentoSimpleProductService;
+        $this->magentoWebsiteRepository = $magentoWebsiteRepository;
         $this->logger = $logger;
     }
 
@@ -88,6 +94,23 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
             ]);
         }
 
+        // Assign the product to the appropriate websites
+        $magentoWebsites = $this->determineMagentoWebsites($skyLinkProductInSalesChannelGroups);
+        $this->logger->debug('Assigning Magento Product to Websites.', [
+            'SkyLink Product ID' => $skyLinkProduct->getId(),
+            'SkyLink Product SKU' => $skyLinkProduct->getSku(),
+            'Magento Product ID' => $magentoProduct->getId(),
+            'Magento Product SKU' => $magentoProduct->getSku(),
+            'Websites' => array_map(function (WebsiteInterface $magentoWebsite) {
+                return [
+                    'ID' => $magentoWebsite->getId(),
+                    'Name' => $magentoWebsite->getName(),
+                ];
+            }, $magentoWebsites),
+        ]);
+
+        $this->magentoSimpleProductService->assignMagentoProductToWebsites($magentoProduct, $magentoWebsites);
+
         // If there were no variations in different sales channel groups, we can end now
         if (count($skyLinkProductInSalesChannelGroups) < 1) {
             return $magentoProduct;
@@ -120,5 +143,20 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
         );
 
         return $magentoProduct;
+    }
+
+    /**
+     * Determines the Magento Websites to use based on the given SkyLink Product in Sales Channel Groups.
+     */
+    private function determineMagentoWebsites(array $skyLinkProductInSalesChannelGroups)
+    {
+        $salesChannelGroups = array_map(
+            function (SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup) {
+                return $skyLinkProductInSalesChannelGroup->getSalesChannelGroup();
+            },
+            $skyLinkProductInSalesChannelGroups
+        );
+
+        return $this->magentoWebsiteRepository->getListFilteredBySalesChannelGroups($salesChannelGroups);
     }
 }

@@ -34,9 +34,9 @@ class SalesChannelGroup implements SalesChannelGroupInterface
     /**
      * {@inheritdoc}
      */
-    public function getMagentoWebsites()
+    public function getMagentoStores()
     {
-        return $this->magentoWebsites;
+        return $this->magentoStores;
     }
 
     /**
@@ -52,9 +52,9 @@ class SalesChannelGroup implements SalesChannelGroupInterface
     /**
      * {@inheritdoc}
      */
-    public function getMagentoStores()
+    public function getMagentoWebsites()
     {
-        return $this->magentoStores;
+        return $this->magentoWebsites;
     }
 
     /**

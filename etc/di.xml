@@ -164,6 +164,7 @@
     <preference for="RetailExpress\SkyLink\Api\Sales\Payments\SkyLinkPaymentMethodServiceInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\SkyLinkPaymentMethodService"/>
 
     <!-- Setup Sales Channel Segregation -->
+    <preference for="RetailExpress\SkyLink\Api\Segregation\MagentoWebsiteRepositoryInterface" type="RetailExpress\SkyLink\Model\Segregation\MagentoWebsiteRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Data\Segregation\SalesChannelGroupInterface" type="RetailExpress\SkyLink\Model\Segregation\SalesChannelGroup"/>
     <preference for="RetailExpress\SkyLink\Api\Segregation\SalesChannelGroupRepositoryInterface" type="RetailExpress\SkyLink\Model\Segregation\SalesChannelGroupRepository"/>
 

@@ -64,7 +64,8 @@
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoConfigurableProductService"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductStockItemUpdaterInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoConfigurableProductStockItemUpdater"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoProductMapper"/>
-    <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductCustomerGroupPriceServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSimpleProductCustomerGroupPriceService"/>
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductWebsiteManagementInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoProductWebsiteManagement"/>
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductCustomerGroupPriceServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoProductCustomerGroupPriceService"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSimpleProductRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSimpleProductService"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductStockItemMapperInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSimpleProductStockItemMapper"/>
@@ -164,6 +165,7 @@
     <preference for="RetailExpress\SkyLink\Api\Sales\Payments\SkyLinkPaymentMethodServiceInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\SkyLinkPaymentMethodService"/>
 
     <!-- Setup Sales Channel Segregation -->
+    <preference for="RetailExpress\SkyLink\Api\Segregation\MagentoStoreEmulatorInterface" type="RetailExpress\SkyLink\Model\Segregation\MagentoStoreEmulator"/>
     <preference for="RetailExpress\SkyLink\Api\Segregation\MagentoWebsiteRepositoryInterface" type="RetailExpress\SkyLink\Model\Segregation\MagentoWebsiteRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Data\Segregation\SalesChannelGroupInterface" type="RetailExpress\SkyLink\Model\Segregation\SalesChannelGroup"/>
     <preference for="RetailExpress\SkyLink\Api\Segregation\SalesChannelGroupRepositoryInterface" type="RetailExpress\SkyLink\Model\Segregation\SalesChannelGroupRepository"/>

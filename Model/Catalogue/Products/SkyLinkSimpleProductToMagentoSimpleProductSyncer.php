@@ -2,13 +2,14 @@
 
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
+use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductWebsiteManagementInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\SkyLinkProductToMagentoProductSyncerInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
-use RetailExpress\SkyLink\Api\Segregation\MagentoWebsiteRepositoryInterface;
 use RetailExpress\SkyLink\Exceptions\Products\TooManyProductMatchesException;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\SimpleProduct;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
@@ -23,7 +24,7 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
 
     private $magentoSimpleProductService;
 
-    private $magentoWebsiteRepository;
+    private $magentoProductWebsiteManagement;
 
     /**
      * Logger instance.
@@ -35,12 +36,12 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
     public function __construct(
         MagentoSimpleProductRepositoryInterface $magentoSimpleProductRepository,
         MagentoSimpleProductServiceInterface $magentoSimpleProductService,
-        MagentoWebsiteRepositoryInterface $magentoWebsiteRepository,
+        MagentoProductWebsiteManagementInterface $magentoProductWebsiteManagement,
         SkyLinkLoggerInterface $logger
     ) {
         $this->magentoSimpleProductRepository = $magentoSimpleProductRepository;
         $this->magentoSimpleProductService = $magentoSimpleProductService;
-        $this->magentoWebsiteRepository = $magentoWebsiteRepository;
+        $this->magentoProductWebsiteManagement = $magentoProductWebsiteManagement;
         $this->logger = $logger;
     }
 
@@ -58,105 +59,122 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
     public function sync(SkyLinkProduct $skyLinkProduct, array $skyLinkProductInSalesChannelGroups)
     {
         try {
-            /* @var \Magento\Catalog\Api\Data\ProductInterface $magentoProduct */
+            /* @var ProductInterface $magentoProduct */
             $magentoProduct = $this->magentoSimpleProductRepository->findBySkyLinkProductId($skyLinkProduct->getId());
         } catch (TooManyProductMatchesException $e) {
-            $this->logger->error($e->getMessage(), [
-                'SkyLink Product ID' => $skyLinkProduct->getId(),
-                'SkyLink Product SKU' => $skyLinkProduct->getSku(),
-            ]);
-
+            $this->log('error', $e->getMessage(), $skyLinkProduct);
             throw $e;
         }
 
         if (null !== $magentoProduct) {
-            $this->logger->debug('Found Simple Product already mapped to the SkyLink Product, updating it.', [
-                'SkyLink Product ID' => $skyLinkProduct->getId(),
-                'SkyLink Product SKU' => $skyLinkProduct->getSku(),
-                'Magento Product ID' => $magentoProduct->getId(),
-                'Magento Product SKU' => $magentoProduct->getSku(),
-            ]);
+
+            $this->logDebug(
+                'Found Simple Product already mapped to the SkyLink Product, updating it.',
+                $skyLinkProduct,
+                $magentoProduct
+            );
 
             $this->magentoSimpleProductService->updateMagentoProduct($magentoProduct, $skyLinkProduct);
         } else {
-            $this->logger->debug('No Magento Simple Product exists for the SkyLink Product, creating one.', [
-                'SkyLink Product ID' => $skyLinkProduct->getId(),
-                'SkyLink Product SKU' => $skyLinkProduct->getSku(),
-            ]);
+            $this->logDebug(
+                'No Magento Simple Product exists for the SkyLink Product, creating one.',
+                $skyLinkProduct
+            );
 
             $magentoProduct = $this->magentoSimpleProductService->createMagentoProduct($skyLinkProduct);
 
-            $this->logger->debug('Created a Magento Simple Product for the SkyLink Product.', [
-                'SkyLink Product ID' => $skyLinkProduct->getId(),
-                'SkyLink Product SKU' => $skyLinkProduct->getSku(),
-                'Magento Product ID' => $magentoProduct->getId(),
-                'Magento Product SKU' => $magentoProduct->getSku(),
-            ]);
+            $this->logDebug(
+                'Created a Magento Simple Product for the SkyLink Product.',
+                $skyLinkProduct,
+                $magentoProduct
+            );
         }
-
-        // Assign the product to the appropriate websites
-        $magentoWebsites = $this->determineMagentoWebsites($skyLinkProductInSalesChannelGroups);
-        $this->logger->debug('Assigning Magento Product to Websites.', [
-            'SkyLink Product ID' => $skyLinkProduct->getId(),
-            'SkyLink Product SKU' => $skyLinkProduct->getSku(),
-            'Magento Product ID' => $magentoProduct->getId(),
-            'Magento Product SKU' => $magentoProduct->getSku(),
-            'Websites' => array_map(function (WebsiteInterface $magentoWebsite) {
-                return [
-                    'ID' => $magentoWebsite->getId(),
-                    'Name' => $magentoWebsite->getName(),
-                ];
-            }, $magentoWebsites),
-        ]);
-
-        $this->magentoSimpleProductService->assignMagentoProductToWebsites($magentoProduct, $magentoWebsites);
 
         // If there were no variations in different sales channel groups, we can end now
-        if (count($skyLinkProductInSalesChannelGroups) < 1) {
-            return $magentoProduct;
+        if (count($skyLinkProductInSalesChannelGroups) > 0) {
+            $this->logDebug(
+                'Overriding Magento Product data using SkyLink Product data fetched from all configured Sales Channel IDs.',
+                $skyLinkProduct,
+                $magentoProduct,
+                [
+                    'Sales Channel IDs' => array_map(
+                        function (SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup) {
+                            return (string) $skyLinkProductInSalesChannelGroup
+                                ->getSalesChannelGroup()
+                                ->getSalesChannelId();
+                        },
+                        $skyLinkProductInSalesChannelGroups
+                    )
+                ]
+            );
+
+            // Loop through the product in all Sales Channel Groups and update values
+            array_walk(
+                $skyLinkProductInSalesChannelGroups,
+                function (SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup) use ($magentoProduct) {
+                    $this->magentoProductWebsiteManagement->overrideMagentoProductForSalesChannelGroup(
+                        $magentoProduct,
+                        $skyLinkProductInSalesChannelGroup
+                    );
+                }
+            );
         }
 
-        $this->logger->debug('Updating Magento Product data using SkyLink Product data fetched from all configured Sales Channel IDs.', [
-            'SkyLink Product ID' => $skyLinkProduct->getId(),
-            'SkyLink Product SKU' => $skyLinkProduct->getSku(),
-            'Magento Product ID' => $magentoProduct->getId(),
-            'Magento Product SKU' => $magentoProduct->getSku(),
-            'Sales Channel IDs' => array_map(
-                function (SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup) {
-                    return (string) $skyLinkProductInSalesChannelGroup
-                        ->getSalesChannelGroup()
-                        ->getSalesChannelId();
-                },
-                $skyLinkProductInSalesChannelGroups
-            ),
-        ]);
+        // @todo WTF is this? Totally needs to be abstracted away, it's clogging this class up (as with all the other logging)...
+        $this->logDebug(
+            'Assigning Magento Product to Websites.',
+            $skyLinkProduct,
+            $magentoProduct,
+            [
+                'Sales Channel Groups' => array_map(
+                    function (SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup) {
 
-        // Loop through the product in all Sales Channel Groups and update values
-        array_walk(
-            $skyLinkProductInSalesChannelGroups,
-            function (SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup) use ($magentoProduct) {
-                $this->magentoSimpleProductService->updateMagentoProductForSalesChannelGroup(
-                    $magentoProduct,
-                    $skyLinkProductInSalesChannelGroup
-                );
-            }
+                        $salesChannelGroup = $skyLinkProductInSalesChannelGroup->getSalesChannelGroup();
+
+                        return [
+                            'Sales Channel ID' => $salesChannelGroup->getSalesChannelId(),
+                            'Websites' => array_map(function (WebsiteInterface $magentoWebsite) {
+                                return [
+                                    'ID' => $magentoWebsite->getId(),
+                                    'Name' => $magentoWebsite->getName(),
+                                ];
+                            }, $salesChannelGroup->getMagentoWebsites()),
+                        ];
+                    },
+                    $skyLinkProductInSalesChannelGroups
+                ),
+            ]
+        );
+
+        $this->magentoProductWebsiteManagement->assignMagentoProductToWebsitesForSalesChannelGroups(
+            $magentoProduct,
+            $skyLinkProductInSalesChannelGroups
         );
 
         return $magentoProduct;
     }
 
-    /**
-     * Determines the Magento Websites to use based on the given SkyLink Product in Sales Channel Groups.
-     */
-    private function determineMagentoWebsites(array $skyLinkProductInSalesChannelGroups)
+    private function logDebug($message, SkyLinkProduct $skyLinkProduct, ProductInterface $magentoProduct = null, array $additional = null)
     {
-        $salesChannelGroups = array_map(
-            function (SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup) {
-                return $skyLinkProductInSalesChannelGroup->getSalesChannelGroup();
-            },
-            $skyLinkProductInSalesChannelGroups
-        );
+        $this->log('debug', $message, $skyLinkProduct, $magentoProduct, $additional);
+    }
 
-        return $this->magentoWebsiteRepository->getListFilteredBySalesChannelGroups($salesChannelGroups);
+    private function log($level, $message, SkyLinkProduct $skyLinkProduct, ProductInterface $magentoProduct = null, array $additional = null)
+    {
+        $data = [
+            'SkyLink Product ID' => $skyLinkProduct->getId(),
+            'SkyLink Product SKU' => $skyLinkProduct->getSku(),
+        ];
+
+        if (null !== $magentoProduct) {
+            $data['Magento Product ID'] = $magentoProduct->getId();
+            $data['Magento Product SKU'] = $magentoProduct->getSku();
+        }
+
+        if (null !== $additional) {
+            $data = array_merge($data, $additional);
+        }
+
+        $this->logger->$level($message, $data);
     }
 }

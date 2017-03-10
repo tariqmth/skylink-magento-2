@@ -12,8 +12,9 @@ trait ProductInterfaceAsserter
     {
         if (!$product instanceof Product) {
             throw new InvalidArgumentException(sprintf(
-                'Updating a Magento Product for a Sales Channel Group requires the Product be an instance of %s.',
-                Product::class
+                'Updating a Magento Product for a Sales Channel Group requires the Product be an instance of %s, %s given.',
+                Product::class,
+                get_class($product)
             ));
         }
     }

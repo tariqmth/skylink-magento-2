@@ -3,7 +3,6 @@
 namespace RetailExpress\SkyLink\Api\Catalogue\Products;
 
 use Magento\Catalog\Api\Data\ProductInterface;
-use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 
 interface MagentoProductMapperInterface
@@ -17,16 +16,10 @@ interface MagentoProductMapperInterface
     public function mapMagentoProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct);
 
     /**
-     * Maps the Magento Product based on the given SkyLink Product in a Sales Channel Group.
+     * Map a Magento Product based on what can be mapped/overridden in the current set Store.
      *
-     * This method is the entry point to scoped data for stores/websites, which can
-     * be accessed through the Sales Channel Group object.
-     *
-     * @param ProductInterface                           $magentoProduct
-     * @param SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup
+     * @param ProductInterface $magentoProduct
+     * @param SkyLinkProduct   $skyLinkProduct
      */
-    public function mapMagentoProductForSalesChannelGroup(
-        ProductInterface $magentoProduct,
-        SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup
-    );
+    public function mapMagentoProductForWebsite(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct);
 }

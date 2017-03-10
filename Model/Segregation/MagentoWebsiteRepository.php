@@ -24,57 +24,60 @@ class MagentoWebsiteRepository implements MagentoWebsiteRepositoryInterface
     }
 
     /**
-     * Gets a list of all Magento Websites that will be associated with any
-     * data segregation, filtered by the given Sales Channel Groups.
-     *
-     * @param [] $salesChannelGroups
-     *
-     * @return \RetailExpress\SkyLink\Api\Data\Segregation\SalesChannelGroupInterface[]
-     *
-     * @throws \RetailExpress\SkyLink\Exceptions\Segregation\SalesChannelIdMisconfiguredException
+     * {@inheritdoc}
      */
-    public function getListFilteredBySalesChannelGroups(array $salesChannelGroups)
+    public function getListFilteredByGlobalSalesChannelId()
     {
-        $salesChannelGroupWebsites = [];
-
-        array_walk($salesChannelGroups, function (SalesChannelGroupInterface $salesChannelGroup) use (&$salesChannelGroupWebsites) {
-            array_map(function (WebsiteInterface $website) use (&$salesChannelGroupWebsites) {
-                if (array_key_exists($website->getId(), $salesChannelGroupWebsites)) {
+        return array_values(array_filter(
+            $this->baseMagentoWebsiteRepository->getList(),
+            function (WebsiteInterface $website) {
+                if (Store::ADMIN_CODE === $website->getCode()) {
                     return;
                 }
 
-                $salesChannelGroupWebsites[$website->getId()] = $website;
-            }, $salesChannelGroup->getMagentoWebsites());
+                // Filter websites to those who use the globally configured Sales Channel ID
+                $websiteSalesChannelId = $this->config->getSalesChannelIdForWebsite($website->getCode());
+                $globalSalesChannelId = $this->config->getSalesChannelId();
+                return $websiteSalesChannelId->sameValueAs($globalSalesChannelId);
+            }
+        ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getListFilteredByGlobalSalesChannelIdAndSalesChannelGroups(array $salesChannelGroups)
+    {
+        $websites = [];
+
+        array_walk(
+            $salesChannelGroups,
+            function (SalesChannelGroupInterface $salesChannelGroup) use (&$websites) {
+                array_map(function (WebsiteInterface $website) use (&$websites) {
+                    $this->addUniquelyToWebsites($website, $websites);
+                }, $salesChannelGroup->getMagentoWebsites());
+            }
+        );
+
+        // Add on unique websites that are globally configured
+        array_map(function (WebsiteInterface $website) use (&$websites) {
+            $this->addUniquelyToWebsites($website, $websites);
+        }, $this->getListFilteredByGlobalSalesChannelId());
+
+        // Because we have unique instances, we don't need to test for equal comparison
+        usort($websites, function (WebsiteInterface $website1, WebsiteInterface $website2) {
+            return $website1->getId() > $website2->getId() ? 1 : -1;
         });
 
-        // Sales Channel Groups are only for websites that are not configured with the globallly
-        // configured Sales Channel ID. We'll find all the remaining websites now.
-        $additionalMagentoWebsites = [];
+        return array_values($websites);
+    }
 
-        array_map(function (WebsiteInterface $website) use ($salesChannelGroupWebsites, &$additionalMagentoWebsites) {
-            if (Store::ADMIN_CODE === $website->getCode()) {
-                return;
-            }
+    private function addUniquelyToWebsites(WebsiteInterface $newWebsite, &$websites)
+    {
+        if (array_key_exists($newWebsite->getId(), $websites)) {
+            return;
+        }
 
-            if (array_key_exists($website->getId(), $salesChannelGroupWebsites)) {
-                return;
-            }
-
-            // If the Sales Channel ID for this website isn't the same as the global, we know we
-            // got a filtered down list of Sales Channel Groups given to us and we should
-            // respect that.
-            $websiteSalesChannelId = $this->config->getSalesChannelIdForWebsite($website->getCode());
-            $globalSalesChannelId = $this->config->getSalesChannelId();
-            if (!$websiteSalesChannelId->sameValueAs($globalSalesChannelId)) {
-                return;
-            }
-
-            $additionalMagentoWebsites[$website->getId()] = $website;
-        }, $this->baseMagentoWebsiteRepository->getList());
-
-        $magentoWebsites = $salesChannelGroupWebsites + $additionalMagentoWebsites;
-        ksort($magentoWebsites);
-
-        return array_values($magentoWebsites);
+        $websites[$newWebsite->getId()] = $newWebsite;
     }
 }

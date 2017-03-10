@@ -50,9 +50,6 @@ class MagentoProductMapper implements MagentoProductMapperInterface
 
     /**
      * {@inheritdoc}
-     *
-     * @todo Set the product to be available on the main website, but what if another sales channel uses
-     * the same website? How will we put it on that website? R&D time!
      */
     public function mapMagentoProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
     {
@@ -63,15 +60,10 @@ class MagentoProductMapper implements MagentoProductMapperInterface
             $this->overrideVisibilityForExistingProduct($magentoProduct);
         }
 
-        // Product name
+        $magentoProduct->setSku((string) $skyLinkProduct->getSku());
         $this->mapName($magentoProduct, $skyLinkProduct);
 
-        // SKU
-        $magentoProduct->setSku((string) $skyLinkProduct->getSku());
-
-        // Setup pricing for product
-        $magentoProduct->setPrice($skyLinkProduct->getPricingStructure()->getRegularPrice()->toNative());
-        $magentoProduct->setCustomAttribute('special_price', $skyLinkProduct->getPricingStructure()->getSpecialPrice()->toNative());
+        $this->mapPrices($magentoProduct, $skyLinkProduct);
 
         // Use the cubic weight for the given product
         // @todo this should be configuration-based
@@ -86,43 +78,9 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         $this->mapAttributes($magentoProduct, $skyLinkProduct);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function mapMagentoProductForSalesChannelGroup(
-        ProductInterface $magentoProduct,
-        SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup
-    ) {
-        $this->assertImplementationOfProductInterface($magentoProduct);
-
-        $skyLinkProduct = $skyLinkProductInSalesChannelGroup->getSkyLinkProduct();
-        $magentoWebsites = $skyLinkProductInSalesChannelGroup->getSalesChannelGroup()->getMagentoWebsites();
-        $magentoStores = $skyLinkProductInSalesChannelGroup->getSalesChannelGroup()->getMagentoStores();
-
-        // Let's make sure the product is on the given website
-        $magentoProduct->setWebsiteIds(array_merge(
-            $magentoProduct->getWebsiteIds(),
-            array_map(function (WebsiteInterface $magentoWebsite) {
-                return $magentoWebsite->getId();
-            }, $magentoWebsites)
-        ));
-
-        // Now we'll update the product data for each Magento Store
-        array_walk($magentoStores, function (StoreInterface $magentoStore) use ($magentoProduct, $skyLinkProduct) {
-            $magentoStoreId = $magentoStore->getId();
-
-            $magentoProduct->addAttributeUpdate(
-                'price',
-                $skyLinkProduct->getPricingStructure()->getRegularPrice()->toNative(),
-                $magentoStoreId
-            );
-
-            $magentoProduct->addAttributeUpdate(
-                'special_price',
-                $skyLinkProduct->getPricingStructure()->getSpecialPrice()->toNative(),
-                $magentoStoreId
-            );
-        });
+    public function mapMagentoProductForWebsite(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
+    {
+        $this->mapPrices($magentoProduct, $skyLinkProduct);
     }
 
     /**
@@ -174,6 +132,13 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         if (!$magentoProduct->getId() || $syncStrategy->sameValueAs(SyncStrategy::get('always'))) {
             $magentoProduct->setName((string) $skyLinkProduct->getName());
         }
+    }
+
+    private function mapPrices(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
+    {
+        // Setup pricing for product
+        $magentoProduct->setPrice($skyLinkProduct->getPricingStructure()->getRegularPrice()->toNative());
+        $magentoProduct->setCustomAttribute('special_price', $skyLinkProduct->getPricingStructure()->getSpecialPrice()->toNative());
     }
 
     private function mapAttributes(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)

@@ -9,11 +9,11 @@ use Magento\Framework\Controller\Result\JsonFactory as JsonResultFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 use RetailExpress\SkyLink\Api\Eds\ChangeSetRepositoryInterface;
 use RetailExpress\SkyLink\Eds\ChangeSet;
-use RetailExpress\SkyLink\Eds\ChangeSetDeserialiser;
+use RetailExpress\SkyLink\Eds\ChangeSetDeserialiserFactory;
 
 class Notify extends Action
 {
-    private $changeSetDeserialiser;
+    private $changeSetDeserialiserFactory;
 
     private $changeSetRepository;
 
@@ -21,13 +21,13 @@ class Notify extends Action
 
     public function __construct(
         Context $context,
-        ChangeSetDeserialiser $changeSetDeserialiser,
+        ChangeSetDeserialiserFactory $changeSetDeserialiserFactory,
         ChangeSetRepositoryInterface $changeSetRepository,
         JsonResultFactory $jsonResultFactory
     ) {
         parent::__construct($context);
 
-        $this->changeSetDeserialiser = $changeSetDeserialiser;
+        $this->changeSetDeserialiserFactory = $changeSetDeserialiserFactory;
         $this->changeSetRepository = $changeSetRepository;
         $this->jsonResultFactory = $jsonResultFactory;
     }
@@ -46,8 +46,11 @@ class Notify extends Action
         // Firstly, parse the body that's been sent through
         $payload = $this->getRequest()->getContent();
 
+        /* @var \RetailExpress\SkyLink\Eds\ChangeSetDeserialiserFactory $changeSetDeserializer */
+        $changeSetDeserialiser = $this->changeSetDeserialiserFactory->create();
+
         try {
-            $changeSets = $this->changeSetDeserialiser->deserialise($payload);
+            $changeSets = $changeSetDeserialiser->deserialise($payload);
         } catch (InvalidArgumentException $e) {
             return $jsonResult
                 ->setHttpResponseCode(422)

@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
+        <catalog>
+            <price>
+                <scope>1</scope>
+            </price>
+        </catalog>
         <cataloginventory>
             <options>
                 <eta_enabled>0</eta_enabled>

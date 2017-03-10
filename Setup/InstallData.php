@@ -3,11 +3,13 @@
 namespace RetailExpress\SkyLink\Setup;
 
 use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Indexer\Product\Price\Processor as ProductPriceIndexer;
 use Magento\Customer\Model\Customer;
 use Magento\Eav\Model\Config as EavConfig;
 use Magento\Eav\Setup\EavSetup;
 use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\App\Config\MutableScopeConfigInterface;
+use \Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
@@ -23,6 +25,8 @@ class InstallData implements InstallDataInterface
 
     private $scopeConfig;
 
+    private $indexerRegistry;
+
     /**
      * @todo rework this with \RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeRepository
      */
@@ -37,11 +41,13 @@ class InstallData implements InstallDataInterface
     public function __construct(
         EavSetupFactory $eavSetupFactory,
         EavConfig $eavConfig,
-        MutableScopeConfigInterface $scopeConfig
+        MutableScopeConfigInterface $scopeConfig,
+        IndexerRegistry $indexerRegistry
     ) {
         $this->eavSetupFactory = $eavSetupFactory;
         $this->eavConfig = $eavConfig;
         $this->scopeConfig = $scopeConfig;
+        $this->indexerRegistry = $indexerRegistry;
     }
 
     /**
@@ -59,6 +65,7 @@ class InstallData implements InstallDataInterface
         $this->addPickupGroupToProducts($eavSetup);
         $this->disableConfiguredMultishipping($setup);
         $this->addQtyOnOrderToProducts($eavSetup);
+        $this->makeProductPricingConfiguredPerWebsite($setup);
     }
 
     private function addSkyLinkCustomerIdToCustomers(EavSetup $eavSetup)
@@ -162,7 +169,6 @@ class InstallData implements InstallDataInterface
 
     private function disableConfiguredMultishipping(ModuleDataSetupInterface $setup)
     {
-        // Remove any multishipping config values from the database
         $setup->getConnection()->delete(
             $setup->getTable('core_config_data'),
             [
@@ -186,6 +192,18 @@ class InstallData implements InstallDataInterface
         );
 
         $this->addAttributeToDefaultGroupInAllSets($eavSetup, $attributeCode, Product::ENTITY);
+    }
+
+    private function makeProductPricingConfiguredPerWebsite(ModuleDataSetupInterface $setup)
+    {
+        $setup->getConnection()->delete(
+            $setup->getTable('core_config_data'),
+            [
+                'path = ?' => 'catalog/price/scope',
+            ]
+        );
+
+        $this->indexerRegistry->get(ProductPriceIndexer::INDEXER_ID)->invalidate();
     }
 
     private function addAttributeToDefaultGroupInAllSets(EavSetup $eavSetup, $magentoAttributeCode, $entityType)

@@ -10,7 +10,6 @@ use Magento\Catalog\Model\Product\Visibility;
 use Magento\ConfigurableProduct\Api\Data\OptionInterface;
 use Magento\ConfigurableProduct\Api\Data\OptionInterfaceFactory;
 use Magento\ConfigurableProduct\Api\Data\OptionValueInterfaceFactory;
-use Magento\ConfigurableProduct\Api\LinkManagementInterface as BaseLinkManagementInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\ConfigurableFactory as ConfigurableProductTypeFactory;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductLinkManagementInterface;
@@ -21,8 +20,6 @@ use RetailExpress\SkyLink\Sdk\Catalogue\Products\MatrixPolicy as SkyLinkMatrixPo
 class MagentoConfigurableProductLinkManagement implements MagentoConfigurableProductLinkManagementInterface
 {
     private $configurableProductTypeFactory;
-
-    private $baseMagentoLinkManagement;
 
     private $productExtensionFactory;
 
@@ -36,7 +33,6 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
 
     public function __construct(
         ConfigurableProductTypeFactory $configurableProductTypeFactory,
-        BaseLinkManagementInterface $baseMagentoLinkManagement,
         ProductExtensionFactory $productExtensionFactory,
         OptionInterfaceFactory $optionFactory,
         OptionValueInterfaceFactory $optionValueFactory,
@@ -44,7 +40,6 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
         ProductRepositoryInterface $baseMagentoProductRepository
     ) {
         $this->configurableProductTypeFactory = $configurableProductTypeFactory;
-        $this->baseMagentoLinkManagement = $baseMagentoLinkManagement;
         $this->productExtensionFactory = $productExtensionFactory;
         $this->optionFactory = $optionFactory;
         $this->optionValueFactory = $optionValueFactory;

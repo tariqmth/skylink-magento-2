@@ -112,43 +112,7 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
 
         $this->mapProduct($magentoProduct, $skyLinkProduct);
         $this->mapStockAndSave($magentoProduct, $magentoStockItem, $skyLinkProduct);
-    }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function assignMagentoProductToWebsites(ProductInterface $magentoProduct, array $magentoWebsites)
-    {
-        $this->assertImplementationOfProductInterface($magentoProduct);
-
-        $existingIds = array_map('intval', $magentoProduct->getWebsiteIds());
-        $newIds = array_map(function (WebsiteInterface $magentoWebsite) {
-            return (int) $magentoWebsite->getId();
-        }, $magentoWebsites);
-
-        // Determine the IDs to remove and add
-        $idsToRemove = array_diff($existingIds, $newIds);
-        $idsToAdd = array_diff($newIds, $existingIds);
-
-        // Remove from websites
-        array_walk($idsToRemove, function ($idToRemove) use ($magentoProduct) {
-            $result = $this->magentoProductWebsiteLinkRepository->deleteById(
-                $magentoProduct->getSku(),
-                $idToRemove
-            );
-        });
-
-        // Add to websites
-        array_walk($idsToAdd, function ($idToAdd) use ($magentoProduct) {
-            $magentoProductWebsiteLink = $this->magentoProductWebsiteLinkFactory->create();
-            $magentoProductWebsiteLink
-                ->setSku($magentoProduct->getSku())
-                ->setWebsiteId($idToAdd);
-
-            $this->magentoProductWebsiteLinkRepository->save($magentoProductWebsiteLink);
-        });
-
-        $this->saveDirectly($magentoProduct);
     }
 
     private function mapProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)

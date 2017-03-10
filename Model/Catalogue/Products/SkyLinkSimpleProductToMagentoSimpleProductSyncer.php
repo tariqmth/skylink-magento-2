@@ -74,7 +74,7 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
                 $magentoProduct
             );
 
-            $this->magentoSimpleProductService->updateMagentoProduct($magentoProduct, $skyLinkProduct);
+            $magentoProduct = $this->magentoSimpleProductService->updateMagentoProduct($magentoProduct, $skyLinkProduct);
         } else {
             $this->logDebug(
                 'No Magento Simple Product exists for the SkyLink Product, creating one.',

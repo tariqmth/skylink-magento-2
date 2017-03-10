@@ -113,6 +113,7 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         $this->mapProduct($magentoProduct, $skyLinkProduct);
         $this->mapStockAndSave($magentoProduct, $magentoStockItem, $skyLinkProduct);
 
+        return $magentoProduct;
     }
 
     private function mapProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
@@ -127,20 +128,15 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
     }
 
     private function mapStockAndSave(
-        ProductInterface $magentoProduct,
+        ProductInterface &$magentoProduct,
         StockItemInterface $magentoStockItem,
         SkyLinkProduct $skyLinkProduct
     ) {
         $this->magentoStockItemMapper->mapStockItem($magentoStockItem, $skyLinkProduct->getInventoryItem());
-        $this->save($magentoProduct);
+        $magentoProduct = $this->baseMagentoProductRepository->save($magentoProduct);
         $this->magentoStockRegistry->updateStockItemBySku($magentoProduct->getSku(), $magentoStockItem);
 
         $this->syncCustomerGroupPrices($magentoProduct, $skyLinkProduct);
-    }
-
-    private function save(ProductInterface $magentoProduct)
-    {
-        $this->baseMagentoProductRepository->save($magentoProduct);
     }
 
     private function syncCustomerGroupPrices(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)

@@ -107,11 +107,11 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
     }
 
     private function updateStockAndSave(
-        ProductInterface $magentoConfigurableProduct,
+        ProductInterface &$magentoConfigurableProduct,
         StockItemInterface $magentoStockItem
     ) {
         $this->magentoStockItemUpdater->updateStockItem($magentoStockItem);
-        $this->baseMagentoProductRepository->save($magentoConfigurableProduct);
+        $magentoConfigurableProduct = $this->baseMagentoProductRepository->save($magentoConfigurableProduct);
         $this->magentoStockRegistry->updateStockItemBySku($magentoConfigurableProduct->getSku(), $magentoStockItem);
     }
 

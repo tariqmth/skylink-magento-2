@@ -78,7 +78,7 @@
         </section>
         <section id="multishipping">
             <group id="options">
-                <field id="checkout_multiple">
+                <field id="checkout_multiple" canRestore="1">
                     <comment>Shipping to multiple addresses is incompatible with SkyLink.</comment>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\No</source_model>
                 </field>

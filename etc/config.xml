@@ -45,7 +45,7 @@
                 <regular_price_attribute>default_price</regular_price_attribute>
                 <special_price_attribute>discounted_price</special_price_attribute>
                 <configurable_product_match_threshold>0.5</configurable_product_match_threshold>
-                <composite_product_sync_rerun_threshold>300</composite_product_sync_rerun_threshold>
+                <composite_product_sync_rerun_threshold>60</composite_product_sync_rerun_threshold>
             </products>
             <debugging>
                 <should_capture_logs>0</should_capture_logs>

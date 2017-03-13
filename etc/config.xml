@@ -27,6 +27,11 @@
                 <checkout_multiple>0</checkout_multiple>
             </options>
         </multishipping>
+        <checkout>
+            <options>
+                <guest_checkout>0</guest_checkout>
+            </options>
+        </checkout>
         <skylink>
             <api>
                 <version>2</version>

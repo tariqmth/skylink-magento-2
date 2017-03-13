@@ -95,6 +95,16 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
 
         // Add order items
         array_map(function (OrderItemInterface $magentoOrderItem) use (&$skyLinkOrder) {
+
+            // We get an array of all order items, parents and children. The Order Item Builder is responsible
+            // for translating any type of order item (parent or child) into a SkyLink Order Item. Because
+            // of this, we'll only send order items that don't have a parent (so as to let it handle
+            // all order item types). This is how we handle (for example) both
+            // simple and configurable products. Cool, eh?
+            if ($magentoOrderItem->getParentItemId()) {
+                return;
+            }
+
             $skyLinkOrderItem = $this->skyLinkOrderItemBuilder->buildFromMagentoOrderItem($magentoOrderItem);
             $skyLinkOrder = $skyLinkOrder->withItem($skyLinkOrderItem);
         }, $magentoOrder->getItems());
@@ -163,7 +173,7 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
         if (!$magentoOrder instanceof MagentoOrder) {
             throw new InvalidArgumentException(sprintf(
                 'Determining a Pickup Outlet requires a Magento Order be an instance of %s.',
-                magentoOrder::class
+                MagentoOrder::class
             ));
         }
     }

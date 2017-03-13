@@ -20,7 +20,7 @@ class OrderManagementPlugin
 
     public function beforePlace(OrderManagementInterface $subject, OrderInterface $magentoOrder)
     {
-        // We'll go through all of the items and quickly sync their stock
+        // We'll go through all simple products in the order and sync their stock
         array_map(function (OrderItemInterface $magentoOrderItem) {
             if (ProductType::TYPE_SIMPLE !== $magentoOrderItem->getProductType()) {
                 return;

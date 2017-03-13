@@ -13,6 +13,7 @@ interface SkyLinkOrderItemBuilderInterface
      *
      * @return \RetailExpress\SkyLink\Sdk\Sales\Orders\Item
      *
+     * @throws \RetailExpress\SkyLink\Exceptions\Sales\Orders\MagentoOrderItemContainsMoreThanOneChildItemException
      * @throws \RetailExpress\SkyLink\Exceptions\Sales\Orders\MagentoOrderItemNotLinkedToSkyLinkProductException
      * @throws \RetailExpress\SkyLink\Exceptions\Sales\Orders\MagentoOrderItemNotProductBasedException
      */

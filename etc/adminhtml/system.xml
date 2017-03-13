@@ -91,6 +91,18 @@
                 </field>
             </group>
         </section>
+        <section id="checkout">
+            <group id="options">
+                <field id="skylink_guest_customer_id" translate="label" type="text" sortOrder="7" showInDefault="1" canRestore="1">
+                    <label>SkyLink Guest Customer ID</label>
+                    <backend_model>RetailExpress\SkyLink\Model\System\Config\Backend\GuestCustomerId</backend_model>
+                    <comment><![CDATA[Enter a valid SkyLink Customer ID to place all Magento Guest Checkout orders against. <strong>Magento's Guest checkout is disabled while there is no SkyLink Guest Customer ID.</strong> <em>You will need to save changes before the <kbd>Allow Guest Checkout</kbd> dropdown can be changed.</em>]]></comment>
+                </field>
+                <field id="guest_checkout">
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\GuestCheckout</source_model>
+                </field>
+            </group>
+        </section>
         <section id="skylink" translate="label" type="text" sortOrder="400" showInDefault="1" showInWebsite="1">
             <label>SkyLink</label>
             <tab>service</tab>

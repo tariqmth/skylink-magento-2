@@ -4,22 +4,22 @@ namespace RetailExpress\SkyLink\Model\Sales\Orders;
 
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Sales\Api\Data\OrderInterface;
+use RetailExpress\SkyLink\Api\Sales\Orders\ConfigInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkCustomerIdServiceInterface;
-use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkGuestCustomerServiceInterface;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 
 class SkyLinkCustomerIdService implements SkyLinkCustomerIdServiceInterface
 {
     private $baseMagentoCustomerRepository;
 
-    private $skyLinkGuestCustomerService;
+    private $orderConfig;
 
     public function __construct(
         CustomerRepositoryInterface $baseMagentoCustomerRepository,
-        SkyLinkGuestCustomerServiceInterface $skyLinkGuestCustomerService
+        ConfigInterface $orderConfig
     ) {
         $this->baseMagentoCustomerRepository = $baseMagentoCustomerRepository;
-        $this->skyLinkGuestCustomerService = $skyLinkGuestCustomerService;
+        $this->orderConfig = $orderConfig;
     }
 
     public function determineSkyLinkCustomerId(OrderInterface $magentoOrder)
@@ -27,7 +27,7 @@ class SkyLinkCustomerIdService implements SkyLinkCustomerIdServiceInterface
         // If the Magento Order is using a guest customer,
         // we'll just grab the mapped guest customer ID.
         if ($magentoOrder->getCustomerIsGuest()) {
-            return $this->skyLinkGuestCustomerService->getGuestCustomerId();
+            return $this->orderConfig->getGuestCustomerId();
         }
 
         // Otherwise, we'll find the Magento Customer and grab their SkyLink Customer Id

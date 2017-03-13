@@ -6,6 +6,7 @@ use RetailExpress\SkyLink\Api\Catalogue\Products\SkyLinkProductToMagentoProductS
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductLinkManagementInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductServiceInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductWebsiteManagementInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Matrix;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
@@ -24,6 +25,8 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
 
     private $magentoConfigurableProductLinkManagement;
 
+    private $magentoProductWebsiteManagement;
+
     private $simpleProductSyncer;
 
     /**
@@ -38,11 +41,13 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
         MagentoConfigurableProductServiceInterface $magentoConfigurableProductService,
         MagentoConfigurableProductLinkManagementInterface $magentoConfigurableProductLinkManagement,
         SkyLinkSimpleProductToMagentoSimpleProductSyncer $simpleProductSyncer,
+        MagentoProductWebsiteManagementInterface $magentoProductWebsiteManagement,
         SkyLinkLoggerInterface $logger
     ) {
         $this->magentoConfigurableProductRepository = $magentoConfigurableProductRepository;
         $this->magentoConfigurableProductService = $magentoConfigurableProductService;
         $this->magentoConfigurableProductLinkManagement = $magentoConfigurableProductLinkManagement;
+        $this->magentoProductWebsiteManagement = $magentoProductWebsiteManagement;
         $this->simpleProductSyncer = $simpleProductSyncer;
         $this->logger = $logger;
     }
@@ -110,6 +115,11 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
                 'Magento Configurable Product SKU' => $magentoConfigurableProduct->getSku(),
             ]);
         }
+
+        $this->magentoProductWebsiteManagement->assignMagentoProductToWebsitesForSalesChannelGroups(
+            $magentoConfigurableProduct,
+            $skyLinkProductInSalesChannelGroups
+        );
 
         return $magentoConfigurableProduct;
     }

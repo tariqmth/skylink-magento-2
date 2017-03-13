@@ -3,7 +3,9 @@
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Api\Data\ProductWebsiteLinkInterfaceFactory;
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\Catalog\Api\ProductWebsiteLinkRepositoryInterface;
 use Magento\Catalog\Model\Product\WebsiteFactory as MagentoProductWebsiteFactory;
 use Magento\Store\Api\Data\WebsiteInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductCustomerGroupPriceServiceInterface;
@@ -25,22 +27,26 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
 
     private $magentoCustomerGroupPriceService;
 
-    private $magentoProductWebsiteFactory;
+    private $magentoProductWebsiteLinkRepository;
+
+    private $magentoProductWebsiteLinkFactory;
 
     public function __construct(
         MagentoStoreEmulatorInterface $magentoStoreEmulator,
         MagentoProductMapperInterface $magentoProductMapper,
         ProductRepositoryInterface $magentoProductRepository,
         MagentoProductCustomerGroupPriceServiceInterface $magentoCustomerGroupPriceService,
-        MagentoProductWebsiteFactory $magentoProductWebsiteFactory,
-        MagentoWebsiteRepositoryInterface $magentoWebsiteRepository
+        MagentoWebsiteRepositoryInterface $magentoWebsiteRepository,
+        ProductWebsiteLinkRepositoryInterface $magentoProductWebsiteLinkRepository,
+        ProductWebsiteLinkInterfaceFactory $magentoProductWebsiteLinkFactory
     ) {
         $this->magentoStoreEmulator = $magentoStoreEmulator;
         $this->magentoProductMapper = $magentoProductMapper;
         $this->magentoProductRepository = $magentoProductRepository;
         $this->magentoCustomerGroupPriceService = $magentoCustomerGroupPriceService;
-        $this->magentoProductWebsiteFactory = $magentoProductWebsiteFactory;
         $this->magentoWebsiteRepository = $magentoWebsiteRepository;
+        $this->magentoProductWebsiteLinkRepository = $magentoProductWebsiteLinkRepository;
+        $this->magentoProductWebsiteLinkFactory = $magentoProductWebsiteLinkFactory;
     }
 
     /**
@@ -119,9 +125,20 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
 
         /* @var int[] $removeFromWebsiteIds */
         $removeFromWebsiteIds = array_diff($currentlyAssignedWebsiteIds, $allowedWebsiteIds);
+        array_walk($removeFromWebsiteIds, function ($websiteId) use ($magentoProduct) {
+            $this->magentoProductWebsiteLinkRepository->deleteById($magentoProduct->getSku(), $websiteId);
+        });
 
-        /* @var \Magento\Catalog\Model\Product\Website $magentoProductWebsite */
-        $magentoProductWebsite = $this->magentoProductWebsiteFactory->create();
-        $magentoProductWebsite->removeProducts($removeFromWebsiteIds, [$magentoProduct->getId()]);
+        /* @var int[] $addToWebsiteIds */
+        $addToWebsiteIds = array_diff($allowedWebsiteIds, $currentlyAssignedWebsiteIds);
+        array_walk($addToWebsiteIds, function ($websiteId) use ($magentoProduct) {
+            /* @var \Magento\Catalog\Api\Data\ProductWebsiteLinkInterface $magentoProductWebsiteLink */
+            $magentoProductWebsiteLink = $this->magentoProductWebsiteLinkFactory->create();
+            $magentoProductWebsiteLink
+                ->setSku($magentoProduct->getSku())
+                ->setWebsiteId($websiteId);
+
+            $this->magentoProductWebsiteLinkRepository->save($magentoProductWebsiteLink);
+        });
     }
 }

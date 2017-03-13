@@ -101,6 +101,14 @@
         <plugin name="skylink_magento_configurable_product_service_validation" type="RetailExpress\SkyLink\Plugin\SkyLink\Catalogue\Products\MagentoConfigurableProductServiceValidationPlugin" sortOrder="10" disabled="false"/>
     </type>
 
+    <!-- Create a plugin to workaround how Magento automatically sets the website ID on a product programatically -->
+    <type name="Magento\Catalog\Api\ProductRepositoryInterface">
+        <plugin name="skylink_website_id_workaround" type="RetailExpress\SkyLink\Plugin\Magento\Catalogue\Products\ProductRepositoryWebsiteIdWorkaroundPlugin" sortOrder="10" disabled="false"/>
+    </type>
+    <type name="RetailExpress\SkyLink\Commands\Catalogue\Products\SyncSkyLinkProductToMagentoProductHandler">
+        <plugin name="skylink_website_id_workaround" type="RetailExpress\SkyLink\Plugin\SkyLink\Catalogue\Products\SyncSkyLinkProductToMagentoProductHandlerWebsiteIdWorkaroundPlugin" sortOrder="10" disabled="false"/>
+    </type>
+
     <!-- Debugging implementations -->
     <preference for="RetailExpress\SkyLink\Api\Debugging\ConfigInterface" type="RetailExpress\SkyLink\Model\Debugging\Config"/>
     <preference for="RetailExpress\SkyLink\Api\Debugging\LogViewerInterface" type="RetailExpress\SkyLink\Model\Debugging\LogViewer"/>

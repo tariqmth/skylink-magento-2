@@ -39,13 +39,25 @@ class SkyLinkCustomerBuilder implements SkyLinkCustomerBuilderInterface
             }
         );
 
-        $skyLinkBillingContact = $this
-            ->skyLinkCustomerContactBuilder
-            ->buildSkyLinkBillingContactFromMagentoCustomerAddress($magentoBillingAddress, $magentoCustomer->getEmail());
+        if (null !== $magentoBillingAddress) {
+            $skyLinkBillingContact = $this
+                ->skyLinkCustomerContactBuilder
+                ->buildSkyLinkBillingContactFromMagentoCustomerAddress($magentoCustomer, $magentoBillingAddress);
+        } else {
+            $skyLinkBillingContact = $this
+                ->skyLinkCustomerContactBuilder
+                ->buildEmptyBillingContact($magentoCustomer);
+        }
 
-        $skyLinkShippingContact = $this
-            ->skyLinkCustomerContactBuilder
-            ->buildSkyLinkShippingContactFromMagentoCustomerAddress($magentoShippingAddress);
+        if (null !== $magentoShippingAddress) {
+            $skyLinkShippingContact = $this
+                ->skyLinkCustomerContactBuilder
+                ->buildSkyLinkShippingContactFromMagentoCustomerAddress($magentoShippingAddress);
+        } else {
+            $skyLinkShippingContact = $this
+                ->skyLinkCustomerContactBuilder
+                ->buildEmptyShippingContact();
+        }
 
         $skyLinkNewsletterSubscription = new SkyLinkNewsletterSubscription(false);
 

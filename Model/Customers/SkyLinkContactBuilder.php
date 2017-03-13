@@ -3,6 +3,7 @@
 namespace RetailExpress\SkyLink\Model\Customers;
 
 use Magento\Customer\Api\Data\AddressInterface;
+use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use RetailExpress\SkyLink\Api\Customers\SkyLinkContactBuilderInterface as SkyLinkCustomerContactBuilderInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkContactBuilderInterface as SkyLinkOrderContactBuilderInterface;
@@ -14,12 +15,14 @@ class SkyLinkContactBuilder implements SkyLinkCustomerContactBuilderInterface, S
     /**
      * {@inheritdoc}
      */
-    public function buildSkyLinkBillingContactFromMagentoCustomerAddress(AddressInterface $magentoCustomerAddress, $emailAddress)
-    {
+    public function buildSkyLinkBillingContactFromMagentoCustomerAddress(
+        CustomerInterface $magentoCustomer,
+        AddressInterface $magentoCustomerAddress
+    ) {
         $arguments = array_merge(
             $this->extractCommonArguments($magentoCustomerAddress),
             [
-                'emailAddress' => $emailAddress,
+                'emailAddress' => $magentoCustomer->getEmail(),
                 'addressState' => $this->extractStateFromCustomerAddress($magentoCustomerAddress),
                 'faxNumber' => $magentoCustomerAddress->getFax(),
             ]
@@ -41,6 +44,28 @@ class SkyLinkContactBuilder implements SkyLinkCustomerContactBuilderInterface, S
         );
 
         return $this->buildSkyLinkShippingContact($arguments);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildEmptyBillingContact(CustomerInterface $magentoCustomer)
+    {
+        // @todo should this belong in the SDK (and with other classes too - a createEmpty() method?)
+        return SkyLinkBillingContact::fromNative(
+            $magentoCustomer->getFirstname(),
+            $magentoCustomer->getLastname(),
+            $magentoCustomer->getEmail()
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildEmptyShippingContact()
+    {
+        // @todo see self::createEmptyBillingContact() notes...
+        return SkyLinkShippingContact::fromNative();
     }
 
     /**

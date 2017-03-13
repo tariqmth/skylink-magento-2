@@ -32,6 +32,11 @@
         <plugin name="skylink_customer_repository" type="RetailExpress\SkyLink\Plugin\Magento\Customers\CustomerRepositoryPlugin" sortOrder="10" disabled="false"/>
     </type>
 
+    <!-- Create a plugin to bust Magento's customer cache during command handling -->
+    <type name="RetailExpress\SkyLink\Commands\Customers\SyncMagentoCustomerToSkyLinkCustomerHandler">
+        <plugin name="skylink_cache_buster" type="RetailExpress\SkyLink\Plugin\SkyLink\Customers\SyncMagentoCustomerToSkyLinkCustomerCacheBusterPlugin" sortOrder="10" disabled="false"/>
+    </type>
+
     <!-- Create a plugin to usefully log validation issues with managing Magento Customers -->
     <type name="RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface">
         <plugin name="skylink_magento_customer_service_validation" type="RetailExpress\SkyLink\Plugin\SkyLink\Customers\MagentoCustomerServiceValidationPlugin" sortOrder="10" disabled="false"/>

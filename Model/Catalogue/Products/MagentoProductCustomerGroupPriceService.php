@@ -35,7 +35,6 @@ class MagentoProductCustomerGroupPriceService implements MagentoProductCustomerG
         ProductInterface $magentoProduct,
         SkyLinkPricingStructure $skyLinkPricingStructure
     ) {
-        return;
         array_map(function (SkyLinkPriceGroupPrice $skyLinkPriceGroupPrice) use ($magentoProduct) {
             /* @var \Magento\Customer\Api\Data\GroupInterface|null $magentoCustomerGroup */
             $magentoCustomerGroup = $this
@@ -56,15 +55,10 @@ class MagentoProductCustomerGroupPriceService implements MagentoProductCustomerG
             // If there is an existing tier price, we'll compare it against ours and remove it if need-be
             if (null !== $existingTierPrice) {
 
-                // If our new value is the same as the existing, we'll just reutrn
+                // If our new value is the same as the existing, we'll just return
                 if ($tierPriceValue == $existingTierPrice->getValue()) {
-                    var_dump('existing tier price is fine');
                     return;
                 }
-
-                var_dump('removing', [$magentoProductSku,
-                    $magentoCustomerGroupId,
-                    self::CUSTOMER_GROUP_PRICE_QTY]);
 
                 // If they're different, we'll need to delete the existing tier price
                 $this->magentoProductTierPriceManagement->remove(
@@ -72,14 +66,7 @@ class MagentoProductCustomerGroupPriceService implements MagentoProductCustomerG
                     $magentoCustomerGroupId,
                     self::CUSTOMER_GROUP_PRICE_QTY
                 );
-            } else {
-                var_dump('no existing tier price');
             }
-
-            var_dump('adding', [$magentoProductSku,
-                $magentoCustomerGroupId,
-                $tierPriceValue,
-                self::CUSTOMER_GROUP_PRICE_QTY]);
 
             // At this point, there is either no existing tier price, or there was, and we removed it
             $this->magentoProductTierPriceManagement->add(

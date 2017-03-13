@@ -23,5 +23,5 @@ interface MagentoSimpleProductServiceInterface
      * @param ProductInterface $magentoProduct
      * @param SkyLinkProduct   $skyLinkProduct
      */
-    public function updateMagentoProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct);
+    public function updateMagentoProduct(ProductInterface &$magentoProduct, SkyLinkProduct $skyLinkProduct);
 }

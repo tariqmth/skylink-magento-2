@@ -105,15 +105,13 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
     /**
      * {@inheritdoc}
      */
-    public function updateMagentoProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
+    public function updateMagentoProduct(ProductInterface &$magentoProduct, SkyLinkProduct $skyLinkProduct)
     {
         /* @var StockItemInterface $magentoStockItem */
         $magentoStockItem = $this->magentoStockRegistry->getStockItemBySku($magentoProduct->getSku());
 
         $this->mapProduct($magentoProduct, $skyLinkProduct);
         $this->mapStockAndSave($magentoProduct, $magentoStockItem, $skyLinkProduct);
-
-        return $magentoProduct;
     }
 
     private function mapProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
@@ -139,19 +137,21 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         $this->syncCustomerGroupPrices($magentoProduct, $skyLinkProduct);
     }
 
-    private function syncCustomerGroupPrices(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
+    private function syncCustomerGroupPrices(ProductInterface &$magentoProduct, SkyLinkProduct $skyLinkProduct)
     {
         // Loop through Magento Websites that are configured for the global scope,
         // shoot into the website scope and sync customer group prices for that
         // website. Customer Group Prices can't be both global and scoped,
         // so we just scope them all instead. Much simpler ;) NOT!
-        array_map(function (WebsiteInterface $magentoWebsite) use ($magentoProduct, $skyLinkProduct) {
+        array_map(function (WebsiteInterface $magentoWebsite) use (&$magentoProduct, $skyLinkProduct) {
             $this->magentoStoreEmulator->onWebsite($magentoWebsite, function () use ($magentoProduct, $skyLinkProduct) {
                 $this->magentoCustomerGroupPriceService->syncCustomerGroupPrices(
                     $magentoProduct,
                     $skyLinkProduct->getPricingStructure()
                 );
             });
+
+            $magentoProduct = $this->baseMagentoProductRepository->get($magentoProduct->getSku());
         }, $this->magentoWebsiteRepository->getListFilteredByGlobalSalesChannelId());
     }
 }

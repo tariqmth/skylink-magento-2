@@ -14,7 +14,7 @@ interface MagentoProductWebsiteManagementInterface
      * @param SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup
      */
     public function overrideMagentoProductForSalesChannelGroup(
-        ProductInterface $magentoProduct,
+        ProductInterface &$magentoProduct,
         SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup
     );
 

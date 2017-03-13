@@ -50,7 +50,7 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
      * @param SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup
      */
     public function overrideMagentoProductForSalesChannelGroup(
-        ProductInterface $magentoProduct,
+        ProductInterface &$magentoProduct,
         SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup
     ) {
         /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Products\Product $skyLinkProduct */
@@ -60,7 +60,7 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
         $magentoWebsites = $skyLinkProductInSalesChannelGroup->getSalesChannelGroup()->getMagentoWebsites();
 
         // Loop through all the Magento Websites that the Sales Channel Group uses and scope into each
-        array_map(function (WebsiteInterface $magentoWebsite) use ($magentoProduct, $skyLinkProduct) {
+        array_map(function (WebsiteInterface $magentoWebsite) use (&$magentoProduct, $skyLinkProduct) {
 
             // Map the product in the context of the given Magento Website
             $this->magentoStoreEmulator->onWebsite($magentoWebsite, function () use ($magentoProduct, $skyLinkProduct) {
@@ -68,7 +68,7 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
             });
 
             // Save the product
-            $this->magentoProductRepository->save($magentoProduct);
+            $magentoProduct = $this->magentoProductRepository->save($magentoProduct);
 
             // And sync Customer Group Prices for the given Magento Website
             $this->magentoStoreEmulator->onWebsite($magentoWebsite, function () use ($magentoProduct, $skyLinkProduct) {
@@ -78,6 +78,10 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
                 );
             });
         }, $magentoWebsites);
+
+        // Refresh the referenced instance of the product (as the last customer
+        // group price sync in the loop did not do this)...
+        $magentoProduct = $this->magentoProductRepository->get($magentoProduct->getSku());
     }
 
     /**

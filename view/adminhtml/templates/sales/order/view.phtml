@@ -1,0 +1,12 @@
+<?php
+
+/**
+ * @var \RetailExpress\SkyLink\Sdk\Sales\Orders\OrderId|null $skyLinkOrderId
+ */
+$skyLinkOrderId = $block->getSkyLinkOrderId();
+?>
+<?php if (null !== $skyLinkOrderId): ?>
+    <p class="skylink-order-id">
+        <?=__('SkyLink Order ID:')?> <strong><?=__('#%1', $skyLinkOrderId)?></strong>
+    </p>
+<?php endif ?>

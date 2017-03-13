@@ -170,6 +170,30 @@
                     <comment><![CDATA[Retail Express does not have the concept of a Configurable Product but Magento does, but rather it groups Products together in a Matrix. During the sync process, we compare all of the Simple Products in Magento represented by the Retail Express Matrix. We then look at their common parent(s). If the percentage of products in the Retail Express Matrix all have the same parent product in Magento, we will attach all of the children products in the Matrix to that parent product. <em>It is recommended you do not change this value from the default (50%).</strong>.]]></comment>
                 </field>
             </group>
+            <group id="debugging" translate="label" type="text" sortOrder="500" showInDefault="1">
+                <label>Debugging</label>
+                <field id="should_capture_logs" translate="label" type="select" sortOrder="100" showInDefault="1" canRestore="1">
+                    <label>Should Capture Logs</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[SkyLink provides two types of logging, <kbd>uncaptured</kbd> (temporary) and <kbd>captured</kbd> (semi-permanent) logs. Both uncaptured and captured logging does not change what is logged, but how much logging history is available.]]></comment>
+                </field>
+                <field id="uncaptured_logs_to_keep" translate="label" type="select" sortOrder="200" showInDefault="1" canRestore="1">
+                    <label>Uncaptured Logs to Keep</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\UncapturedLogsTokeep</source_model>
+                </field>
+                <field id="captured_logs_to_keep" translate="label" type="select" sortOrder="300" showInDefault="1" canRestore="1">
+                    <label>Captured Logs to Keep</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\CapturedLogsTokeep</source_model>
+                    <depends>
+                        <field id="should_capture_logs">1</field>
+                    </depends>
+                </field>
+                <field id="purging_chance" translate="label" type="select" sortOrder="400" showInDefault="1" canRestore="1">
+                    <label>Purging Chance</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\PurgingChance</source_model>
+                    <comment>To improve efficiency, you can specify how likely SkyLink is to purge old logs. The greater the chance, the more often old logs are removed, however this comes at a minor performance hit.</comment>
+                </field>
+            </group>
         </section>
     </system>
 </config>

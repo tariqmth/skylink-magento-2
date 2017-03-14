@@ -32,17 +32,20 @@ class ProductRepositoryWebsiteIdWorkaroundPlugin
         ProductInterface $magentoProduct,
         $saveOptions = false
     ) {
+        // If no workaround is required, let's exit early
+        if (false === $this->needsWorkaround()) {
+            return $proceed($magentoProduct, $saveOptions);
+        }
+
         $this->assertImplementationOfProductInterface($magentoProduct);
 
-        if ($this->needsWorkaround()) {
-            $properWebsiteIds = $magentoProduct->getWebsiteIds();
-        }
+        /* @var int[] $properWebsiteIds */
+        $properWebsiteIds = $magentoProduct->getWebsiteIds();
 
+        /* @var ProductInterface $magentoProduct */
         $magentoProduct = $proceed($magentoProduct, $saveOptions);
 
-        if ($this->needsWorkaround()) {
-            $this->restoreWebsiteIds($magentoProduct, $properWebsiteIds);
-        }
+        $this->restoreWebsiteIds($magentoProduct, $properWebsiteIds);
 
         return $magentoProduct;
     }

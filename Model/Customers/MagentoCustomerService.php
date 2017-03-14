@@ -12,6 +12,7 @@ use Magento\Framework\Registry;
 use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface;
+use Throwable;
 
 class MagentoCustomerService implements MagentoCustomerServiceInterface
 {
@@ -116,6 +117,9 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
         $this->registry->register(self::REGISTRY_LOCK_KEY, true);
         try {
             $callback();
+        } catch (Throwable $e) { // PHP 7+
+            $this->unlockSkyLinkToMagento();
+            throw $e;
         } catch (Exception $e) {
             $this->unlockSkyLinkToMagento();
             throw $e;

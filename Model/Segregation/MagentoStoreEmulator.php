@@ -9,6 +9,7 @@ use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Store\Model\Website;
+use Throwable;
 
 class MagentoStoreEmulator implements MagentoStoreEmulatorInterface
 {
@@ -40,6 +41,9 @@ class MagentoStoreEmulator implements MagentoStoreEmulatorInterface
             $response = $callback();
             $this->magentoStoreManager->setCurrentStore($currentStore);
             return $response;
+        } catch (Throwable $e) { // PHP 7+
+            $this->magentoStoreManager->setCurrentStore($currentStore);
+            throw $e;
         } catch (Exception $e) {
             $this->magentoStoreManager->setCurrentStore($currentStore);
             throw $e;

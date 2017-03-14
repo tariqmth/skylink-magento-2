@@ -110,18 +110,22 @@ class SyncSkyLinkProductToMagentoProductHandler
             throw $e;
         }
 
-        // If we're not allowed to proceed, we'll just
-        if (
-            $this->caresAboutCompositeProductReruns($command, $skyLinkProduct) &&
-            false === $this->compositeProductRerunManager->canProceedWithSync($skyLinkProduct)
-        ) {
-            $this->logger->info('Skipping syncing SkyLink Product to Magento Product because it is part of a SkyLink Composite Product that was recently synced and does not need to be re-synced yet.', [
-                'SkyLink Product ID' => $skyLinkProductId,
-            ]);
+        // If we care about composite product reruns (i.e. on a bulk sync)
+        if ($this->caresAboutCompositeProductReruns($command, $skyLinkProduct)) {
 
-            // We don't need to dispatch an event becuase the reruns do not occur
-            // in conjunction with any observers that watch that event (e.g. EDS)
-            return;
+            // If we can't proceed because it's already been done recently
+            if (false === $this->compositeProductRerunManager->canProceedWithSync($skyLinkProduct)) {
+                $this->logger->info('Skipping syncing SkyLink Product to Magento Product because it is part of a SkyLink Composite Product that was recently synced and does not need to be re-synced yet.', [
+                    'SkyLink Product ID' => $skyLinkProductId,
+                ]);
+
+                // We don't need to dispatch an event becuase the reruns do not occur
+                // in conjunction with any observers that watch that event (e.g. EDS)
+                return;
+            }
+
+            // If we can sync, let's tell the re-run manager that we're starting right now
+            $this->compositeProductRerunManager->isSyncing($skyLinkProduct);
         }
 
         // We'll now grab the product in the context of any additional Sales Channel Groups. We'll
@@ -153,10 +157,6 @@ class SyncSkyLinkProductToMagentoProductHandler
         throw new InvalidArgumentException("Could not find syncer for SkyLink Product #{$skyLinkProductId}.");
 
         success:
-
-        if ($this->caresAboutCompositeProductReruns($command, $skyLinkProduct)) {
-            $this->compositeProductRerunManager->didSync($skyLinkProduct);
-        }
 
         $this->eventManager->dispatch(
             'retail_express_skylink_skylink_product_was_synced_to_magento_product',

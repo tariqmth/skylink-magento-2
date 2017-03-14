@@ -17,9 +17,9 @@ interface MagentoSyncCompositeProductRerunManagerInterface
     public function canProceedWithSync(CompositeSkyLinkProduct $skyLinkCompositeProduct);
 
     /**
-     * Advise the Manager that a Composite SkyLink Product did sync.
+     * Advise the Manager that a Composite SkyLink Product is syncing.
      *
      * @param CompositeSkyLinkProduct $skyLinkCompositeProduct
      */
-    public function didSync(CompositeSkyLinkProduct $skyLinkCompositeProduct);
+    public function isSyncing(CompositeSkyLinkProduct $skyLinkCompositeProduct);
 }

@@ -35,7 +35,7 @@ class MagentoSyncCompositeProductRerunManager implements MagentoSyncCompositePro
     /**
      * {@inheritdoc}
      */
-    public function didSync(CompositeSkyLinkProduct $skyLinkCompositeProduct)
+    public function isSyncing(CompositeSkyLinkProduct $skyLinkCompositeProduct)
     {
         $cacheKey = $this->getCacheKey($skyLinkCompositeProduct);
 

@@ -68,7 +68,13 @@ class MagentoProductCustomerGroupPriceService implements MagentoProductCustomerG
                 );
             }
 
-            // At this point, there is either no existing tier price, or there was, and we removed it
+            // At this point, there is either no existing tier price, or there was, and we removed
+            // it. We'llmake sure that our tier price is actually greater than 0 before
+            // attempting to add it (as Magento doesn't allow tier prices that are 0).
+            if ($tierPriceValue == 0) { // Non-strict comparison (comparing float against int)
+                return;
+            }
+
             $this->magentoProductTierPriceManagement->add(
                 $magentoProductSku,
                 $magentoCustomerGroupId,

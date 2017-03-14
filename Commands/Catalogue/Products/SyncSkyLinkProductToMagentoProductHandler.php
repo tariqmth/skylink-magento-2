@@ -128,13 +128,6 @@ class SyncSkyLinkProductToMagentoProductHandler
             $this->compositeProductRerunManager->isSyncing($skyLinkProduct);
         }
 
-        // We'll now grab the product in the context of any additional Sales Channel Groups. We'll
-        // use this to determine what websites to copy the product across to and also allow the
-        // syncer to work on any specifics for the product in that Sales Channel Group.
-
-        /* @var SkyLinkProductInSalesChannelGroupInterface[] $skyLinkProductInSalesChannelGroups */
-        $skyLinkProductInSalesChannelGroups = $this->getSkyLinkProductInSalesChannelGroups($skyLinkProductId);
-
         foreach ($this->syncers as $syncer) {
             if (!$syncer->accepts($skyLinkProduct)) {
                 continue;
@@ -146,6 +139,14 @@ class SyncSkyLinkProductToMagentoProductHandler
                 'Syncer' => $syncer->getName(),
             ]);
 
+            // We'll now grab the product in the context of any additional Sales Channel Groups. We'll
+            // use this to determine what websites to copy the product across to and also allow the
+            // syncer to work on any specifics for the product in that Sales Channel Group.
+
+            /* @var SkyLinkProductInSalesChannelGroupInterface[] $skyLinkProductInSalesChannelGroups */
+            $skyLinkProductInSalesChannelGroups = $this->getSkyLinkProductInSalesChannelGroups($skyLinkProductId);
+
+            // Grab our Magento Product from the syncer (we'll use this in event dispatching later on)
             $magentoProduct = $syncer->sync(
                 $skyLinkProduct,
                 $skyLinkProductInSalesChannelGroups

@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Api\Outlets;
+namespace RetailExpress\SkyLink\Api\Pickup;
 
 interface MagentoPickupGroupChooserInterface
 {
@@ -9,7 +9,7 @@ interface MagentoPickupGroupChooserInterface
      *
      * @param \Magento\Catalog\Api\Data\ProductInterface[] $magentoProducts
      *
-     * @return \RetailExpress\SkyLink\Model\Outlets\PickupGroup
+     * @return \RetailExpress\SkyLink\Model\Pickup\PickupGroup
      */
     public function choosePickupGroup(array $magentoProducts);
 }

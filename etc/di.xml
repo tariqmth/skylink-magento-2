@@ -127,10 +127,11 @@
         </arguments>
     </type>
 
-    <!-- Outlet implementations -->
-    <preference for="RetailExpress\SkyLink\Api\Outlets\MagentoPickupGroupChooserInterface" type="RetailExpress\SkyLink\Model\Outlets\MagentoPickupGroupChooser"/>
-    <preference for="RetailExpress\SkyLink\Api\Outlets\PickupManagementInterface" type="RetailExpress\SkyLink\Model\Outlets\PickupManagement"/>
-    <preference for="RetailExpress\SkyLink\Api\Outlets\SkyLinkOutletRepositoryInterface" type="RetailExpress\SkyLink\Model\Outlets\SkyLinkOutletRepository"/>
+    <!-- Pickup (click and collect) implementations -->
+    <preference for="RetailExpress\SkyLink\Api\Pickup\ConfigInterface" type="RetailExpress\SkyLink\Model\Pickup\Config"/>
+    <preference for="RetailExpress\SkyLink\Api\Pickup\MagentoPickupGroupChooserInterface" type="RetailExpress\SkyLink\Model\Pickup\MagentoPickupGroupChooser"/>
+    <preference for="RetailExpress\SkyLink\Api\Pickup\PickupManagementInterface" type="RetailExpress\SkyLink\Model\Pickup\PickupManagement"/>
+    <preference for="RetailExpress\SkyLink\Api\Pickup\PickupOutletRepositoryInterface" type="RetailExpress\SkyLink\Model\Pickup\PickupOutletRepository"/>
 
     <!-- Sales order implementations -->
     <preference for="RetailExpress\SkyLink\Api\Sales\Orders\ConfigInterface" type="RetailExpress\SkyLink\Model\Sales\Orders\Config"/>
@@ -191,9 +192,6 @@
             </argument>
             <argument name="commands" xsi:type="array">
                 <item name="skylinkBulkCustomersCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkCustomersCommand</item>
-            </argument>
-            <argument name="commands" xsi:type="array">
-                <item name="skylinkBulkOutletsCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkOutletsCommand</item>
             </argument>
             <argument name="commands" xsi:type="array">
                 <item name="skylinkBulkProductsCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkProductsCommand</item>

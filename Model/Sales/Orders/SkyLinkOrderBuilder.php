@@ -7,7 +7,7 @@ use InvalidArgumentException;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Model\Order as MagentoOrder;
-use RetailExpress\SkyLink\Api\Outlets\PickupManagementInterface;
+use RetailExpress\SkyLink\Api\Pickup\PickupManagementInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderAddressExtractorInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkContactBuilderInterface as SkyLinkOrderContactBuilderInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkCustomerIdServiceInterface;

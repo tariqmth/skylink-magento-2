@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Model\Outlets;
+namespace RetailExpress\SkyLink\Model\Pickup;
 
 use ValueObjects\Enum\Enum;
 

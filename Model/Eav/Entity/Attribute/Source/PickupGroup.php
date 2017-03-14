@@ -3,7 +3,7 @@
 namespace RetailExpress\SkyLink\Model\Eav\Entity\Attribute\Source;
 
 use Magento\Eav\Model\Entity\Attribute\Source\AbstractSource;
-use RetailExpress\SkyLink\Model\Outlets\PickupGroup as BasePickupGroup;
+use RetailExpress\SkyLink\Model\Pickup\PickupGroup as BasePickupGroup;
 
 class PickupGroup extends AbstractSource
 {

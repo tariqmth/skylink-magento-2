@@ -6,7 +6,7 @@ use PhpSpec\ObjectBehavior;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\Api\AttributeInterface;
 use RetailExpress\SkyLink\Model\Outlets\MagentoPickupGroupChooser;
-use RetailExpress\SkyLink\Model\Outlets\PickupGroup;
+use RetailExpress\SkyLink\Model\Pickup\PickupGroup;
 
 class MagentoPickupGroupChooserSpec extends ObjectBehavior
 {

@@ -123,7 +123,6 @@ To create the queued jobs for the initial sync, type:
 bin/magento retail-express:skylink:bulk-products
 bin/magento retail-express:skylink:bulk-customer-groups
 bin/magento retail-express:skylink:bulk-customers
-bin/magento retail-express:skylink:bulk-outlets
 ```
 
 ## Temporary Logging Workaround

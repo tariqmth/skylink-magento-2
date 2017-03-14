@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Api\Outlets;
+namespace RetailExpress\SkyLink\Api\Pickup;
 
 use Magento\Sales\Model\Order as MagentoOrder;
 use RetailExpress\SkyLink\Sdk\Outlets\Outlet as SkyLinkOutlet;

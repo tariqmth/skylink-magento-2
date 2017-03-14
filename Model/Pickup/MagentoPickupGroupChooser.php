@@ -1,9 +1,9 @@
 <?php
 
-namespace RetailExpress\SkyLink\Model\Outlets;
+namespace RetailExpress\SkyLink\Model\Pickup;
 
 use Magento\Catalog\Api\Data\ProductInterface;
-use RetailExpress\SkyLink\Api\Outlets\MagentoPickupGroupChooserInterface;
+use RetailExpress\SkyLink\Api\Pickup\MagentoPickupGroupChooserInterface;
 
 class MagentoPickupGroupChooser implements MagentoPickupGroupChooserInterface
 {

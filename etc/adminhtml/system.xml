@@ -182,6 +182,11 @@
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ConfigurableProductMatchThreshold</source_model>
                     <comment><![CDATA[Retail Express does not have the concept of a Configurable Product but Magento does, but rather it groups Products together in a Matrix. During the sync process, we compare all of the Simple Products in Magento represented by the Retail Express Matrix. We then look at their common parent(s). If the percentage of products in the Retail Express Matrix all have the same parent product in Magento, we will attach all of the children products in the Matrix to that parent product. <em>It is recommended you do not change this value from the default (50%).</strong>.]]></comment>
                 </field>
+                <field id="composite_product_sync_rerun_threshold" translate="label" type="select" sortOrder="600" showInDefault="1" canRestore="1">
+                    <label>Composite Product Sync Rerun Threshold</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\CompositeProductSyncRerunThreshold</source_model>
+                    <comment>Due to the way Retail Express gives us a complete list of product IDs to sync during a bulk product sync, it's likely we'll sync an entire compsite (such as configurable) product over and over, one time for each simple product that it owns. Specify a timeframe where, during a bulk product sync, we simply skip re-syncing a configurable product over and over. This setting does not affect EDS-based product syncing, which occurs every time we are notified of a change.</comment>
+                </field>
             </group>
             <group id="debugging" translate="label" type="text" sortOrder="500" showInDefault="1">
                 <label>Debugging</label>

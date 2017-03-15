@@ -5,6 +5,7 @@
             <group id="price">
                 <field id="scope" canRestore="1">
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\PriceScope</source_model>
+                    <comment>In order to synchronise Price Group Pricing from Retail Express to Customer Group Pricing in Magento, SkyLink needs to restrict Magento's Price Scope to Website only, so as to support different Price Group Prices per Sales Channel.</comment>
                 </field>
             </group>
         </section>

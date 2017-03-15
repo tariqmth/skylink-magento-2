@@ -193,10 +193,14 @@
                 <field id="uncaptured_logs_to_keep" translate="label" type="select" sortOrder="200" showInDefault="1" canRestore="1">
                     <label>Uncaptured Logs to Keep</label>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\UncapturedLogsTokeep</source_model>
+                    <depends>
+                        <field id="should_capture_logs">0</field>
+                    </depends>
                 </field>
                 <field id="captured_logs_to_keep" translate="label" type="select" sortOrder="300" showInDefault="1" canRestore="1">
                     <label>Captured Logs to Keep</label>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\CapturedLogsTokeep</source_model>
+                    <comment>A large number of captured logs can make some browsers sluggish when viewing them.</comment>
                     <depends>
                         <field id="should_capture_logs">1</field>
                     </depends>

@@ -2,9 +2,11 @@
 
 namespace RetailExpress\SkyLink\Plugin\SkyLink\Catalogue\Products;
 
+use Exception;
 use Magento\Framework\Registry;
 use RetailExpress\SkyLink\Commands\Catalogue\Products\SyncSkyLinkProductToMagentoProductCommand;
 use RetailExpress\SkyLink\Commands\Catalogue\Products\SyncSkyLinkProductToMagentoProductHandler;
+use Throwable;
 
 /**
  * This class is an attempted workaround for the issues experienced in
@@ -28,8 +30,17 @@ class SyncSkyLinkProductToMagentoProductHandlerWebsiteIdWorkaroundPlugin
     ) {
         $this->registry->register(self::REGISTRY_KEY, true);
 
-        $proceed($command);
+        try {
+            $response = $proceed($command);
+        } catch (Throwable $e) { // PHP 7+
+            $this->registry->unregister(self::REGISTRY_KEY);
+            throw $e;
+        } catch (Exception $e) {
+            $this->registry->unregister(self::REGISTRY_KEY);
+            throw $e;
+        }
 
         $this->registry->unregister(self::REGISTRY_KEY);
+        return $response;
     }
 }

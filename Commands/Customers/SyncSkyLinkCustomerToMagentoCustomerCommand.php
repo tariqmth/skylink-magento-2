@@ -2,10 +2,10 @@
 
 namespace RetailExpress\SkyLink\Commands\Customers;
 
-use RetailExpress\CommandBus\Api\Queues\AlwaysQueuedCommand;
+use RetailExpress\CommandBus\Api\Queues\NormallyQueuedCommand;
 use RetailExpress\CommandBus\Api\Queues\QueueableCommand;
 
-class SyncSkyLinkCustomerToMagentoCustomerCommand extends AlwaysQueuedCommand implements QueueableCommand
+class SyncSkyLinkCustomerToMagentoCustomerCommand extends NormallyQueuedCommand implements QueueableCommand
 {
     /**
      * The SkyLink Customer ID.

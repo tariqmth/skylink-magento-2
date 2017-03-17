@@ -177,12 +177,30 @@
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ProductPriceAttribute</source_model>
                     <comment><![CDATA[Choose the attribute in Retail Express to map to a product's regular price attribute <strong>(falling back to <kbd>POS Price [With Discounts]</kbd> if your chosen attribute is not available for a given product)</strong>.]]></comment>
                 </field>
-                <field id="configurable_product_match_threshold" translate="label" type="select" sortOrder="500" showInDefault="1" canRestore="1">
+                <field id="url_key_attribute_code_1" translate="label" type="select" sortOrder="500" showInDefault="1" canRestore="1">
+                    <label>URL Key Attribute 1</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\UrlKeyAttribute</source_model>
+                    <comment><![CDATA[Choose a product attribute that we will use to generate the URL key. To avoid duplicate URL keys, we suffix a <kbd>-1</kbd>, <kbd>-2</kbd> etc until we find a unique URL key. URL keys are only ever assigned during product creation, they do not change when a product is updated.]]></comment>
+                </field>
+                <field id="url_key_attribute_code_2" translate="label" type="select" sortOrder="600" showInDefault="1" canRestore="1">
+                    <label>URL Key Attribute 2</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\OptionalUrlKeyAttribute</source_model>
+                    <comment>Choose an optional second product attribute that we will use to generate the URL key.</comment>
+                </field>
+                <field id="url_key_attribute_code_3" translate="label" type="select" sortOrder="700" showInDefault="1" canRestore="1">
+                    <label>URL Key Attribute 3</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\OptionalUrlKeyAttribute</source_model>
+                    <comment>Choose an optional third product attribute that we will use to generate the URL key using.</comment>
+                    <depends>
+                        <field id="url_key_attribute_2" negative="1">0</field>
+                    </depends>
+                </field>
+                <field id="configurable_product_match_threshold" translate="label" type="select" sortOrder="800" showInDefault="1" canRestore="1">
                     <label>Configurable Product Match Threshold</label>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ConfigurableProductMatchThreshold</source_model>
                     <comment><![CDATA[Retail Express does not have the concept of a Configurable Product but Magento does, but rather it groups Products together in a Matrix. During the sync process, we compare all of the Simple Products in Magento represented by the Retail Express Matrix. We then look at their common parent(s). If the percentage of products in the Retail Express Matrix all have the same parent product in Magento, we will attach all of the children products in the Matrix to that parent product. <em>It is recommended you do not change this value from the default (50%).</strong>.]]></comment>
                 </field>
-                <field id="composite_product_sync_rerun_threshold" translate="label" type="select" sortOrder="600" showInDefault="1" canRestore="1">
+                <field id="composite_product_sync_rerun_threshold" translate="label" type="select" sortOrder="900" showInDefault="1" canRestore="1">
                     <label>Composite Product Sync Rerun Threshold</label>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\CompositeProductSyncRerunThreshold</source_model>
                     <comment>Due to the way Retail Express gives us a complete list of product IDs to sync during a bulk product sync, it's likely we'll sync an entire compsite (such as configurable) product over and over, one time for each simple product that it owns. Specify a timeframe where, during a bulk product sync, we simply skip re-syncing a configurable product over and over. This setting does not affect EDS-based product syncing, which occurs every time we are notified of a change.</comment>

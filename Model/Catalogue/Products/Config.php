@@ -55,6 +55,23 @@ class Config implements ConfigInterface
         );
     }
 
+    public function getUrlKeyAttributeCodes()
+    {
+        $values = [];
+
+        for ($i = 1; $i <= 3; $i++) {
+            $value = $this->scopeConfig->getValue("skylink/products/url_key_attribute_code_{$i}");
+
+            if ('0' === $value) {
+                continue;
+            }
+
+            $values[] = $value;
+        }
+
+        return $values;
+    }
+
     /**
      * {@inheritdoc}
      */

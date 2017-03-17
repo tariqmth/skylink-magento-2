@@ -7,21 +7,31 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product\Url as ProductUrl;
 use Magento\Catalog\Model\Product\UrlFactory as ProductUrlFactory;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use RetailExpress\SkyLink\Api\Catalogue\Products\ConfigInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\UrlKeyGeneratorInterface;
+use RetailExpress\SkyLink\Model\Catalogue\Products\ProductInterfaceAsserter;
 
 class UrlKeyGenerator implements UrlKeyGeneratorInterface
 {
+    use ProductInterfaceAsserter;
+
+    private $productConfig;
+
     private $productUrlFactory;
+
+    private $productUrl;
 
     private $baseMagentoProductRepository;
 
     private $searchCriteriaBuilder;
 
     public function __construct(
+        ConfigInterface $productConfig,
         ProductUrlFactory $productUrlFactory,
         ProductRepositoryInterface $baseMagentoProductRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
+        $this->productConfig = $productConfig;
         $this->productUrlFactory = $productUrlFactory;
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
@@ -29,32 +39,39 @@ class UrlKeyGenerator implements UrlKeyGeneratorInterface
 
     public function generateUniqueUrlKeyForMagentoProduct(ProductInterface $magentoProduct)
     {
-        /* @var \Magento\Catalog\Model\Product\Url $productUrl */
-        $productUrl = $this->productUrlFactory->create();
+        $this->assertImplementationOfProductInterface($magentoProduct);
 
-        $urlKey = $this->generateUrlKeyBasedOnProductName($magentoProduct, $productUrl);
+        $attributeCodes = $this->productConfig->getUrlKeyAttributeCodes();
 
-        // Try find an existing product with the given URL key, and if so, we'll
-        // generate one based on the name and the SKU (which is always unique).
-        if ($this->productExistsWithUrlKey($magentoProduct, $urlKey)) {
-            $urlKey = $this->generateUrlKeyBasedOnProductNameAndSku($magentoProduct, $productUrl);
-        }
+        $attributeValues = array_filter(array_map(function ($attributeCode) use ($magentoProduct) {
+            $attributeValue = $magentoProduct->getAttributeText($attributeCode);
+
+            if (false === $attributeValue) {
+                $attributeValue = $magentoProduct->getData($attributeCode);
+            }
+
+            if ($attributeValue) {
+                return $attributeValue;
+            }
+        }, $attributeCodes));
+
+        $i = 0;
+        do {
+            $urlKey = $this->generateUrlKey($attributeValues, $i++);
+        } while ($this->productExistsWithUrlKey($magentoProduct, $urlKey));
 
         return $urlKey;
     }
 
-    private function generateUrlKeyBasedOnProductName(ProductInterface $magentoProduct, ProductUrl $productUrl)
+    private function generateUrlKey(array $urlKeyParts, $counter)
     {
-        return $productUrl->formatUrlKey($magentoProduct->getName());
-    }
+        $urlKey = implode(' ', $urlKeyParts);
 
-    private function generateUrlKeyBasedOnProductNameAndSku(ProductInterface $magentoProduct, ProductUrl $productUrl)
-    {
-        return $productUrl->formatUrlKey(sprintf(
-            '%s %s',
-            $magentoProduct->getName(),
-            $magentoProduct->getSku()
-        ));
+        if ($counter > 0) {
+            $urlKey .= sprintf(' %d', $counter);
+        }
+
+        return $this->getProductUrl()->formatUrlKey($urlKey);
     }
 
     private function productExistsWithUrlKey(ProductInterface $excludedMagentoProduct, $urlKey)
@@ -72,5 +89,17 @@ class UrlKeyGenerator implements UrlKeyGeneratorInterface
         $matchingProducts = $this->baseMagentoProductRepository->getList($searchCriteria);
 
         return 1 === $matchingProducts->getTotalCount();
+    }
+
+    /**
+     * @return \Magento\Catalog\Model\Product\Url
+     */
+    private function getProductUrl()
+    {
+        if (null === $this->productUrl) {
+            $this->productUrl = $this->productUrlFactory->create();
+        }
+
+        return $this->productUrl;
     }
 }

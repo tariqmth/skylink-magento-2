@@ -2,6 +2,7 @@
 
 namespace RetailExpress\SkyLink\Model\Catalogue\Attributes;
 
+use Magento\Catalog\Api\Data\EavAttributeInterface;
 use Magento\Catalog\Api\ProductAttributeRepositoryInterface;
 use Magento\Framework\Api\SortOrderBuilder;
 use Magento\Framework\App\ResourceConnection;
@@ -83,6 +84,21 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
         }
 
         $this->attributeMappings = $attributeMappings;
+    }
+
+    public function getMagentoAttributes()
+    {
+        $magentoAttributes = [];
+
+        array_map(function (array $byType) use (&$magentoAttributes) {
+            array_walk($byType['attributes'], function (EavAttributeInterface $magentoAttribute) use (&$magentoAttributes) {
+                $magentoAttributes[$magentoAttribute->getDefaultFrontendLabel()] = $magentoAttribute;
+            });
+        }, $this->getMagentoAttributesByType());
+
+        ksort($magentoAttributes, SORT_NATURAL);
+
+        return array_values($magentoAttributes);
     }
 
     /**

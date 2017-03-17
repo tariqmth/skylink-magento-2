@@ -33,6 +33,13 @@ interface ConfigInterface
     public function getSpecialPriceAttribute();
 
     /**
+     * Returns the URL Key Attribute Codes.
+     *
+     * @return string[]
+     */
+    public function getUrlKeyAttributeCodes();
+
+    /**
      * Returns the threshold used to match configurable products.
      *
      * @return \RetailExpress\SkyLink\ValueObjects\ConfigurableProductMatchThreshold

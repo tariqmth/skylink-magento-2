@@ -52,6 +52,7 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
         $magentoCustomer = $this->magentoCustomerFactory->create();
 
         // Associate with the given SkyLink Customer
+        $magentoCustomer->unsData('skylink_customer_id');
         $magentoCustomer->setCustomAttribute(
             'skylink_customer_id',
             $skyLinkCustomer->getId()->toNative()

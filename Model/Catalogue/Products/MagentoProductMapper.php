@@ -70,8 +70,11 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         $magentoProduct->setWeight($skyLinkProduct->getPhysicalPackage()->getWeight()->toNative());
 
         // Until we extend the stock item itself, we are storing the qty on order against the product itself
+        $magentoProduct->unsData('qty_on_order');
         if ($skyLinkProduct->getInventoryItem()->hasQtyOnOrder()) {
             $magentoProduct->setCustomAttribute('qty_on_order', $skyLinkProduct->getInventoryItem()->getQtyOnOrder()->toNative());
+        } else {
+            $magentoProduct->setCustomAttribute('qty_on_order', 0);
         }
 
         // All other attributes
@@ -98,6 +101,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
                 ->getAttributeSetForProductType($skyLinkProduct->getProductType())->getId()
         );
 
+        $magentoProduct->unsData('skylink_product_id');
         $magentoProduct->setCustomAttribute('skylink_product_id', (string) $skyLinkProduct->getId());
     }
 
@@ -138,6 +142,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
     {
         // Setup pricing for product
         $magentoProduct->setPrice($skyLinkProduct->getPricingStructure()->getRegularPrice()->toNative());
+        $magentoProduct->unsData('special_price');
         $magentoProduct->setCustomAttribute('special_price', $skyLinkProduct->getPricingStructure()->getSpecialPrice()->toNative());
     }
 
@@ -154,6 +159,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
 
             // If there's no value for the SkyLink Attribute Option, we'll wipe the custom attribute value
             if (null === $skyLinkAttributeOption) {
+                $magentoProduct->unsData($magentoAttribute->getAttributeCode());
                 $magentoProduct->setCustomAttribute($magentoAttribute->getAttributeCode(), null);
                 continue;
             }
@@ -172,6 +178,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
             }
 
             // Now we'll set the custom attribute value
+            $magentoProduct->unsData($magentoAttribute->getAttributeCode());
             $magentoProduct->setCustomAttribute(
                 $magentoAttribute->getAttributeCode(),
                 $magentoAttributeValue

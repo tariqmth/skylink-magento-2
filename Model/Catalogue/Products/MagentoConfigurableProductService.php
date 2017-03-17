@@ -103,6 +103,7 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
     private function setUrlKeyForMappedProduct(ProductInterface $magentoConfigurableProduct)
     {
         $urlKey = $this->urlKeyGenerator->generateUniqueUrlKeyForMagentoProduct($magentoConfigurableProduct);
+        $magentoConfigurableProduct->unsData('url_key');
         $magentoConfigurableProduct->setCustomAttribute('url_key', $urlKey);
     }
 

@@ -122,6 +122,7 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
     private function setUrlKeyForMappedProduct(ProductInterface $magentoProduct)
     {
         $urlKey = $this->urlKeyGenerator->generateUniqueUrlKeyForMagentoProduct($magentoProduct);
+        $magentoProduct->unsData('url_key');
         $magentoProduct->setCustomAttribute('url_key', $urlKey);
     }
 

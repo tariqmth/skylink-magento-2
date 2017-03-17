@@ -11,6 +11,7 @@ use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeServiceInterf
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeTypeManagerInterface;
 use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
+use RetailExpress\SkyLink\Exceptions\Products\AttributeNotMappedException;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeRepositoryFactory;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\Attribute as SkyLinkAttribute;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
@@ -77,14 +78,43 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
 
         $skyLinkAttributeCode = $skyLinkAttribute->getCode();
 
-        // Get the Magento attribute instance
-        /* @var ProductAttributeInterface $magentoAttributeToMap */
-        $magentoAttributeToMap = $this->baseMagentoProductAttributeRepository->get($command->magentoAttributeCode);
+        $magentoAttributeCode = $command->magentoAttributeCode;
 
-        $this->logger->info('Syncing SkyLink Attribute to Magento Attribute.', [
-            'SkyLink Attribute Code' => $skyLinkAttributeCode,
-            'Magento Attribute Code' => $magentoAttributeToMap->getAttributeCode(),
-        ]);
+        // If we specified a new attribute to map
+        if (null !== $magentoAttributeCode) {
+            /* @var ProductAttributeInterface $magentoAttributeToMap */
+            $magentoAttributeToMap = $this->baseMagentoProductAttributeRepository->get($command->magentoAttributeCode);
+
+            $this->logger->info('Syncing SkyLink Attribute to Magento Attribute.', [
+                'SkyLink Attribute Code' => $skyLinkAttributeCode,
+                'Magento Attribute Code' => $magentoAttributeToMap->getAttributeCode(),
+            ]);
+
+        // Otherwise, find the existing one
+        } else {
+
+            $this->logger->info('Finding an already mapped Magento Attribute to sync SkyLink Attribute to.', [
+                'SkyLink Attribute Code' => $skyLinkAttributeCode,
+            ]);
+
+            /* @var ProductAttributeInterface|null $magentoAttributeToMap */
+            $magentoAttributeToMap = $this->getAlreadyMappedMagentoAttribute($skyLinkAttribute);
+
+            if (null === $magentoAttributeToMap) {
+                $e = AttributeNotMappedException::withSkyLinkAttributeCode($skyLinkAttributeCode);
+
+                $this->logger->error($e->getMessage(), [
+                    'SkyLink Attribute Code' => $skyLinkAttributeCode,
+                ]);
+
+                throw $e;
+            }
+
+            $this->logger->info('Syncing SkyLink Attribute to already mapped Magento Attribute.', [
+                'SkyLink Attribute Code' => $skyLinkAttributeCode,
+                'Magento Attribute Code' => $magentoAttributeToMap->getAttributeCode(),
+            ]);
+        }
 
         // Remap the attribute only if needed
         $this->remapAttributeOnlyIfNeeded($magentoAttributeToMap, $skyLinkAttribute);
@@ -109,13 +139,8 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
         ProductAttributeInterface $magentoAttributeToMap,
         SkyLinkAttribute $skyLinkAttribute
     ) {
-        $skyLinkAttributeCode = $skyLinkAttribute->getCode();
-
-        // Check if we're dealing with the same attribute or not. If we aren't, we'll map to the new one
-        /* @var ProductAttributeInterface $alreadyMappedMagentoAttribute */
-        $alreadyMappedMagentoAttribute = $this
-            ->magentoAttributeRepository
-            ->getMagentoAttributeForSkyLinkAttributeCode($skyLinkAttributeCode);
+        /* @var ProductAttributeInterface|null $alreadyMappedMagentoAttribute */
+        $alreadyMappedMagentoAttribute = $this->getAlreadyMappedMagentoAttribute($skyLinkAttribute);
 
         if (null === $alreadyMappedMagentoAttribute ||
             $alreadyMappedMagentoAttribute->getAttributeCode() !== $magentoAttributeToMap->getAttributeCode()
@@ -123,8 +148,20 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
             // Map to the new attribute, which removes all old previous mappings
             $this
                 ->magentoAttributeService
-                ->mapMagentoAttributeForSkyLinkAttributeCode($magentoAttributeToMap, $skyLinkAttributeCode);
+                ->mapMagentoAttributeForSkyLinkAttributeCode($magentoAttributeToMap, $skyLinkAttribute->getCode());
         }
+    }
+
+    /**
+     * @return ProductAttributeInterface|null
+     */
+    private function getAlreadyMappedMagentoAttribute($skyLinkAttribute)
+    {
+        // @todo make this more effecient with local caching
+        // Check if we're dealing with the same attribute or not. If we aren't, we'll map to the new one
+        return $this
+            ->magentoAttributeRepository
+            ->getMagentoAttributeForSkyLinkAttributeCode($skyLinkAttribute->getCode());
     }
 
     private function syncAttributeOptionMappings(

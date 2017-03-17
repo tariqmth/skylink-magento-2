@@ -4,11 +4,18 @@
     <!-- When an EDS Change Set is registered -->
     <event name="retail_express_skylink_eds_change_set_registered">
         <observer name="customers" instance="RetailExpress\SkyLink\Observer\Customers\WhenEdsChangeSetWasRegistered"/>
+        <observer name="attributes" instance="RetailExpress\SkyLink\Observer\Catalogue\Attributes\WhenEdsChangeSetWasRegistered"/>
+        <observer name="products" instance="RetailExpress\SkyLink\Observer\Catalogue\Products\WhenEdsChangeSetWasRegistered"/>
     </event>
 
     <!-- When a SkyLink Customer was synced to a Magento Customer -->
     <event name="retail_express_skylink_skylink_customer_was_synced_to_magento_customer">
         <observer name="eds" instance="RetailExpress\SkyLink\Observer\Customers\WhenSkyLinkCustomerWasSyncedToMagentoCustomer"/>
+    </event>
+
+    <!-- WHen a SkyLink Attribute was synced to a Magento Attribute -->
+    <event name="retail_express_skylink_skylink_attribute_was_synced_to_magento_attribute">
+        <observer name="eds" instance="RetailExpress\SkyLink\Observer\Catalogue\Attributes\WhenSkyLinkAttributeWasSyncedToMagentoAttribute"/>
     </event>
 
     <!-- When a SkyLink Product was synced to a Magento Product -->

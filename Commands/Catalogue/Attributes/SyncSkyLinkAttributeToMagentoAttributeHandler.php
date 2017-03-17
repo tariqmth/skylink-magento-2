@@ -4,6 +4,7 @@ namespace RetailExpress\SkyLink\Commands\Catalogue\Attributes;
 
 use Magento\Catalog\Api\Data\ProductAttributeInterface;
 use Magento\Catalog\Api\ProductAttributeRepositoryInterface as BaseProductAttributeRepositoryInterface;
+use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionServiceInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
@@ -43,6 +44,13 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
      */
     private $logger;
 
+    /**
+     * Event Manager instance.
+     *
+     * @var EventManagerInterface
+     */
+    private $eventManager;
+
     public function __construct(
         ConfigInterface $config,
         AttributeRepositoryFactory $attributeRepositoryFactory,
@@ -52,7 +60,8 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
         MagentoAttributeTypeManagerInterface $magentoAttributeTypeManager,
         MagentoAttributeOptionRepositoryInterface $magentoAttributeOptionRepository,
         MagentoAttributeOptionServiceInterface $magentoAttributeOptionService,
-        SkyLinkLoggerInterface $logger
+        SkyLinkLoggerInterface $logger,
+        EventManagerInterface $eventManager
     ) {
         $this->config = $config;
         $this->attributeRepositoryFactory = $attributeRepositoryFactory;
@@ -63,6 +72,7 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
         $this->magentoAttributeOptionRepository = $magentoAttributeOptionRepository;
         $this->magentoAttributeOptionService = $magentoAttributeOptionService;
         $this->logger = $logger;
+        $this->eventManager = $eventManager;
     }
 
     public function handle(SyncSkyLinkAttributeToMagentoAttributeCommand $command)
@@ -133,6 +143,15 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
 
         // And sync our new attribute mappings
         $this->syncAttributeOptionMappings($magentoAttributeToMap, $skyLinkAttribute);
+
+        $this->eventManager->dispatch(
+            'retail_express_skylink_skylink_attribute_was_synced_to_magento_attribute',
+            [
+                'command' => $command,
+                'skylink_attribute' => $skyLinkAttribute,
+                'magento_attribute' => $magentoAttributeToMap,
+            ]
+        );
     }
 
     private function remapAttributeOnlyIfNeeded(

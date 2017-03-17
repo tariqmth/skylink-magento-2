@@ -1,11 +1,11 @@
 <?php
 
-namespace RetailExpress\SkyLink\Observer\Customers;
+namespace RetailExpress\SkyLink\Observer\Catalogue\Products;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use RetailExpress\CommandBus\Api\CommandBusInterface;
-use RetailExpress\SkyLink\Commands\Customers\SyncSkyLinkCustomerToMagentoCustomerCommand;
+use RetailExpress\SkyLink\Commands\Catalogue\Products\SyncSkyLinkProductToMagentoProductCommand;
 use RetailExpress\SkyLink\Eds\Entity;
 use RetailExpress\SkyLink\Eds\EntityType;
 
@@ -24,8 +24,8 @@ class WhenEdsChangeSetWasRegistered implements ObserverInterface
 
         // Build commands
         $commands = array_filter(array_map(function (Entity $entity) {
-            if ($entity->getType()->sameValueAs(EntityType::get('customer'))) {
-                return $this->createSyncSkyLinkCustomerToMagentoCustomerCommand($entity);
+            if ($entity->getType()->sameValueAs(EntityType::get('product'))) {
+                return $this->createSyncSkyLinkProductToMagentoProductCommand($entity);
             }
         }, $changeSet->getEntities()));
 
@@ -36,10 +36,10 @@ class WhenEdsChangeSetWasRegistered implements ObserverInterface
         }, $commands);
     }
 
-    private function createSyncSkyLinkCustomerToMagentoCustomerCommand(Entity $entity)
+    private function createSyncSkyLinkProductToMagentoProductCommand(Entity $entity)
     {
-        $command = new SyncSkyLinkCustomerToMagentoCustomerCommand();
-        $command->skyLinkCustomerId = $entity->getId()->toNative();
+        $command = new SyncSkyLinkProductToMagentoProductCommand();
+        $command->skyLinkProductId = $entity->getId()->toNative();
 
         return $command;
     }

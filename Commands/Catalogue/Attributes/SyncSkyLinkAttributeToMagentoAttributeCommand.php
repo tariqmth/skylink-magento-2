@@ -4,9 +4,14 @@ namespace RetailExpress\SkyLink\Commands\Catalogue\Attributes;
 
 use RetailExpress\CommandBus\Api\Queues\NormallyQueuedCommand;
 use RetailExpress\CommandBus\Api\Queues\QueueableCommand;
+use RetailExpress\SkyLink\Commands\Eds\ChangeSetCommand;
 
 class SyncSkyLinkAttributeToMagentoAttributeCommand extends NormallyQueuedCommand implements QueueableCommand
 {
+    use ChangeSetCommand;
+
+    use EdsAttributeOptionIdWorkaround;
+
     /**
      * The SkyLink Attribute Code.
      *

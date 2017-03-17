@@ -4,22 +4,18 @@ namespace RetailExpress\SkyLink\Commands\Catalogue\Products;
 
 use RetailExpress\CommandBus\Api\Queues\NormallyQueuedCommand;
 use RetailExpress\CommandBus\Api\Queues\QueueableCommand;
+use RetailExpress\SkyLink\Commands\Eds\ChangeSetCommand;
 
 class SyncSkyLinkProductToMagentoProductCommand extends NormallyQueuedCommand implements QueueableCommand
 {
+    use ChangeSetCommand;
+
     /**
      * The SkyLink Product ID.
      *
      * @var int
      */
     public $skyLinkProductId;
-
-    /**
-     * An optional EDS Change Set ID that this command is associated with.
-     *
-     * @var string
-     */
-    public $changeSetId;
 
     /**
      * Flag for whether the sync is a potential composite product rerun (meaning that

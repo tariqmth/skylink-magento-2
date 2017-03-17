@@ -27,3 +27,12 @@
      SET `schema_version` = "0.1.0", `data_version` = null
      WHERE `module` = "RetailExpress_SkyLink"
      ```
+
+## Upgrading from 1.0.0-beta8 to 1.0.0-beta9
+1. 1.0.0 beta 9 is a virtual rewrite of the extension (with new Retail Express APIs). It is recommended to drop all `retail_express_*` tales as well as run the following:
+
+   ```sql
+   DELETE from `setup_module`
+   WHERE `module` = "RetailExpress_SkyLink"
+   OR WHERE `module` = "RetailExpress_CommandBus"
+   ```

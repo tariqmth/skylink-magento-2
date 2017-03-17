@@ -190,6 +190,7 @@
             <argument name="commands" xsi:type="array">
                 <item name="skylinkBulkCustomerGroupsCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkCustomerGroupsCommand</item>
                 <item name="skylinkBulkCustomersCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkCustomersCommand</item>
+                <item name="skylinkBulkAttributesCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkAttributesCommand</item>
                 <item name="skylinkBulkProductsCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkProductsCommand</item>
                 <item name="skyLinkCustomerCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\SyncCustomerCommand</item>
                 <item name="skyLinkAttributeCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\SyncAttributeCommand</item>

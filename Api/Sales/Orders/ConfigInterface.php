@@ -21,9 +21,9 @@ interface ConfigInterface
     public function getGuestCustomerId();
 
     /**
-     * Returns the default Item Delivery Method.
+     * Returns the default Item Fulfillment Method.
      *
-     * @return \RetailExpress\SkyLink\Sdk\Sales\Orders\ItemDeliveryMethod
+     * @return \RetailExpress\SkyLink\Sdk\Sales\Orders\ItemFulfillmentMethod
      */
-    public function getItemDeliveryMethod();
+    public function getItemFulfillmentMethod();
 }

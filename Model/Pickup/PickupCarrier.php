@@ -12,14 +12,14 @@ use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\ResultFactory as RateResultFactory;
 use Psr\Log\LoggerInterface;
-use RetailExpress\SkyLink\Api\Data\Sales\Shipments\ItemDeliveryMethodInterface;
+use RetailExpress\SkyLink\Api\Data\Sales\Shipments\ItemFulfillmentMethodInterface;
 use RetailExpress\SkyLink\Api\Pickup\MagentoPickupGroupChooserInterface;
 use RetailExpress\SkyLink\Api\Pickup\PickupManagementInterface;
 use RetailExpress\SkyLink\Api\Pickup\PickupOutletRepositoryInterface;
 use RetailExpress\SkyLink\Sdk\Outlets\Outlet as SkyLinkOutlet;
-use RetailExpress\SkyLink\Sdk\Sales\Orders\ItemDeliveryMethod as SkyLinkItemDeliveryMethod;
+use RetailExpress\SkyLink\Sdk\Sales\Orders\ItemFulfillmentMethod as SkyLinkItemFulfillmentMethod;
 
-class PickupCarrier extends AbstractCarrier implements CarrierInterface, ItemDeliveryMethodInterface
+class PickupCarrier extends AbstractCarrier implements CarrierInterface, ItemFulfillmentMethodInterface
 {
     /**
      * {@inheritdoc}
@@ -122,9 +122,9 @@ class PickupCarrier extends AbstractCarrier implements CarrierInterface, ItemDel
     /**
      * {@inheritdoc}
      */
-    public function getItemDeliveryMethod()
+    public function getItemFulfillmentMethod()
     {
-        return SkyLinkItemDeliveryMethod::get($this->getConfigData('item_delivery_method'));
+        return SkyLinkItemFulfillmentMethod::get($this->getConfigData('item_delivery_method'));
     }
 
     private function getMagentoProducts(RateRequest $request)

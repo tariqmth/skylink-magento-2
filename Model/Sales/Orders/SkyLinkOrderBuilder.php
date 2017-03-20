@@ -15,7 +15,7 @@ use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkContactBuilderInterface as Sky
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkCustomerIdServiceInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderBuilderInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderItemBuilderInterface;
-use RetailExpress\SkyLink\Api\Data\Sales\Shipments\ItemDeliveryMethodInterface;
+use RetailExpress\SkyLink\Api\Data\Sales\Shipments\ItemFulfillmentMethodInterface;
 use RetailExpress\SkyLink\Exceptions\Sales\Orders\MagentoOrderStateNotMappedException;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\Order as SkyLinkOrder;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\Status as SkyLinkStatus;
@@ -120,8 +120,8 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
             $skyLinkOrder = $skyLinkOrder->withItem($skyLinkOrderItem);
         }, $magentoOrder->getItems());
 
-        $skyLinkOrder = $skyLinkOrder->withDeliveryMethodForAllItems(
-            $this->determineItemDeliveryMethod($magentoOrder)
+        $skyLinkOrder = $skyLinkOrder->withFulfillmentMethodForAllItems(
+            $this->determineItemFulfillmentMethod($magentoOrder)
         );
 
         $skyLinkOrder = $skyLinkOrder->withDeliveryDriverNameForAllItems(
@@ -147,20 +147,20 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
         return $carrierTitle;
     }
 
-    private function determineItemDeliveryMethod(OrderInterface $magentoOrder)
+    private function determineItemFulfillmentMethod(OrderInterface $magentoOrder)
     {
         $this->assertImplementationOfOrder($magentoOrder);
 
         $carrierCode = $magentoOrder->getShippingMethod(true)->getData('carrier_code');
         $matchingCarrier = $this->magentoShippingConfig->getActiveCarriers()[$carrierCode]; // @todo somehow validate the carrier??
 
-        // If our class adheres to the item delivery method contract, we'll use it to determine the method
-        if (class_implements($matchingCarrier, ItemDeliveryMethodInterface::class)) {
-            return $matchingCarrier->getItemDeliveryMethod();
+        // If our class adheres to the item fulfillment method contract, we'll use it to determine the method
+        if (class_implements($matchingCarrier, ItemFulfillmentMethodInterface::class)) {
+            return $matchingCarrier->getItemFulfillmentMethod();
         }
 
         // Failing that, we'll just use the default configured one
-        return $this->orderConfig->getItemDeliveryMethod();
+        return $this->orderConfig->getItemFulfillmentMethod();
     }
 
     private function getPlacedAt(OrderInterface $magentoOrder)

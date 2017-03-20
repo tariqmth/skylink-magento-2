@@ -53,9 +53,9 @@
                     <label><![CDATA[Name & Title]]></label>
                 </field>
                 <field id="item_delivery_method" translate="label" type="select" sortOrder="30" showInDefault="1" canRestore="1">
-                    <label>Item Delivery Method</label>
-                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ItemDeliveryMethod</source_model>
-                    <comment>You have the ability to set the item delivery method in Retail Express for any Orders coming through Click and Collect.</comment>
+                    <label>Item Fulfillment Method</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ItemFulfillmentMethod</source_model>
+                    <comment>You have the ability to set the item fulfillment method in Retail Express for any Orders coming through Click and Collect.</comment>
                 </field>
                 <field id="group_one_outlets" translate="label" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Group 1 Outlets</label>
@@ -214,9 +214,9 @@
             <group id="orders" translate="label" type="text" sortOrder="500" showInDefault="1">
                 <label>Orders</label>
                 <field id="item_delivery_method" translate="label" type="select" sortOrder="100" showInDefault="1" canRestore="1">
-                    <label>Item Delivery Method</label>
-                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ItemDeliveryMethod</source_model>
-                    <comment><![CDATA[You have the ability to set the item delivery method in Retail Express for any Orders coming through from Magento. <strong>Note: Some shipping methods (such as Click and Collect) support overriding this value in their settings.</strong>]]></comment>
+                    <label>Item Fulfillment Method</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ItemFulfillmentMethod</source_model>
+                    <comment><![CDATA[You have the ability to set the item fulfillment method in Retail Express for any Orders coming through from Magento. <strong>Note: Some shipping methods (such as Click and Collect) support overriding this value in their settings.</strong>]]></comment>
                 </field>
             </group>
             <group id="debugging" translate="label" type="text" sortOrder="600" showInDefault="1">

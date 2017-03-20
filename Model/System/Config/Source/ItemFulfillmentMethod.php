@@ -3,9 +3,9 @@
 namespace RetailExpress\SkyLink\Model\System\Config\Source;
 
 use Magento\Framework\Option\ArrayInterface;
-use RetailExpress\SkyLink\Sdk\Sales\Orders\ItemDeliveryMethod as SkyLinkItemDeliveryMethod;
+use RetailExpress\SkyLink\Sdk\Sales\Orders\ItemFulfillmentMethod as SkyLinkItemFulfillmentMethod;
 
-class ItemDeliveryMethod implements ArrayInterface
+class ItemFulfillmentMethod implements ArrayInterface
 {
     /**
      * {@inheritdoc}
@@ -17,8 +17,8 @@ class ItemDeliveryMethod implements ArrayInterface
         return array_map(function ($value) {
             return [
                 'value' => $value,
-                'label' => SkyLinkItemDeliveryMethod::get($value)->getLabel(),
+                'label' => SkyLinkItemFulfillmentMethod::get($value)->getLabel(),
             ];
-        }, SkyLinkItemDeliveryMethod::getNonAutomaticFulfilling());
+        }, SkyLinkItemFulfillmentMethod::getNonAutomaticFulfilling());
     }
 }

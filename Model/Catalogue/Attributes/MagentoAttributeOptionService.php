@@ -72,12 +72,7 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
     ) {
         $magentoAttributeOption = $this->magentoAttributeOptionFactory->create();
         $magentoAttributeOption->setLabel($skyLinkAttributeOption->getLabel());
-
-        $this->magentoAttributeOptionManagement->add(
-            ProductAttributeInterface::ENTITY_TYPE_CODE,
-            $magentoAttribute->getAttributeCode(),
-            $magentoAttributeOption
-        );
+        $this->saveMagentoAttributeOption($magentoAttribute, $magentoAttributeOption);
 
         // Unfortuantely, the Magento Attribute Option Management implementation does
         // not update the given attribute option's properties, so we'll query the
@@ -87,6 +82,31 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         );
 
         return $magentoAttributeOption;
+    }
+
+    public function updateMagentoAttributeOptionForSkyLinkAttributeOption(
+        ProductAttributeInterface $magentoAttribute,
+        AttributeOptionInterface $magentoAttributeOption,
+        SkyLinkAttributeOption $skyLinkAttributeOption
+    ) {
+        // If the labels match, we will skip on the overhead of actually saving
+        if ($magentoAttributeOption->getLabel() == $skyLinkAttributeOption->getLabel()) {
+            return;
+        }
+
+        $magentoAttributeOption->setLabel($skyLinkAttributeOption->getLabel());
+        $this->saveMagentoAttributeOption($magentoAttribute, $magentoAttributeOption);
+    }
+
+    private function saveMagentoAttributeOption(
+        ProductAttributeInterface $magentoAttribute,
+        AttributeOptionInterface $magentoAttributeOption
+    ) {
+        $this->magentoAttributeOptionManagement->add(
+            ProductAttributeInterface::ENTITY_TYPE_CODE,
+            $magentoAttribute->getAttributeCode(),
+            $magentoAttributeOption
+        );
     }
 
     /**

@@ -33,4 +33,17 @@ interface MagentoAttributeOptionServiceInterface
         ProductAttributeInterface $magentoAttribute,
         SkyLinkAttributeOption $skyLinkAttributeOption
     );
+
+    /**
+     * Update the given Magento Attribute Option to suffice the given SkyLink
+     * Attribute Option
+     *
+     * @param ProductAttributeInterface $magentoAttribute
+     * @param SkyLinkAttributeOption    $skyLinkAttributeOption
+     */
+    public function updateMagentoAttributeOptionForSkyLinkAttributeOption(
+        ProductAttributeInterface $magentoAttribute,
+        AttributeOptionInterface $magentoAttributeOption,
+        SkyLinkAttributeOption $skyLinkAttributeOption
+    );
 }

@@ -57,7 +57,15 @@ class MagentoOrderItemAndSkyLinkFulfillmentGrouper implements MagentoOrderItemAn
                 }
             );
 
-            return [$skyLinkFulfillment, $magentoOrderItem];
+            // @todo revisit how bundled products oculd possibly be compatible with fulfillments (where 2 bundles
+            // could be sold but that consists of 7 items [and therefore 7 fulfillments]) - how can we track
+            // these systems to make them compatible? We shouldn't get cuaght out here here though, due to:
+            // \RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderItemBuilderInterface::buildFromMagentoOrderItem
+            if (null !== $magentoOrderItem->getParentItem()) {
+                $magentoOrderItem = $magentoOrderItem->getParentItem();
+            }
+
+            return [$magentoOrderItem, $skyLinkFulfillment];
         }, $skyLinkFulfillments);
     }
 }

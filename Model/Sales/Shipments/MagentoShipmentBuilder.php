@@ -28,9 +28,9 @@ class MagentoShipmentBuilder implements MagentoShipmentBuilderInterface
         $magentoShipment = $this->magentoOrderConverter->toShipment($magentoOrder);
 
         array_walk($groups, function (array $group) use ($magentoShipment) {
-            list($skyLinkFulfillment, $magentoOrderItem) = $group;
-            $fulfillmentQty = $skyLinkFulfillment->getQty()->toNative();
+            list($magentoOrderItem, $skyLinkFulfillment) = $group;
             $qtyThatCanBeShipped = $magentoOrderItem->getQtyToShip();
+            $fulfillmentQty = $skyLinkFulfillment->getQty()->toNative();
 
             if ($fulfillmentQty > $qtyThatCanBeShipped) {
                 throw FulfillmentShippingMoreThanAvailableException::withSkyLinkFulfillmentAndMagentoOrderItem(

@@ -44,17 +44,18 @@ class OrderRepositoryPlugin
 
     public function afterGet(OrderRepositoryInterface $subject, OrderInterface $magentoOrder)
     {
-        $skyLinkOrderIdString = $this->connection->fetchOne(
+        $payload = $this->connection->fetchRow(
             $this->connection
                 ->select()
-                ->from($this->getOrdersTable(), 'skylink_order_id')
+                ->from($this->getOrdersTable(), ['skylink_order_id', 'sales_channel_id'])
                 ->where('magento_order_id = ?', $magentoOrder->getEntityId())
         );
 
-        if (false !== $skyLinkOrderIdString) {
+        if (false !== $payload) {
             /* @var \Magento\Sales\Api\Data\OrderExtensionInterface $extendedAttributes */
             $extendedAttributes = $this->getOrderExtensionAttributes($magentoOrder);
-            $extendedAttributes->setSkyLinkOrderId(new SkyLinkOrderId($skyLinkOrderIdString));
+            $extendedAttributes->setSkyLinkOrderId(new SkyLinkOrderId($payload['skylink_order_id']));
+            $extendedAttributes->setSalesChannelId(new SalesChannelId($payload['sales_channel_id']));
         }
 
         return $magentoOrder;

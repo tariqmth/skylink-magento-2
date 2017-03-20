@@ -44,7 +44,7 @@ class PickupManagement implements PickupManagementInterface
      */
     public function getMagentoShippingCarrierCode()
     {
-        return 'skylink_pickup';
+        return 'skylinkpickup';
     }
 
     /**
@@ -70,7 +70,7 @@ class PickupManagement implements PickupManagementInterface
     {
         $shippingCarrierCodeAndMethod = $magentoOrder->getData('shipping_method');
 
-        if (!preg_match('/skylink_pickup_outlet_(\d+)/', $shippingCarrierCodeAndMethod, $matches)) {
+        if (!preg_match('/skylinkpickup_outlet_(\d+)/', $shippingCarrierCodeAndMethod, $matches)) {
             return null;
         }
 

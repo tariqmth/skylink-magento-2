@@ -43,14 +43,19 @@
             </group>
         </section>
         <section id="carriers">
-            <group id="skylink_pickup" translate="label" type="text" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="skylinkpickup" translate="label" type="text" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Click and Collect</label>
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Title</label>
+                <field id="name_title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                    <label><![CDATA[Name & Title]]></label>
+                </field>
+                <field id="item_delivery_method" translate="label" type="select" sortOrder="30" showInDefault="1" canRestore="1">
+                    <label>Item Delivery Method</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ItemDeliveryMethod</source_model>
+                    <comment>You have the ability to set the item delivery method in Retail Express for any Orders coming through Click and Collect.</comment>
                 </field>
                 <field id="group_one_outlets" translate="label" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Group 1 Outlets</label>
@@ -152,7 +157,7 @@
                 <field id="price_group_type" translate="label" type="select" sortOrder="200" showInDefault="1" canRestore="1">
                     <label>Price Group Type</label>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\PriceGroupType</source_model>
-                    <comment><![CDATA[In Retail Express, a Customer can belong to both a Standard and Fixed Price Group. In Magento, a Customer can only belong to one Customer Group. You must choose if Magento Customers are placed in a Customer Group based on their Standard or Fixed Price Groups from Retail Express. <strong>Note, there is no fallback for the chosen option; for example, if you choose Fixed Price Groups but the Retail Express Customer only belongs to a Standard Price Group, the Magento Customer will not belong to any Customer Groups.</strong>]]></comment>
+                    <comment><![CDATA[In Retail Express, a Customer can belong to both a Standard and Fixed Price Group. In Magento, a Customer can only belong to one Customer Group. You must choose if Magento Customers are placed in a Customer Group based on their Standard or Fixed Price Groups from Retail Express. <strong>Note: there is no fallback for the chosen option; for example, if you choose Fixed Price Groups but the Retail Express Customer only belongs to a Standard Price Group, the Magento Customer will not belong to any Customer Groups.</strong>]]></comment>
                 </field>
             </group>
             <group id="products" translate="label" type="text" sortOrder="400" showInDefault="1" showInWebsite="1">
@@ -206,7 +211,15 @@
                     <comment>Due to the way Retail Express gives us a complete list of product IDs to sync during a bulk product sync, it's likely we'll sync an entire compsite (such as configurable) product over and over, one time for each simple product that it owns. Specify a timeframe where, during a bulk product sync, we simply skip re-syncing a configurable product over and over. This setting does not affect EDS-based product syncing, which occurs every time we are notified of a change.</comment>
                 </field>
             </group>
-            <group id="debugging" translate="label" type="text" sortOrder="500" showInDefault="1">
+            <group id="orders" translate="label" type="text" sortOrder="500" showInDefault="1">
+                <label>Orders</label>
+                <field id="item_delivery_method" translate="label" type="select" sortOrder="100" showInDefault="1" canRestore="1">
+                    <label>Item Delivery Method</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ItemDeliveryMethod</source_model>
+                    <comment><![CDATA[You have the ability to set the item delivery method in Retail Express for any Orders coming through from Magento. <strong>Note: Some shipping methods (such as Click and Collect) support overriding this value in their settings.</strong>]]></comment>
+                </field>
+            </group>
+            <group id="debugging" translate="label" type="text" sortOrder="600" showInDefault="1">
                 <label>Debugging</label>
                 <field id="should_capture_logs" translate="label" type="select" sortOrder="100" showInDefault="1" canRestore="1">
                     <label>Should Capture Logs</label>

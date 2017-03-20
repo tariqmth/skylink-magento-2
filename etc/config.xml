@@ -14,13 +14,14 @@
             </options>
         </cataloginventory>
         <carriers>
-            <skylink_pickup>
+            <skylinkpickup>
                 <active>0</active>
                 <model>RetailExpress\SkyLink\Model\Pickup\PickupCarrier</model>
-                <title>Click and Collect</title>
+                <name_title>Click and Collect</name_title>
                 <specificerrmsg>Unfortunately, this is not available. For more, please your local store.</specificerrmsg>
                 <sallowspecific>0</sallowspecific>
-            </skylink_pickup>
+                <item_delivery_method>store</item_delivery_method>
+            </skylinkpickup>
         </carriers>
         <multishipping>
             <options>
@@ -55,6 +56,9 @@
                 <configurable_product_match_threshold>0.5</configurable_product_match_threshold>
                 <composite_product_sync_rerun_threshold>3600</composite_product_sync_rerun_threshold>
             </products>
+            <orders>
+                <item_delivery_method>home</item_delivery_method>
+            </orders>
             <debugging>
                 <should_capture_logs>0</should_capture_logs>
                 <uncaptured_logs_to_keep>1000</uncaptured_logs_to_keep>

@@ -27,7 +27,7 @@ class Config implements ConfigInterface
             case 'one':
             case 'two':
                 $outletIds = $this->scopeConfig->getValue(
-                    "carriers/skylink_pickup/group_{$value}_outlets",
+                    "carriers/skylinkpickup/group_{$value}_outlets",
                     'website',
                     $websiteCode
                 );

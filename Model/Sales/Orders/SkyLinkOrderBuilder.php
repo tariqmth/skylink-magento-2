@@ -7,12 +7,15 @@ use InvalidArgumentException;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Model\Order as MagentoOrder;
+use Magento\Shipping\Model\Config as ShippingConfig;
 use RetailExpress\SkyLink\Api\Pickup\PickupManagementInterface;
+use RetailExpress\SkyLink\Api\Sales\Orders\ConfigInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderAddressExtractorInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkContactBuilderInterface as SkyLinkOrderContactBuilderInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkCustomerIdServiceInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderBuilderInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderItemBuilderInterface;
+use RetailExpress\SkyLink\Api\Data\Sales\Shipments\ItemDeliveryMethodInterface;
 use RetailExpress\SkyLink\Exceptions\Sales\Orders\MagentoOrderStateNotMappedException;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\Order as SkyLinkOrder;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\Status as SkyLinkStatus;
@@ -21,6 +24,8 @@ use ValueObjects\StringLiteral\StringLiteral;
 
 class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
 {
+    private $orderConfig;
+
     private $skyLinkCustomerIdService;
 
     private $magentoOrderAddressExtractor;
@@ -30,6 +35,8 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
     private $skyLinkOrderItemBuilder;
 
     private $pickupManagement;
+
+    private $magentoShippingConfig;
 
     /**
      * Returns the Magento State to SkyLink Status mappings.
@@ -56,17 +63,21 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
     }
 
     public function __construct(
+        ConfigInterface $orderConfig,
         SkyLinkCustomerIdServiceInterface $skyLinkCustomerIdService,
         MagentoOrderAddressExtractorInterface $magentoOrderAddressExtractor,
         SkyLinkOrderContactBuilderInterface $skyLinkOrderContactBuilder,
         SkyLinkOrderItemBuilderInterface $skyLinkOrderItemBuilder,
-        PickupManagementInterface $pickupManagement
+        PickupManagementInterface $pickupManagement,
+        ShippingConfig $magentoShippingConfig
     ) {
+        $this->orderConfig = $orderConfig;
         $this->skyLinkCustomerIdService = $skyLinkCustomerIdService;
         $this->magentoOrderAddressExtractor = $magentoOrderAddressExtractor;
         $this->skyLinkOrderContactBuilder = $skyLinkOrderContactBuilder;
         $this->skyLinkOrderItemBuilder = $skyLinkOrderItemBuilder;
         $this->pickupManagement = $pickupManagement;
+        $this->magentoShippingConfig = $magentoShippingConfig;
     }
 
     /**
@@ -109,7 +120,47 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
             $skyLinkOrder = $skyLinkOrder->withItem($skyLinkOrderItem);
         }, $magentoOrder->getItems());
 
+        $skyLinkOrder = $skyLinkOrder->withDeliveryMethodForAllItems(
+            $this->determineItemDeliveryMethod($magentoOrder)
+        );
+
+        $skyLinkOrder = $skyLinkOrder->withDeliveryDriverNameForAllItems(
+            new StringLiteral($this->getShippingCarrierTitle($magentoOrder))
+        );
+
         return $skyLinkOrder;
+    }
+
+    /**
+     * @see \Magento\Checkout\Model\Type\Onepage::saveShippingMethod()
+     */
+    private function getShippingCarrierTitle(OrderInterface $magentoOrder)
+    {
+        $shippingDescription = $magentoOrder->getShippingDescription();
+
+        // This is designed to take the carrier title from a shipping description in the following forms
+        // (as per Onepage::saveShippingMethod):
+        // 1. "My Carrier - My Method"
+        // 2. "My carrier"
+        list($carrierTitle) = explode(' - ', $shippingDescription, 2);
+
+        return $carrierTitle;
+    }
+
+    private function determineItemDeliveryMethod(OrderInterface $magentoOrder)
+    {
+        $this->assertImplementationOfOrder($magentoOrder);
+
+        $carrierCode = $magentoOrder->getShippingMethod(true)->getData('carrier_code');
+        $matchingCarrier = $this->magentoShippingConfig->getActiveCarriers()[$carrierCode]; // @todo somehow validate the carrier??
+
+        // If our class adheres to the item delivery method contract, we'll use it to determine the method
+        if (class_implements($matchingCarrier, ItemDeliveryMethodInterface::class)) {
+            return $matchingCarrier->getItemDeliveryMethod();
+        }
+
+        // Failing that, we'll just use the default configured one
+        return $this->orderConfig->getItemDeliveryMethod();
     }
 
     private function getPlacedAt(OrderInterface $magentoOrder)

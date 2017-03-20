@@ -19,4 +19,11 @@ interface ConfigInterface
      * @throws \RetailExpress\SkyLink\Exceptions\Sales\Orders\NoGuestCustomerIdConfiguredException
      */
     public function getGuestCustomerId();
+
+    /**
+     * Returns the default Item Delivery Method.
+     *
+     * @return \RetailExpress\SkyLink\Sdk\Sales\Orders\ItemDeliveryMethod
+     */
+    public function getItemDeliveryMethod();
 }

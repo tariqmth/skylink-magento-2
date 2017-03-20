@@ -6,6 +6,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\ConfigInterface;
 use RetailExpress\SkyLink\Exceptions\Sales\Orders\NoGuestCustomerIdConfiguredException;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
+use RetailExpress\SkyLink\Sdk\Sales\Orders\ItemDeliveryMethod as SkyLinkItemDeliveryMethod;
 
 class Config implements ConfigInterface
 {
@@ -42,5 +43,13 @@ class Config implements ConfigInterface
         }
 
         return new SkyLinkCustomerId($value);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getItemDeliveryMethod()
+    {
+        return SkyLinkItemDeliveryMethod::get($this->scopeConfig->getValue('skylink/orders/item_delivery_method'));
     }
 }

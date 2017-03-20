@@ -12,12 +12,14 @@ use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\ResultFactory as RateResultFactory;
 use Psr\Log\LoggerInterface;
+use RetailExpress\SkyLink\Api\Data\Sales\Shipments\ItemDeliveryMethodInterface;
 use RetailExpress\SkyLink\Api\Pickup\MagentoPickupGroupChooserInterface;
 use RetailExpress\SkyLink\Api\Pickup\PickupManagementInterface;
 use RetailExpress\SkyLink\Api\Pickup\PickupOutletRepositoryInterface;
 use RetailExpress\SkyLink\Sdk\Outlets\Outlet as SkyLinkOutlet;
+use RetailExpress\SkyLink\Sdk\Sales\Orders\ItemDeliveryMethod as SkyLinkItemDeliveryMethod;
 
-class PickupCarrier extends AbstractCarrier implements CarrierInterface
+class PickupCarrier extends AbstractCarrier implements CarrierInterface, ItemDeliveryMethodInterface
 {
     /**
      * {@inheritdoc}
@@ -66,7 +68,7 @@ class PickupCarrier extends AbstractCarrier implements CarrierInterface
      */
     public function getAllowedMethods()
     {
-        return [$this->_code => $this->getConfigData('name')];
+        return [$this->_code => $this->getConfigData('name_title')];
     }
 
     /**
@@ -103,7 +105,7 @@ class PickupCarrier extends AbstractCarrier implements CarrierInterface
             $method = $this->rateMethodFactory->create();
 
             $method->setCarrier($this->_code);
-            $method->setCarrierTitle($this->getConfigData('title'));
+            $method->setCarrierTitle($this->getConfigData('name_title'));
 
             $method->setMethod($this->pickupManagement->getMagentoShippingMethodCode($skyLinkOutlet));
             $method->setMethodTitle($this->pickupManagement->getMagentoShippingMethodTitle($skyLinkOutlet));
@@ -115,6 +117,14 @@ class PickupCarrier extends AbstractCarrier implements CarrierInterface
         }, $outlets);
 
         return $result;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getItemDeliveryMethod()
+    {
+        return SkyLinkItemDeliveryMethod::get($this->getConfigData('item_delivery_method'));
     }
 
     private function getMagentoProducts(RateRequest $request)

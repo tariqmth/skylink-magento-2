@@ -37,8 +37,7 @@ class MagentoWebsiteRepository implements MagentoWebsiteRepositoryInterface
 
                 // Filter websites to those who use the globally configured Sales Channel ID
                 $websiteSalesChannelId = $this->config->getSalesChannelIdForWebsite($website->getCode());
-                $globalSalesChannelId = $this->config->getSalesChannelId();
-                return $websiteSalesChannelId->sameValueAs($globalSalesChannelId);
+                return $websiteSalesChannelId->sameValueAs($this->config->getSalesChannelId());
             }
         ));
     }

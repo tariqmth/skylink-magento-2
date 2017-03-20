@@ -179,9 +179,10 @@
     <preference for="RetailExpress\SkyLink\Api\Sales\Payments\SkyLinkPaymentMethodServiceInterface" type="RetailExpress\SkyLink\Model\Sales\Payments\SkyLinkPaymentMethodService"/>
 
     <!-- Setup Sales Channel Segregation -->
+    <preference for="RetailExpress\SkyLink\Api\Data\Segregation\SalesChannelGroupInterface" type="RetailExpress\SkyLink\Model\Segregation\SalesChannelGroup"/>
     <preference for="RetailExpress\SkyLink\Api\Segregation\MagentoStoreEmulatorInterface" type="RetailExpress\SkyLink\Model\Segregation\MagentoStoreEmulator"/>
     <preference for="RetailExpress\SkyLink\Api\Segregation\MagentoWebsiteRepositoryInterface" type="RetailExpress\SkyLink\Model\Segregation\MagentoWebsiteRepository"/>
-    <preference for="RetailExpress\SkyLink\Api\Data\Segregation\SalesChannelGroupInterface" type="RetailExpress\SkyLink\Model\Segregation\SalesChannelGroup"/>
+    <preference for="RetailExpress\SkyLink\Api\Segregation\SalesChannelIdRepositoryInterface" type="RetailExpress\SkyLink\Model\Segregation\SalesChannelIdRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Segregation\SalesChannelGroupRepositoryInterface" type="RetailExpress\SkyLink\Model\Segregation\SalesChannelGroupRepository"/>
 
     <!-- Add a new console command to bulk sync -->
@@ -195,6 +196,7 @@
                 <item name="skyLinkCustomerCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\SyncCustomerCommand</item>
                 <item name="skyLinkAttributeCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\SyncAttributeCommand</item>
                 <item name="skyLinkProductCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\SyncProductCommand</item>
+                <item name="skyLinkFulfillmentsCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\SyncFulfillmentsCommand</item>
             </argument>
         </arguments>
     </type>

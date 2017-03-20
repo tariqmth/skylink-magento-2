@@ -275,13 +275,19 @@ class InstallSchema implements InstallSchemaInterface
                 11,
                 ['nullable' => false]
             )
+            ->addColumn(
+                'sales_channel_id',
+                DdlTable::TYPE_INTEGER,
+                null,
+                ['nullable' => false]
+            )
             ->addIndex(
                 $installer->getIdxName(
                     $ordersTable,
-                    ['magento_order_id', 'skylink_order_id'],
+                    ['magento_order_id', 'skylink_order_id', 'sales_channel_id'],
                     DbAdapterInterface::INDEX_TYPE_PRIMARY
                 ),
-                ['magento_order_id', 'skylink_order_id'],
+                ['magento_order_id', 'skylink_order_id', 'sales_channel_id'],
                 DbAdapterInterface::INDEX_TYPE_PRIMARY
             )
             ->addForeignKey(
@@ -311,8 +317,8 @@ class InstallSchema implements InstallSchemaInterface
             )
             ->addColumn(
                 'skylink_payment_id',
-                DdlTable::TYPE_TEXT,
-                32,
+                DdlTable::TYPE_INTEGER,
+                null,
                 ['nullable' => false]
             )
             ->addIndex(

@@ -6,6 +6,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Api\Pickup\ConfigInterface as PickupConfigInterface;
 use RetailExpress\SkyLink\Api\Pickup\PickupOutletRepositoryInterface;
+use RetailExpress\SkyLink\Api\Segregation\SalesChannelIdRepositoryInterface;
 use RetailExpress\SkyLink\Sdk\Outlets\OutletId as SkyLinkOutletId;
 use RetailExpress\SkyLink\Sdk\Outlets\OutletRepositoryFactory as SkyLinkOutletRepositoryFactory;
 
@@ -18,12 +19,7 @@ class PickupOutletRepository implements PickupOutletRepositoryInterface
      */
     private $storeManager;
 
-    /**
-     * The SkyLink Config instance.
-     *
-     * @var \RetailExpress\SkyLink\Api\ConfigInterface
-     */
-    private $config;
+    private $salesChannelIdRepository;
 
     private $pickupConfig;
 
@@ -31,12 +27,12 @@ class PickupOutletRepository implements PickupOutletRepositoryInterface
 
     public function __construct(
         StoreManagerInterface $storeManager,
-        ConfigInterface $config,
+        SalesChannelIdRepositoryInterface $salesChannelIdRepository,
         PickupConfigInterface $pickupConfig,
         SkyLinkOutletRepositoryFactory $skyLinkOutletRepositoryFactory
     ) {
         $this->storeManager = $storeManager;
-        $this->config = $config;
+        $this->salesChannelIdRepository = $salesChannelIdRepository;
         $this->pickupConfig = $pickupConfig;
         $this->skyLinkOutletRepositoryFactory = $skyLinkOutletRepositoryFactory;
     }
@@ -56,7 +52,7 @@ class PickupOutletRepository implements PickupOutletRepositoryInterface
         $skyLinkOutletRepository = $this->skyLinkOutletRepositoryFactory->create();
 
         /* @var \RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId $salesChannelId */
-        $salesChannelId = $this->config->getSalesChannelIdForWebsite($currentWebsite->getCode());
+        $salesChannelId = $this->salesChannelIdRepository->getSalesChannelIdForCurrentWebsite();
 
         return array_map(function (SkyLinkOutletId $skyLinkOutletId) use ($skyLinkOutletRepository, $salesChannelId) {
             return $skyLinkOutletRepository->find($skyLinkOutletId, $salesChannelId);

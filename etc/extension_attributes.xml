@@ -12,9 +12,14 @@
         </attribute>
     </extension_attributes>
 
-    <!-- Add a SkyLink Order ID to Magento Orders -->
+    <!-- Add a SkyLink Order ID and Sales Channel ID to Magento Orders -->
     <extension_attributes for="Magento\Sales\Api\Data\OrderInterface">
         <attribute code="skylink_order_id" type="RetailExpress\SkyLink\Sdk\Sales\Orders\OrderId">
+            <resources>
+                <resource ref="RetailExpress_SkyLink::skylink"/>
+            </resources>
+        </attribute>
+        <attribute code="sales_channel_id" type="RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId">
             <resources>
                 <resource ref="RetailExpress_SkyLink::skylink"/>
             </resources>

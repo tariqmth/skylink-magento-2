@@ -11,6 +11,7 @@ use RetailExpress\SkyLink\Commands\Sales\Orders\CreateSkyLinkOrderFromMagentoOrd
 use RetailExpress\SkyLink\Model\Sales\Orders\OrderExtensionAttributes;
 use RetailExpress\SkyLink\Model\Sales\Orders\OrderHelper;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\OrderId as SkyLinkOrderId;
+use RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId;
 
 class OrderRepositoryPlugin
 {
@@ -82,19 +83,20 @@ class OrderRepositoryPlugin
         /* @var \Magento\Sales\Api\Data\OrderExtensionInterface $extendedAttributes */
         $extendedAttributes = $this->getOrderExtensionAttributes($magentoOrder);
         $skyLinkOrderId = $extendedAttributes->getSkyLinkOrderId();
+        $salesChannelId = $extendedAttributes->getSalesChannelId();
 
         // When we send the order to Retail Express, the handler should save the
         // Retail Express Order ID for the given order. At that point, we're
         // back to this method. If that is the case, we'll add a mapping
         // into our tables if one is now on the order and not persisted.
-        if (null !== $skyLinkOrderId && !$this->mappingExists($magentoOrderId, $skyLinkOrderId)) {
-            $this->addMapping($magentoOrderId, $skyLinkOrderId);
+        if (null !== $skyLinkOrderId && !$this->mappingExists($magentoOrderId, $skyLinkOrderId, $salesChannelId)) {
+            $this->addMapping($magentoOrderId, $skyLinkOrderId, $salesChannelId);
         }
 
         return $magentoOrder;
     }
 
-    private function mappingExists($magentoOrderId, SkyLinkOrderId $skyLinkOrderId)
+    private function mappingExists($magentoOrderId, SkyLinkOrderId $skyLinkOrderId, SalesChannelId $salesChannelId)
     {
         return (bool) $this->connection->fetchOne(
             $this->connection
@@ -102,10 +104,11 @@ class OrderRepositoryPlugin
                 ->from($this->getOrdersTable(), 'count(skylink_order_id)')
                 ->where('magento_order_id = ?', $magentoOrderId)
                 ->where('skylink_order_id = ?', $skyLinkOrderId) // @todo Is this needed with our database primary keys?
+                ->where('sales_channel_id = ?', $salesChannelId) // @todo ditto ^
         );
     }
 
-    private function addMapping($magentoOrderId, SkyLinkOrderId $skyLinkOrderId)
+    private function addMapping($magentoOrderId, SkyLinkOrderId $skyLinkOrderId, SalesChannelId $salesChannelId)
     {
         // Insert a mapping in our database
         $this->connection->insert(
@@ -113,6 +116,7 @@ class OrderRepositoryPlugin
             [
                 'magento_order_id' => $magentoOrderId,
                 'skylink_order_id' => $skyLinkOrderId,
+                'sales_channel_id' => $salesChannelId,
             ]
         );
     }

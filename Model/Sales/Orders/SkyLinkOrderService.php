@@ -5,6 +5,7 @@ namespace RetailExpress\SkyLink\Model\Sales\Orders;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use RetailExpress\SkyLink\Api\Segregation\SalesChannelIdRepositoryInterface;
 use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkOrderServiceInterface;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\Order as SkyLinkOrder;
@@ -16,16 +17,16 @@ class SkyLinkOrderService implements SkyLinkOrderServiceInterface
 
     private $skyLinkOrderRepositoryFactory;
 
-    private $config;
+    private $salesChannelIdRepository;
 
     public function __construct(
         OrderRepositoryFactory $skyLinkOrderRepositoryFactory,
-        ConfigInterface $config,
+        SalesChannelIdRepositoryInterface $salesChannelIdRepository,
         OrderExtensionFactory $orderExtensionFactory,
         OrderRepositoryInterface $baseMagentoOrderRepository
     ) {
         $this->skyLinkOrderRepositoryFactory = $skyLinkOrderRepositoryFactory;
-        $this->config = $config;
+        $this->salesChannelIdRepository = $salesChannelIdRepository;
         $this->orderExtensionFactory = $orderExtensionFactory;
         $this->baseMagentoOrderRepository = $baseMagentoOrderRepository;
     }
@@ -38,15 +39,16 @@ class SkyLinkOrderService implements SkyLinkOrderServiceInterface
         /* @var \RetailExpress\SkyLink\Sdk\Sales\Orders\OrderRepository $skyLinkOrderRepository */
         $skyLinkOrderRepository = $this->skyLinkOrderRepositoryFactory->create();
 
+        /* @var \RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId $salesChannelId */
+        $salesChannelId = $this->salesChannelIdRepository->getSalesChannelIdForCurrentWebsite();
+
         // Add to SkyLink
-        $skyLinkOrderRepository->add(
-            $this->config->getSalesChannelId(),
-            $skyLinkOrder
-        );
+        $skyLinkOrderRepository->add($salesChannelId, $skyLinkOrder);
 
         // Now we'll grab the extension attributes instance and set the SkyLink Order ID
         $extendedAttributes = $this->getOrderExtensionAttributes($magentoOrder);
         $extendedAttributes->setSkylinkOrderId($skyLinkOrder->getId()); // @todo check for existing SkyLink Order ID? Note lowercsae "l"
+        $extendedAttributes->setSalesChannelId($salesChannelId);
 
         // Save the Magento Order
         $this->baseMagentoOrderRepository->save($magentoOrder);

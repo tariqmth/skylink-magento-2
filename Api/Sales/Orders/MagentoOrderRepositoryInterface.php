@@ -7,6 +7,13 @@ use RetailExpress\SkyLink\Sdk\Sales\Orders\OrderId as SkyLinkOrderId;
 interface MagentoOrderRepositoryInterface
 {
     /**
+     * Gets a list of active Magento Orders that have a SkyLink Order ID.
+     *
+     * @return \Magento\Sales\Api\Data\OrderInterface[]
+     */
+    public function getListOfActiveWithSkyLinkOrderIds();
+
+    /**
      * Finds a Magento Order by the given SkyLink Order ID.
      *
      * @param SkyLinkOrderId $skyLinkOrderId

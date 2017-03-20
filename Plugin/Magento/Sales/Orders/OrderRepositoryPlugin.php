@@ -5,6 +5,7 @@ namespace RetailExpress\SkyLink\Plugin\Magento\Sales\Orders;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Sales\Api\Data\OrderExtensionFactory;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\Data\OrderSearchResultInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use RetailExpress\CommandBus\Api\CommandBusInterface;
 use RetailExpress\SkyLink\Commands\Sales\Orders\CreateSkyLinkOrderFromMagentoOrderCommand;
@@ -42,21 +43,18 @@ class OrderRepositoryPlugin
         $this->orderExtensionFactory = $orderExtensionFactory;
     }
 
+    public function afterGetList(OrderRepositoryInterface $subject, OrderSearchResultInterface $orderSearchResults)
+    {
+        foreach ($orderSearchResults->getItems() as $magentoOrder) {
+            $this->attachExtensionAttributes($magentoOrder);
+        }
+
+        return $orderSearchResults;
+    }
+
     public function afterGet(OrderRepositoryInterface $subject, OrderInterface $magentoOrder)
     {
-        $payload = $this->connection->fetchRow(
-            $this->connection
-                ->select()
-                ->from($this->getOrdersTable(), ['skylink_order_id', 'sales_channel_id'])
-                ->where('magento_order_id = ?', $magentoOrder->getEntityId())
-        );
-
-        if (false !== $payload) {
-            /* @var \Magento\Sales\Api\Data\OrderExtensionInterface $extendedAttributes */
-            $extendedAttributes = $this->getOrderExtensionAttributes($magentoOrder);
-            $extendedAttributes->setSkyLinkOrderId(new SkyLinkOrderId($payload['skylink_order_id']));
-            $extendedAttributes->setSalesChannelId(new SalesChannelId($payload['sales_channel_id']));
-        }
+        $this->attachExtensionAttributes($magentoOrder);
 
         return $magentoOrder;
     }
@@ -95,6 +93,23 @@ class OrderRepositoryPlugin
         }
 
         return $magentoOrder;
+    }
+
+    private function attachExtensionAttributes(OrderInterface $magentoOrder)
+    {
+        $payload = $this->connection->fetchRow(
+            $this->connection
+                ->select()
+                ->from($this->getOrdersTable(), ['skylink_order_id', 'sales_channel_id'])
+                ->where('magento_order_id = ?', $magentoOrder->getEntityId())
+        );
+
+        if (false !== $payload) {
+            /* @var \Magento\Sales\Api\Data\OrderExtensionInterface $extendedAttributes */
+            $extendedAttributes = $this->getOrderExtensionAttributes($magentoOrder);
+            $extendedAttributes->setSkyLinkOrderId(new SkyLinkOrderId($payload['skylink_order_id']));
+            $extendedAttributes->setSalesChannelId(new SalesChannelId($payload['sales_channel_id']));
+        }
     }
 
     private function mappingExists($magentoOrderId, SkyLinkOrderId $skyLinkOrderId, SalesChannelId $salesChannelId)

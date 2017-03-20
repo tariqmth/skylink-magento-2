@@ -193,6 +193,7 @@
                 <item name="skylinkBulkCustomersCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkCustomersCommand</item>
                 <item name="skylinkBulkAttributesCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkAttributesCommand</item>
                 <item name="skylinkBulkProductsCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkProductsCommand</item>
+                <item name="skylinkBulkFulfillmentsCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkFulfillmentsCommand</item>
                 <item name="skyLinkCustomerCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\SyncCustomerCommand</item>
                 <item name="skyLinkAttributeCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\SyncAttributeCommand</item>
                 <item name="skyLinkProductCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\SyncProductCommand</item>

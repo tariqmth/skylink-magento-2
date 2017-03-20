@@ -5,7 +5,6 @@ namespace RetailExpress\SkyLink\Console\Command;
 use DateTimeImmutable;
 use DateTimeZone;
 use RetailExpress\CommandBus\Api\CommandBusInterface;
-use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Commands\Customers\SyncSkyLinkPriceGroupToMagentoCustomerGroupCommand;
 use RetailExpress\SkyLink\Sdk\Customers\PriceGroups\PriceGroup as SkyLinkPriceGroup;
 use RetailExpress\SkyLink\Sdk\Customers\PriceGroups\PriceGroupRepositoryFactory;

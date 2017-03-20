@@ -2,6 +2,7 @@
 
 namespace RetailExpress\SkyLink\Commands\Sales\Shipments;
 
+use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
 use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderRepositoryInterface;
@@ -28,18 +29,27 @@ class SyncSkyLinkFulfillmentBatchesToMagentoShipmentsHandler
      */
     private $logger;
 
+    /**
+     * Event Manager instance.
+     *
+     * @var EventManagerInterface
+     */
+    private $eventManager;
+
     public function __construct(
         MagentoOrderRepositoryInterface $magentoOrderRepository,
         SkyLinkOrderRepositoryFactory $skyLinkOrderRepositoryFactory,
         MagentoShipmentRepositoryInterface $magentoShipmentRepository,
         MagentoShipmentServiceInterface $magentoShipmentService,
-        SkyLinkLoggerInterface $logger
+        SkyLinkLoggerInterface $logger,
+        EventManagerInterface $eventManager
     ) {
         $this->magentoOrderRepository = $magentoOrderRepository;
         $this->skyLinkOrderRepositoryFactory = $skyLinkOrderRepositoryFactory;
         $this->magentoShipmentRepository = $magentoShipmentRepository;
         $this->magentoShipmentService = $magentoShipmentService;
         $this->logger = $logger;
+        $this->eventManager = $eventManager;
     }
 
     public function handle(SyncSkyLinkFulfillmentBatchesToMagentoShipmentsCommand $command)
@@ -70,7 +80,8 @@ class SyncSkyLinkFulfillmentBatchesToMagentoShipmentsHandler
 
         // Iterate over the fulfillment batches for the SkyLink Order and try find our
         // own corresponding shipments. If we don't find one, we'll create it instead.
-        array_map(
+        /* @var \Magento\Sales\Api\Data\ShipmentInterface[] $magentoShipments */
+        $magentoShipments = array_map(
             function (SkyLinkFulfillmentBatch $skyLinkFulfillmentBatch) use ($skyLinkOrder, $magentoOrder) {
 
                 /* @var \Magento\Sales\Api\Data\ShipmentInterface|null $magentoShipment */
@@ -119,8 +130,20 @@ class SyncSkyLinkFulfillmentBatchesToMagentoShipmentsHandler
                         'Fulfilled At' => $skyLinkFulfillmentBatch->getFulfilledAt(),
                     ],
                 ]);
+
+                return $magentoShipment;
             },
             $skyLinkOrder->getFulfillmentBatches()
+        );
+
+        $this->eventManager->dispatch(
+            'retail_express_skylink_skylink_fulfillment_batches_were_synced_to_magento_shipments',
+            [
+                'command' => $command,
+                'skylink_order' => $skyLinkOrder,
+                'magento_order' => $magentoOrder,
+                'magento_shipments' => $magentoShipments,
+            ]
         );
     }
 }

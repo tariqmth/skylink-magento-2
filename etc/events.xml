@@ -6,6 +6,7 @@
         <observer name="customers" instance="RetailExpress\SkyLink\Observer\Customers\WhenEdsChangeSetWasRegistered"/>
         <observer name="attributes" instance="RetailExpress\SkyLink\Observer\Catalogue\Attributes\WhenEdsChangeSetWasRegistered"/>
         <observer name="products" instance="RetailExpress\SkyLink\Observer\Catalogue\Products\WhenEdsChangeSetWasRegistered"/>
+        <observer name="fulfillments" instance="RetailExpress\SkyLink\Observer\Sales\Shipments\WhenEdsChangeSetWasRegistered"/>
     </event>
 
     <!-- When a SkyLink Customer was synced to a Magento Customer -->
@@ -21,6 +22,11 @@
     <!-- When a SkyLink Product was synced to a Magento Product -->
     <event name="retail_express_skylink_skylink_product_was_synced_to_magento_product">
         <observer name="eds" instance="RetailExpress\SkyLink\Observer\Catalogue\Products\WhenSkyLinkProductWasSyncedToMagentoProduct"/>
+    </event>
+
+    <!-- When SkyLink Fulfillments were synced to Magento Shipments -->
+    <event name="retail_express_skylink_skylink_fulfillment_batches_were_synced_to_magento_shipments">
+        <observer name="eds" instance="RetailExpress\SkyLink\Observer\Sales\Shipments\WhenSkyLinkFulfillmentBatchesWereSyncedToMagentoShipments"/>
     </event>
 
     <!-- When a SkyLink Payment was created from a Magento Invoice -->

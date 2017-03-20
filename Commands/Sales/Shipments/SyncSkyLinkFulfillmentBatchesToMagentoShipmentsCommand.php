@@ -4,9 +4,17 @@ namespace RetailExpress\SkyLink\Commands\Sales\Shipments;
 
 use RetailExpress\CommandBus\Api\Queues\NormallyQueuedCommand;
 use RetailExpress\CommandBus\Api\Queues\QueueableCommand;
+use RetailExpress\SkyLink\Commands\Eds\ChangeSetCommand;
 
 class SyncSkyLinkFulfillmentBatchesToMagentoShipmentsCommand extends NormallyQueuedCommand implements QueueableCommand
 {
+    use ChangeSetCommand;
+
+    /**
+     * The SkyLink Order ID.
+     *
+     * @var string
+     */
     public $skyLinkOrderId;
 
     /**

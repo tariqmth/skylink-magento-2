@@ -5,6 +5,7 @@ namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\App\ResourceConnection;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
 use RetailExpress\SkyLink\Exceptions\Products\TooManyProductMatchesException;
@@ -15,12 +16,60 @@ class MagentoSimpleProductRepository implements MagentoSimpleProductRepositoryIn
 
     private $searchCriteriaBuilder;
 
+    /**
+     * Database connection.
+     *
+     * @var \Magento\Framework\DB\Adapter\AdapterInterface
+     */
+    private $connection;
+
     public function __construct(
         ProductRepositoryInterface $baseMagentoProductRepository,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        ResourceConnection $resourceConnection
     ) {
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->connection = $resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @todo Maybe not use the DB directly? This could be super slow with large DBs however and this is used in the web.
+     */
+    public function getListOfMappedSkyLinkProductIds()
+    {
+        // select `catalog_product_entity_varchar`.`value` as `skylink_product_id`
+        // from `catalog_product_entity_varchar`
+        // join `eav_attribute` on `catalog_product_entity_varchar`.`attribute_id` = `eav_attribute`.`attribute_id`
+        // where `eav_attribute`.`attribute_code` = 'skylink_product_id'
+        // order by `skylink_product_id` asc;
+
+        $results = $this->connection->fetchAll(
+            $this->connection
+                ->select()
+                ->from(['attribute_values' => $this->getAttributeValuesTable()])
+                ->join(
+                    ['attributes' => $this->getAttributesTable()],
+                    'attribute_values.attribute_id = attributes.attribute_id'
+                )
+                ->where('attributes.attribute_code = ?', 'skylink_product_id')
+        );
+
+        return array_map(function (array $payload) {
+            return new SkyLinkProductId($payload['value']);
+        }, $results);
+    }
+
+    private function getAttributesTable()
+    {
+        return $this->connection->getTableName('eav_attribute');
+    }
+
+    private function getAttributeValuesTable()
+    {
+        return $this->connection->getTableName('catalog_product_entity_varchar');
     }
 
     /**

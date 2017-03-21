@@ -7,6 +7,13 @@ use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
 interface MagentoSimpleProductRepositoryInterface
 {
     /**
+     * Returns an array of all mapped SkyLink Product IDs for all products
+     *
+     * @return SkyLinkProductId[]
+     */
+    public function getListOfMappedSkyLinkProductIds();
+
+    /**
      * Finds an existing simple product by the SkyLink Product ID.
      *
      * @param SkyLinkProductId $skyLinkProductId

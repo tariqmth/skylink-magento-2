@@ -38,7 +38,6 @@ class SkyLinkCustomerService implements SkyLinkCustomerServiceInterface
 
         // If we're creating, we'll setup the association between the Magento Customer and the SkyLink Customer
         if (false === $existingSkyLinkCustomer) {
-            $magentoCustomer->unsData('skylink_customer_id');
             $magentoCustomer->setCustomAttribute('skylink_customer_id', (string) $skyLinkCustomer->getId());
             $this->magentoCustomerRepository->save($magentoCustomer);
         }

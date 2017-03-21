@@ -94,10 +94,7 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
             $this->getShippingCharge($magentoOrder)
         );
 
-        $publicComments = $magentoOrder->getCustomerNote();
-        if (null !== $publicComments) {
-            $skyLinkOrder = $skyLinkOrder->withPublicComments(new StringLiteral($publicComments));
-        }
+        $skyLinkOrder = $skyLinkOrder->withPublicComments($this->determinePublicComments($magentoOrder));
 
         $pickupOutlet = $this->determinePickupOutlet($magentoOrder);
         if (null !== $pickupOutlet) {
@@ -131,6 +128,21 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
         return $skyLinkOrder;
     }
 
+    private function determinePublicComments(OrderInterface $magentoOrder)
+    {
+        $publicComments = [];
+
+        if ($shippingDescription = $magentoOrder->getShippingDescription()) {
+            $publicComments[] = __('Shipping: %1', $shippingDescription);
+        }
+
+        if ($customerNote = $magentoOrder->getCustomerNote()) {
+            $publicComments[] = __('Customer Note: %1', $customerNote);
+        }
+
+        return new StringLiteral(implode("\n", $publicComments));
+    }
+
     /**
      * @see \Magento\Checkout\Model\Type\Onepage::saveShippingMethod()
      */
@@ -155,7 +167,7 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
         $matchingCarrier = $this->magentoShippingConfig->getActiveCarriers()[$carrierCode]; // @todo somehow validate the carrier??
 
         // If our class adheres to the item fulfillment method contract, we'll use it to determine the method
-        if (class_implements($matchingCarrier, ItemFulfillmentMethodInterface::class)) {
+        if ($matchingCarrier instanceof ItemFulfillmentMethodInterface) {
             return $matchingCarrier->getItemFulfillmentMethod();
         }
 

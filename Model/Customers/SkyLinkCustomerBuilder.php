@@ -4,6 +4,7 @@ namespace RetailExpress\SkyLink\Model\Customers;
 
 use Magento\Customer\Api\Data\AddressInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
+use Magento\Newsletter\Model\SubscriberFactory;
 use RetailExpress\SkyLink\Api\Customers\SkyLinkCustomerBuilderInterface;
 use RetailExpress\SkyLink\Api\Customers\SkyLinkContactBuilderInterface as SkyLinkCustomerContactBuilderInterface;
 use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
@@ -15,9 +16,14 @@ class SkyLinkCustomerBuilder implements SkyLinkCustomerBuilderInterface
 {
     private $skyLinkCustomerContactBuilder;
 
-    public function __construct(SkyLinkCustomerContactBuilderInterface $skyLinkCustomerContactBuilder)
-    {
+    private $subscriberFactory;
+
+    public function __construct(
+        SkyLinkCustomerContactBuilderInterface $skyLinkCustomerContactBuilder,
+        SubscriberFactory $subscriberFactory
+    ) {
         $this->skyLinkCustomerContactBuilder = $skyLinkCustomerContactBuilder;
+        $this->subscriberFactory = $subscriberFactory;
     }
 
     /**
@@ -59,7 +65,10 @@ class SkyLinkCustomerBuilder implements SkyLinkCustomerBuilderInterface
                 ->buildEmptyShippingContact();
         }
 
-        $skyLinkNewsletterSubscription = new SkyLinkNewsletterSubscription(false);
+        // Update the newsletter subscription
+        $skyLinkNewsletterSubscription = new SkyLinkNewsletterSubscription(
+            $this->getSubscriber($magentoCustomer)->isSubscribed()
+        );
 
         // If the Magento Customer has a SkyLink Customer ID attached to it
         $skyLinkCustomerIdAttribute = $magentoCustomer->getCustomAttribute('skylink_customer_id');
@@ -80,5 +89,13 @@ class SkyLinkCustomerBuilder implements SkyLinkCustomerBuilderInterface
             $skyLinkShippingContact,
             $skyLinkNewsletterSubscription
         );
+    }
+
+    /**
+     * @return \Magento\Newsletter\Model\Subscriber
+     */
+    private function getSubscriber(CustomerInterface $magentoCustomer)
+    {
+        return $this->subscriberFactory->create()->loadByCustomerId($magentoCustomer->getId());
     }
 }

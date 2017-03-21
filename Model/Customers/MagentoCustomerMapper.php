@@ -3,6 +3,7 @@
 namespace RetailExpress\SkyLink\Model\Customers;
 
 use Magento\Customer\Api\Data\AddressInterface;
+use Magento\Customer\Api\Data\CustomerExtensionFactory;
 use Magento\Customer\Api\Data\CustomerInterface;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerGroupRepositoryInterface;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface;
@@ -14,16 +15,20 @@ use RetailExpress\SkyLink\Sdk\Customers\ShippingContact as SkyLinkShippingContac
 
 class MagentoCustomerMapper implements MagentoCustomerMapperInterface
 {
+    use CustomerExtensionAttributes;
+
     private $customerConfig;
 
     private $magentoCustomerGroupRepository;
 
     public function __construct(
         ConfigInterface $customerConfig,
-        MagentoCustomerGroupRepositoryInterface $magentoCustomerGroupRepository
+        MagentoCustomerGroupRepositoryInterface $magentoCustomerGroupRepository,
+        CustomerExtensionFactory $customerExtensionFactory
     ) {
         $this->customerConfig = $customerConfig;
         $this->magentoCustomerGroupRepository = $magentoCustomerGroupRepository;
+        $this->customerExtensionFactory = $customerExtensionFactory;
     }
 
     /**
@@ -50,6 +55,8 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
         $this->mapBasicInfo($magentoCustomer, $skyLinkBillingContact);
 
         $this->mapCustomerGroup($magentoCustomer, $skyLinkCustomer);
+
+        $this->mapSubscription($magentoCustomer, $skyLinkCustomer);
 
         $this->mapBillingAddress(
             $magentoBillingAddress,
@@ -94,6 +101,16 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
         }
 
         $magentoCustomer->setGroupId($magentoCustomerGroup->getId());
+    }
+
+    private function mapSubscription(CustomerInterface $magentoCustomer, SkyLinkCustomer $skyLinkCustomer)
+    {
+        /* @var \Magento\Customer\Api\Data\CustomerExtensionInterface $extendedAttributes */
+        $extendedAttributes = $this->getCustomerExtensionAttributes($magentoCustomer);
+
+        $extendedAttributes->setIsSubscribed(
+            $skyLinkCustomer->getNewsletterSubscription()->toNative()
+        );
     }
 
     private function mapBillingAddress(AddressInterface $magentoBillingAddress, SkyLinkBillingContact $skyLinkBillingContact)

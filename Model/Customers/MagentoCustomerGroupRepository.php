@@ -20,6 +20,23 @@ class MagentoCustomerGroupRepository implements MagentoCustomerGroupRepositoryIn
         $this->connection = $resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
         $this->baseMagentoCustomerGroupRepository = $baseMagentoCustomerGroupRepository;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getListOfMappedPriceGroupKeys()
+    {
+        $results = $this->connection->fetchAll(
+            $this->connection
+                ->select()
+                ->from($this->getCustomerGroupsPriceGroupsTable())
+        );
+
+        return array_map(function (array $payload) {
+            return SkyLinkPriceGroupKey::fromNative($payload['skylink_price_group_type'], $payload['skylink_price_group_id']);
+        }, $results);
+    }
+
     /**
      * {@inheritdoc}
      */

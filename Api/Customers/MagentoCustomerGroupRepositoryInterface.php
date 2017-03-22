@@ -7,6 +7,13 @@ use RetailExpress\SkyLink\Sdk\Customers\PriceGroups\PriceGroupKey as SkyLinkPric
 interface MagentoCustomerGroupRepositoryInterface
 {
     /**
+     * Gets a list of all mapped price group keys.
+     *
+     * @return SkyLinkPriceGroupKey[]
+     */
+    public function getListOfMappedPriceGroupKeys();
+
+    /**
      * Finds a Magento Customer Group by the given SkyLink Price Group Key.
      *
      * @param SkyLinkPriceGroupKey $skyLinkPriceGroupKey

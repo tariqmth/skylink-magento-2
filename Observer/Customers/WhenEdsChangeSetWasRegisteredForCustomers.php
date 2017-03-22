@@ -9,7 +9,7 @@ use RetailExpress\SkyLink\Commands\Customers\SyncSkyLinkCustomerToMagentoCustome
 use RetailExpress\SkyLink\Eds\Entity;
 use RetailExpress\SkyLink\Eds\EntityType;
 
-class WhenEdsChangeSetWasRegistered implements ObserverInterface
+class WhenEdsChangeSetWasRegisteredForCustomers implements ObserverInterface
 {
     private $commandBus;
 

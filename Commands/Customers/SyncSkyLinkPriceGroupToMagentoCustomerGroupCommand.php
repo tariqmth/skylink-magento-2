@@ -7,6 +7,8 @@ use RetailExpress\CommandBus\Api\Queues\QueueableCommand;
 
 class SyncSkyLinkPriceGroupToMagentoCustomerGroupCommand extends AlwaysQueuedCommand implements QueueableCommand
 {
+    use EdsPriceGroupIdWorkaround;
+
     /**
      * The SkyLink Price Group Key.
      *

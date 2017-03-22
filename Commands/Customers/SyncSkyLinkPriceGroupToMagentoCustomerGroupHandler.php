@@ -5,6 +5,7 @@ namespace RetailExpress\SkyLink\Commands\Customers;
 use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerGroupRepositoryInterface;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerGroupServiceInterface;
+use RetailExpress\SkyLink\Exceptions\Customers\SkyLinkPriceGroupDoesNotExistException;
 use RetailExpress\SkyLink\Sdk\Customers\PriceGroups\PriceGroupKey as SkyLinkPriceGroupKey;
 use RetailExpress\SkyLink\Sdk\Customers\PriceGroups\PriceGroupRepositoryFactory;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
@@ -54,6 +55,18 @@ class SyncSkyLinkPriceGroupToMagentoCustomerGroupHandler
 
         /* @var \RetailExpress\SkyLink\Sdk\Customers\PriceGroups\PriceGroup $skyLinkPriceGroup */
         $skyLinkPriceGroup = $skyLinkPriceGroupRepository->find($skyLinkPriceGroupKey);
+
+        if (null === $skyLinkPriceGroup) {
+            $e = SkyLinkPriceGroupDoesNotExistException::withSkyLinkPriceGroupKey($skyLinkPriceGroupKey);
+
+            $this->logger->error('Syncing SkyLink Price Group to Magento Customer Group', [
+                'Error' => $e->getMessage(),
+                'SkyLink Price Group Type' => $skyLinkPriceGroupKey->getType(),
+                'SkyLink Price Group ID' => $skyLinkPriceGroupKey->getId(),
+            ]);
+
+            throw $e;
+        }
 
         $this->logger->info('Syncing SkyLink Price Group to Magento Customer Group', [
             'SkyLink Price Group ID' => $skyLinkPriceGroup->getKey()->getId(),

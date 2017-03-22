@@ -2,10 +2,10 @@
 
 namespace RetailExpress\SkyLink\Commands\Customers;
 
-use RetailExpress\CommandBus\Api\Queues\AlwaysQueuedCommand;
+use RetailExpress\CommandBus\Api\Queues\NormallyQueuedCommand;
 use RetailExpress\CommandBus\Api\Queues\QueueableCommand;
 
-class SyncSkyLinkPriceGroupToMagentoCustomerGroupCommand extends AlwaysQueuedCommand implements QueueableCommand
+class SyncSkyLinkPriceGroupToMagentoCustomerGroupCommand extends NormallyQueuedCommand implements QueueableCommand
 {
     use EdsPriceGroupIdWorkaround;
 

@@ -119,9 +119,7 @@ class SyncSkyLinkProductToMagentoProductHandler
                     'SkyLink Product ID' => $skyLinkProductId,
                 ]);
 
-                // We don't need to dispatch an event becuase the reruns do not occur
-                // in conjunction with any observers that watch that event (e.g. EDS)
-                return;
+                goto success;
             }
 
             // If we can sync, let's tell the re-run manager that we're starting right now
@@ -164,7 +162,7 @@ class SyncSkyLinkProductToMagentoProductHandler
             [
                 'command' => $command,
                 'skylink_product' => $skyLinkProduct,
-                'magento_product' => $magentoProduct,
+                'magento_product' => isset($magentoProduct) ? $magentoProduct : null, // During a composite product rerun the Magento product is never fetched
             ]
         );
     }

@@ -189,7 +189,7 @@
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="skylinkBulkCustomerGroupsCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkCustomerGroupsCommand</item>
+                <item name="skylinkBulkPriceGroupsCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkPriceGroupsCommand</item>
                 <item name="skylinkBulkCustomersCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkCustomersCommand</item>
                 <item name="skylinkBulkAttributesCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkAttributesCommand</item>
                 <item name="skylinkBulkProductsCommand" xsi:type="object">RetailExpress\SkyLink\Console\Command\BulkProductsCommand</item>

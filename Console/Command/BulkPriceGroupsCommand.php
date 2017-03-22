@@ -14,7 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class BulkCustomerGroupsCommand extends Command
+class BulkPriceGroupsCommand extends Command
 {
     private $skyLinkPriceGroupRepositoryFactory;
 
@@ -27,7 +27,7 @@ class BulkCustomerGroupsCommand extends Command
         $this->skyLinkPriceGroupRepositoryFactory = $skyLinkPriceGroupRepositoryFactory;
         $this->commandBus = $commandBus;
 
-        parent::__construct('retail-express:skylink:bulk-customer-groups');
+        parent::__construct('retail-express:skylink:bulk-price-groups');
     }
 
     /**

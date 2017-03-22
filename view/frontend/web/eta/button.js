@@ -17,7 +17,7 @@ define(['jquery'], function ($) {
     // Checks the ETA date and updates the DOM
     function checkEta() {
       $.getJSON(config.eta_url, function (response) {
-        if (typeof repsonse.date !== 'undefined') {
+        if (typeof response.date !== 'undefined') {
           var date = new Date(response.date);
 
           $responseDate.html(date.toLocaleDateString());

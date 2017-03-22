@@ -2,9 +2,10 @@
 
 namespace RetailExpress\SkyLink\Model\Customers;
 
-use Magento\Customer\Api\GroupRepositoryInterface;
+use Magento\Customer\Api\Data\GroupInterface;
 use Magento\Customer\Api\Data\GroupExtensionFactory;
 use Magento\Customer\Api\Data\GroupInterfaceFactory;
+use Magento\Customer\Api\GroupRepositoryInterface;
 use RetailExpress\SkyLink\Api\Customers\ConfigInterface;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerGroupServiceInterface;
 use RetailExpress\SkyLink\Sdk\Customers\PriceGroups\PriceGroup as SkyLinkPriceGroup;
@@ -36,12 +37,10 @@ class MagentoCustomerGroupService implements MagentoCustomerGroupServiceInterfac
      */
     public function createMagentoCustomerGroup(SkyLinkPriceGroup $skyLinkPriceGroup)
     {
-        /* @var \Magento\Customer\Api\Data\GroupInterface $magentoCustomerGroup */
+        /* @var GroupInterface $magentoCustomerGroup */
         $magentoCustomerGroup = $this->magentoCustomerGroupFactory->create();
 
-        // Setup the basic info for the Magento Customer Group
-        $magentoCustomerGroup->setCode((string) $skyLinkPriceGroup->getNameWithType());
-        $magentoCustomerGroup->setTaxClassId($this->customerConfig->getCustomerGroupTaxClassId());
+        $this->mapBasicInfo($$magentoCustomerGroup, $skyLinkPriceGroup);
 
         // Add our custom attribute
         $extendedAttributes = $this->getCustomerGroupExtensionAttributes($magentoCustomerGroup);
@@ -51,5 +50,20 @@ class MagentoCustomerGroupService implements MagentoCustomerGroupServiceInterfac
         $this->baseMagentoCustomerGroupRepository->save($magentoCustomerGroup);
 
         return $magentoCustomerGroup;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function updateMagentoCustomerGroup(GroupInterface $magentoCustomerGroup, SkyLinkPriceGroup $skyLinkPriceGroup)
+    {
+        $this->mapBasicInfo($$magentoCustomerGroup, $skyLinkPriceGroup);
+    }
+
+    private function mapBasicInfo(GroupInterface $magentoCustomerGroup, SkyLinkPriceGroup $skyLinkPriceGroup)
+    {
+        // Setup the basic info for the Magento Customer Group
+        $magentoCustomerGroup->setCode((string) $skyLinkPriceGroup->getNameWithType());
+        $magentoCustomerGroup->setTaxClassId($this->customerConfig->getCustomerGroupTaxClassId());
     }
 }

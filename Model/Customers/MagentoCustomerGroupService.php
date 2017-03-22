@@ -40,7 +40,7 @@ class MagentoCustomerGroupService implements MagentoCustomerGroupServiceInterfac
         /* @var GroupInterface $magentoCustomerGroup */
         $magentoCustomerGroup = $this->magentoCustomerGroupFactory->create();
 
-        $this->mapBasicInfo($$magentoCustomerGroup, $skyLinkPriceGroup);
+        $this->mapBasicInfo($magentoCustomerGroup, $skyLinkPriceGroup);
 
         // Add our custom attribute
         $extendedAttributes = $this->getCustomerGroupExtensionAttributes($magentoCustomerGroup);

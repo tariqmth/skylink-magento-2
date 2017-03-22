@@ -31,7 +31,7 @@ trait EntityProcessor
      * @param EdsEntityType        $edsEntityType
      * @param ValueObjectInterface $comparisonId
      *
-     * @return EdsEntity
+     * @return EdsEntity|null
      */
     public function getMatchingEdsEntity(
         ChangeSetId $changeSetId,
@@ -49,6 +49,10 @@ trait EntityProcessor
                     $edsEntity->getId()->sameValueAs($comparisonId);
             }
         );
+
+        if (count($matchingEntities) === 0) {
+            return;
+        }
 
         // Check there's only one entity
         if (count($matchingEntities) !== 1) {

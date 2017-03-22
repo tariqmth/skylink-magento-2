@@ -25,12 +25,16 @@ class WhenSkyLinkFulfillmentBatchesWereSyncedToMagentoShipments implements Obser
         $changeSetId = new ChangeSetId($command->changeSetId);
         $skyLinkOrderId = new SkyLinkOrderId($command->skyLinkOrderId);
 
-        /* @var \RetailExpress\SkyLink\Eds\Entity $edsEntity */
+        /* @var \RetailExpress\SkyLink\Eds\Entity|null $edsEntity */
         $edsEntity = $this->getMatchingEdsEntity(
             $changeSetId,
             EdsEntityType::get('order'),
             $skyLinkOrderId
         );
+
+        if (null === $edsEntity) {
+            return;
+        }
 
         $this->changeSetService->processEntity($edsEntity);
     }

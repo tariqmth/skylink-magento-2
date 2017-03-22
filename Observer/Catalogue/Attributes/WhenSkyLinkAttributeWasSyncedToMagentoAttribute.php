@@ -30,12 +30,16 @@ class WhenSkyLinkAttributeWasSyncedToMagentoAttribute implements ObserverInterfa
         $changeSetId = new ChangeSetId($command->changeSetId);
         $skyLinkAttributeOptionId = new SkyLinkAttributeOptionId($command->skyLinkAttributeOptionId);
 
-        /* @var \RetailExpress\SkyLink\Eds\Entity $edsEntity */
+        /* @var \RetailExpress\SkyLink\Eds\Entity|null $edsEntity */
         $edsEntity = $this->getMatchingEdsEntity(
             $changeSetId,
             EdsEntityType::get('attribute_option'),
             $skyLinkAttributeOptionId
         );
+
+        if (null === $edsEntity) {
+            return;
+        }
 
         $this->changeSetService->processEntity($edsEntity);
     }

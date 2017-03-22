@@ -25,12 +25,16 @@ class WhenSkyLinkCustomerWasSyncedToMagentoCustomer implements ObserverInterface
         $changeSetId = new ChangeSetId($command->changeSetId);
         $skyLinkCustomerId = new SkyLinkCustomerId($command->skyLinkCustomerId);
 
-        /* @var \RetailExpress\SkyLink\Eds\Entity $edsEntity */
+        /* @var \RetailExpress\SkyLink\Eds\Entity|null $edsEntity */
         $edsEntity = $this->getMatchingEdsEntity(
             $changeSetId,
             EdsEntityType::get('customer'),
             $skyLinkCustomerId
         );
+
+        if (null === $edsEntity) {
+            return;
+        }
 
         $this->changeSetService->processEntity($edsEntity);
     }

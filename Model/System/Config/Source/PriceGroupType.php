@@ -17,7 +17,7 @@ class PriceGroupType implements ArrayInterface
         return array_map(function ($value) {
             return [
                 'value' => $value,
-                'label' => SkyLinkPriceGroupType::get($value)->getPriceGroupName(),
+                'label' => SkyLinkPriceGroupType::get($value)->getPriceGroupTypeName(),
             ];
         }, SkyLinkPriceGroupType::getConstants());
     }

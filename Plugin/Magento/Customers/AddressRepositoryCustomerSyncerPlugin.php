@@ -8,7 +8,7 @@ use Magento\Customer\Api\Data\AddressInterface;
 use Magento\Framework\Registry;
 use RetailExpress\CommandBus\Api\CommandBusInterface;
 
-class AddressRepositoryPlugin
+class AddressRepositoryCustomerSyncerPlugin
 {
     use CustomerSyncer;
 

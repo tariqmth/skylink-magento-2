@@ -7,7 +7,7 @@ use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\Registry;
 use RetailExpress\CommandBus\Api\CommandBusInterface;
 
-class CustomerRepositoryPlugin
+class CustomerRepositorySyncerPlugin
 {
     use CustomerSyncer;
 

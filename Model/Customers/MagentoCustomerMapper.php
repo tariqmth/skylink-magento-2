@@ -63,10 +63,22 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
             $skyLinkBillingContact
         );
 
-        $this->mapShippingAddress(
-            $magentoShippingAddress,
-            $skyLinkCustomer->getShippingContact()
-        );
+        // If the customer was created in Magento, likely they have one address for both billing and shipping.
+        // Therefore, we don't need to update the shipping address (as it's a slightly less detailed
+        // version of the billing address)
+        if ($magentoShippingAddress !== $magentoBillingAddress) {
+            $this->mapShippingAddress(
+                $magentoShippingAddress,
+                $skyLinkCustomer->getShippingContact()
+            );
+
+            // Reattach the addresses
+            $magentoCustomer->setAddresses([$magentoBillingAddress, $magentoShippingAddress]);
+
+        // Reattach the new address
+        } else {
+            $magentoCustomer->setAddresses([$magentoBillingAddress]);
+        }
     }
 
     private function mapBasicInfo(CustomerInterface $magentoCustomer, SkyLinkBillingContact $skyLinkBillingContact)

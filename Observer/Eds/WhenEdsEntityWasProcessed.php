@@ -39,6 +39,6 @@ class WhenEdsEntityWasProcessed implements ObserverInterface
             return;
         }
 
-        // $this->changeSetService->process($changeSet);
+        $changeSetService->process($changeSet);
     }
 }

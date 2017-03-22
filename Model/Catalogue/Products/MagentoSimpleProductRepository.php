@@ -40,12 +40,6 @@ class MagentoSimpleProductRepository implements MagentoSimpleProductRepositoryIn
      */
     public function getListOfMappedSkyLinkProductIds()
     {
-        // select `catalog_product_entity_varchar`.`value` as `skylink_product_id`
-        // from `catalog_product_entity_varchar`
-        // join `eav_attribute` on `catalog_product_entity_varchar`.`attribute_id` = `eav_attribute`.`attribute_id`
-        // where `eav_attribute`.`attribute_code` = 'skylink_product_id'
-        // order by `skylink_product_id` asc;
-
         $results = $this->connection->fetchAll(
             $this->connection
                 ->select()

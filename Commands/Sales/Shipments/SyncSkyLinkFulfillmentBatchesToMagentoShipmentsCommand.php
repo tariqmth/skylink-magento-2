@@ -24,7 +24,7 @@ class SyncSkyLinkFulfillmentBatchesToMagentoShipmentsCommand extends NormallyQue
      */
     public function getQueue()
     {
-        return 'orders';
+        return 'fulfillments';
     }
 
     /**

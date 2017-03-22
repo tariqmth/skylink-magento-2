@@ -30,7 +30,7 @@ class SyncSkyLinkPriceGroupToMagentoCustomerGroupCommand extends AlwaysQueuedCom
      */
     public function getQueue()
     {
-        return 'customer_groups';
+        return 'price-groups';
     }
 
     /**

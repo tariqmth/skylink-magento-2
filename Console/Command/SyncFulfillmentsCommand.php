@@ -56,7 +56,7 @@ class SyncFulfillmentsCommand extends Command
         if (true === $shouldBeQueued) {
             $output->writeln(sprintf('Queueing SkyLink Order #%s to have it\'s fulfillments synced...', $skyLinkOrderId));
             $this->commandBus->handle($command);
-            $output->writeln("<info>Ensure that an instance of 'retail-express:command-bus:consume-queue orders' is running to perform the actual sync.</info>");
+            $output->writeln("<info>Ensure that an instance of 'retail-express:command-bus:consume-queue fulfillments' is running to perform the actual sync.</info>");
 
             return;
         }

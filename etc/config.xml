@@ -44,6 +44,13 @@
             <customers>
                 <customer_group_tax_class_id>3</customer_group_tax_class_id>
                 <price_group_type>standard</price_group_type>
+                <use_fake_data>1</use_fake_data>
+                <fake_data_first_name>{{missing_first_name}}</fake_data_first_name>
+                <fake_data_last_name>{{missing_last_name}}</fake_data_last_name>
+                <fake_data_street>{{missing_street}}</fake_data_street>
+                <fake_data_city>{{missing_city}}</fake_data_city>
+                <fake_data_telephone>{{missing_telephone}}</fake_data_telephone>
+                <fake_data_country_code>AU</fake_data_country_code>
             </customers>
             <products>
                 <name_attribute>description</name_attribute>

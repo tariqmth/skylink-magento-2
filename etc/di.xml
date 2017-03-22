@@ -14,6 +14,7 @@
     <!-- Customer implementations -->
     <preference for="RetailExpress\SkyLink\Api\Customers\ConfigInterface" type="RetailExpress\SkyLink\Model\Customers\Config"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\SkyLinkContactBuilderInterface" type="RetailExpress\SkyLink\Model\Customers\SkyLinkContactBuilder"/>
+    <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerDataFakerInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerDataFaker"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerRepositoryInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerService"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface" type="RetailExpress\SkyLink\Model\Customers\MagentoCustomerMapper"/>
@@ -26,13 +27,18 @@
 
     <type name="Magento\Customer\Api\AddressRepositoryInterface">
 
+        <plugin name="skylink_address_repository_data_faker" type="RetailExpress\SkyLink\Plugin\Magento\Customers\AddressRepositoryDataFakerPlugin" sortOrder="10" disabled="false"/>
+
         <!-- Create a plugin to sync the customer when the address is changed -->
-        <plugin name="skylink_address_repository" type="RetailExpress\SkyLink\Plugin\Magento\Customers\AddressRepositoryCustomerSyncerPlugin" sortOrder="20" disabled="false"/>
+        <plugin name="skylink_address_repository_syncer" type="RetailExpress\SkyLink\Plugin\Magento\Customers\AddressRepositoryCustomerSyncerPlugin" sortOrder="20" disabled="false"/>
     </type>
 
-    <!-- Create a plugin to sync the customer when they're saved -->
     <type name="Magento\Customer\Api\CustomerRepositoryInterface">
-        <plugin name="skylink_customer_repository" type="RetailExpress\SkyLink\Plugin\Magento\Customers\CustomerRepositorySyncerPlugin" sortOrder="10" disabled="false"/>
+
+        <plugin name="skylink_customer_repository_data_faker" type="RetailExpress\SkyLink\Plugin\Magento\Customers\CustomerRepositoryDataFakerPlugin" sortOrder="10" disabled="false"/>
+
+        <!-- Create a plugin to sync the customer when they're saved -->
+        <plugin name="skylink_customer_repository_syncer" type="RetailExpress\SkyLink\Plugin\Magento\Customers\CustomerRepositorySyncerPlugin" sortOrder="20" disabled="false"/>
     </type>
 
     <!-- Create a plugin to bust Magento's customer cache during command handling -->

@@ -6,28 +6,28 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use RetailExpress\CommandBus\Api\CommandBusInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface;
-use RetailExpress\SkyLink\Api\Customers\MagentoCustomerGroupRepositoryInterface;
 use RetailExpress\SkyLink\Commands\Catalogue\Products\SyncSkyLinkProductToMagentoProductCommand;
 use RetailExpress\SkyLink\Commands\Customers\SyncSkyLinkPriceGroupToMagentoCustomerGroupCommand;
 use RetailExpress\SkyLink\Eds\Entity;
 use RetailExpress\SkyLink\Eds\EntityType;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
-use RetailExpress\SkyLink\Sdk\Customers\PriceGroups\PriceGroupKey as SkyLinkPriceGroupKey;
+use RetailExpress\SkyLink\Sdk\Customers\PriceGroups\PriceGroup as SkyLinkPriceGroup;
+use RetailExpress\SkyLink\Sdk\Customers\PriceGroups\PriceGroupRepositoryFactory;
 
 class WhenEdsChangeSetWasRegisteredForCustomerGroups implements ObserverInterface
 {
-    private $magentoCustomerGroupRepository;
+    private $skyLinkPriceGroupRepositoryFactory;
 
     private $magentoSimpleProductRepository;
 
     private $commandBus;
 
     public function __construct(
-        MagentoCustomerGroupRepositoryInterface $magentoCustomerGroupRepository,
+        PriceGroupRepositoryFactory $skyLinkPriceGroupRepositoryFactory,
         MagentoSimpleProductRepositoryInterface $magentoSimpleProductRepository,
         CommandBusInterface $commandBus
     ) {
-        $this->magentoCustomerGroupRepository = $magentoCustomerGroupRepository;
+        $this->skyLinkPriceGroupRepositoryFactory = $skyLinkPriceGroupRepositoryFactory;
         $this->magentoSimpleProductRepository = $magentoSimpleProductRepository;
         $this->commandBus = $commandBus;
     }
@@ -69,12 +69,15 @@ class WhenEdsChangeSetWasRegisteredForCustomerGroups implements ObserverInterfac
 
     private function createSyncSkyLinkPriceGroupToMagentoCustomerGroupCommands()
     {
-        return array_map(function (SkyLinkPriceGroupKey $skyLinkPriceGroupKey) {
+        /* @var \RetailExpress\SkyLink\Sdk\Customers\PriceGroups\PriceGroupRepository $skyLinkPriceGroupRepository */
+        $skyLinkPriceGroupRepository = $this->skyLinkPriceGroupRepositoryFactory->create();
+
+        return array_map(function (SkyLinkPriceGroup $skyLinkPriceGroup) {
             $command = new SyncSkyLinkPriceGroupToMagentoCustomerGroupCommand();
-            $command->skyLinkPriceGroupKey = (string) $skyLinkPriceGroupKey;
+            $command->skyLinkPriceGroupKey = (string) $skyLinkPriceGroup->getKey();
 
             return $command;
-        }, $this->magentoCustomerGroupRepository->getListOfMappedPriceGroupKeys());
+        }, $skyLinkPriceGroupRepository->all());
     }
 
     private function createSyncSkyLinkProductToMagentoProductCommands()

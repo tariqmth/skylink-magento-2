@@ -22,7 +22,7 @@ class SyncSkyLinkAttributeToMagentoAttributeCommand extends NormallyQueuedComman
     /**
      * The Magento Attribute Code.
      *
-     * @var string
+     * @var string|null
      */
     public $magentoAttributeCode;
 

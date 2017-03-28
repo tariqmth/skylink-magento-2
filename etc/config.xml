@@ -49,8 +49,9 @@
                 <fake_data_last_name>{{missing_last_name}}</fake_data_last_name>
                 <fake_data_street>{{missing_street}}</fake_data_street>
                 <fake_data_city>{{missing_city}}</fake_data_city>
-                <fake_data_telephone>{{missing_telephone}}</fake_data_telephone>
+                <fake_data_postcode>{{missing_postcode}}</fake_data_postcode>
                 <fake_data_country_code>AU</fake_data_country_code>
+                <fake_data_telephone>{{missing_telephone}}</fake_data_telephone>
             </customers>
             <products>
                 <name_attribute>description</name_attribute>

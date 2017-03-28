@@ -63,11 +63,11 @@ interface ConfigInterface
     public function getFakeDataCity();
 
     /**
-     * Get the fake data for "telephone".
+     * Get the fake data for "postcode".
      *
      * @return \ValueObjects\StringLiteral\StringLiteral
      */
-    public function getFakeDataTelephone();
+    public function getFakeDataPostcode();
 
     /**
      * Get the fake data for "country code".
@@ -75,4 +75,11 @@ interface ConfigInterface
      * @return \ValueObjects\Geography\CountryCode
      */
     public function getFakeDataCountryCode();
+
+    /**
+     * Get the fake data for "telephone".
+     *
+     * @return \ValueObjects\StringLiteral\StringLiteral
+     */
+    public function getFakeDataTelephone();
 }

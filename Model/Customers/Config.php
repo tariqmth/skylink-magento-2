@@ -87,9 +87,9 @@ class Config implements ConfigInterface
     /**
      * {@inheritdoc}
      */
-    public function getFakeDataTelephone()
+    public function getFakeDataPostcode()
     {
-        return new StringLiteral($this->scopeConfig->getValue('skylink/customers/fake_data_telephone'));
+        return new StringLiteral($this->scopeConfig->getValue('skylink/customers/fake_data_postcode'));
     }
 
     /**
@@ -98,5 +98,13 @@ class Config implements ConfigInterface
     public function getFakeDataCountryCode()
     {
         return CountryCode::fromNative($this->scopeConfig->getValue('skylink/customers/fake_data_country_code'));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFakeDataTelephone()
+    {
+        return new StringLiteral($this->scopeConfig->getValue('skylink/customers/fake_data_telephone'));
     }
 }

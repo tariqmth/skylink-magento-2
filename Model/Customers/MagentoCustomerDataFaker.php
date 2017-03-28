@@ -64,12 +64,16 @@ class MagentoCustomerDataFaker implements MagentoCustomerDataFakerInterface
                     $magentoAddress->setCity((string) $this->customerConfig->getFakeDataCity());
                     break;
 
-                case 'telephone':
-                    $magentoAddress->setTelephone((string) $this->customerConfig->getFakeDataTelephone());
+                case 'postcode':
+                    $magentoAddress->setPostcode((string) $this->customerConfig->getFakeDataPostcode());
                     break;
 
                 case 'countryId':
                     $magentoAddress->setCountryId((string) $this->customerConfig->getFakeDataCountryCode());
+                    break;
+
+                case 'telephone':
+                    $magentoAddress->setTelephone((string) $this->customerConfig->getFakeDataTelephone());
                     break;
 
                 default:

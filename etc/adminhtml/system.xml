@@ -202,7 +202,7 @@
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\OptionalUrlKeyAttribute</source_model>
                     <comment>Choose an optional third product attribute that we will use to generate the URL key using.</comment>
                     <depends>
-                        <field id="url_key_attribute_code_3" negative="1">0</field>
+                        <field id="url_key_attribute_code_2" negative="1">0</field>
                     </depends>
                 </field>
                 <field id="configurable_product_match_threshold" translate="label" type="select" sortOrder="800" showInDefault="1" canRestore="1">

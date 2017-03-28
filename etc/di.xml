@@ -105,6 +105,11 @@
         </arguments>
     </type>
 
+    <!-- Create a plugin for when attribute options are not synced (typically this occurs with custom_* options) -->
+    <type name="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface">
+        <plugin name="skylink_attribute_option_syncer" type="RetailExpress\SkyLink\Plugin\SkyLink\Catalogue\Products\MagentoProductMapperAttributeOptionSyncerPlugin" sortOrder="10" disabled="false"/>
+    </type>
+
     <!-- Create a plugin to usefully log validation issues with managing Magento Products -->
     <type name="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductServiceInterface">
         <plugin name="skylink_magento_configurable_product_service_validation" type="RetailExpress\SkyLink\Plugin\SkyLink\Catalogue\Products\MagentoConfigurableProductServiceValidationPlugin" sortOrder="10" disabled="false"/>

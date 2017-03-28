@@ -10,7 +10,6 @@ use Magento\Catalog\Model\Product\Visibility;
 use Magento\ConfigurableProduct\Api\Data\OptionInterface;
 use Magento\ConfigurableProduct\Api\Data\OptionInterfaceFactory;
 use Magento\ConfigurableProduct\Api\Data\OptionValueInterfaceFactory;
-use Magento\ConfigurableProduct\Model\Product\Type\ConfigurableFactory as ConfigurableProductTypeFactory;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductLinkManagementInterface;
 use RetailExpress\SkyLink\Exceptions\Products\TooManyParentProductsException;
@@ -19,8 +18,6 @@ use RetailExpress\SkyLink\Sdk\Catalogue\Products\MatrixPolicy as SkyLinkMatrixPo
 
 class MagentoConfigurableProductLinkManagement implements MagentoConfigurableProductLinkManagementInterface
 {
-    private $configurableProductTypeFactory;
-
     private $productExtensionFactory;
 
     private $optionFactory;
@@ -32,40 +29,17 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
     private $baseMagentoProductRepository;
 
     public function __construct(
-        ConfigurableProductTypeFactory $configurableProductTypeFactory,
         ProductExtensionFactory $productExtensionFactory,
         OptionInterfaceFactory $optionFactory,
         OptionValueInterfaceFactory $optionValueFactory,
         MagentoAttributeRepositoryInterface $magentoAttributeRepository,
         ProductRepositoryInterface $baseMagentoProductRepository
     ) {
-        $this->configurableProductTypeFactory = $configurableProductTypeFactory;
         $this->productExtensionFactory = $productExtensionFactory;
         $this->optionFactory = $optionFactory;
         $this->optionValueFactory = $optionValueFactory;
         $this->magentoAttributeRepository = $magentoAttributeRepository;
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getParentProductId(ProductInterface $childProduct)
-    {
-        /* @var \Magento\ConfigurableProduct\Model\Product\Type\Configurable $configurableProductType */
-        $configurableProductType = $this->configurableProductTypeFactory->create();
-
-        // Grab our parent IDs
-        $parentIds = $configurableProductType->getParentIdsByChild($childProduct->getId());
-        $parentIdsCount = count($parentIds);
-
-        // If a child has been assigned to multiple parents, we can't possibly determine which
-        // one to use, we'll just throw an exception and the user can resolve this manually.
-        if ($parentIdsCount > 1) {
-            throw TooManyParentProductsException::withChildProduct($childProduct, $parentIdsCount);
-        }
-
-        return current($parentIds);
     }
 
     /**

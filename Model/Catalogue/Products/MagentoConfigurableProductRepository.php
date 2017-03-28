@@ -2,110 +2,44 @@
 
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
-use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
-use RetailExpress\SkyLink\Api\Catalogue\Products\ConfigInterface as ProductConfigInterface;
-use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductLinkManagementInterface;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
+use Magento\Framework\Api\SearchCriteriaBuilder;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductRepositoryInterface;
-use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface;
-use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
+use ValueObjects\StringLiteral\StringLiteral;
 
 class MagentoConfigurableProductRepository implements MagentoConfigurableProductRepositoryInterface
 {
-    private $magentoSimpleProductRepository;
-
-    private $magentoConfigurableProductLinkManagement;
-
-    private $productConfig;
-
     private $baseMagentoProductRepository;
 
+    private $searchCriteriaBuilder;
+
     public function __construct(
-        MagentoSimpleProductRepositoryInterface $magentoSimpleProductRepository,
-        MagentoConfigurableProductLinkManagementInterface $magentoConfigurableProductLinkManagement,
-        ProductConfigInterface $productConfig,
-        ProductRepositoryInterface $baseMagentoProductRepository
+        ProductRepositoryInterface $baseMagentoProductRepository,
+        SearchCriteriaBuilder $searchCriteriaBuilder
     ) {
-        $this->magentoSimpleProductRepository = $magentoSimpleProductRepository;
-        $this->magentoConfigurableProductLinkManagement = $magentoConfigurableProductLinkManagement;
-        $this->productConfig = $productConfig;
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function findBySkyLinkProductIds(array $skyLinkProductIds)
+    public function findBySkyLinkManufacturerSku(StringLiteral $skyLinkManufacturerSku)
     {
-        $childrenProducts = $this->findSimpleProductsBySkyLinkProductIds($skyLinkProductIds);
+        $this->searchCriteriaBuilder->addFilter('type_id', ConfigurableType::TYPE_CODE);
+        $this->searchCriteriaBuilder->addFilter('manufacturer_sku', (string) $skyLinkManufacturerSku);
+        $searchCriteria = $this->searchCriteriaBuilder->create();
 
-        if (0 === count($childrenProducts)) {
-            return null;
+        $existingProducts = $this->baseMagentoProductRepository->getList($searchCriteria);
+        $existingProductMatches = $existingProducts->getTotalCount();
+
+        if ($existingProductMatches > 1) {
+            throw TooManyProductMatchesException::withSkyLinkManufacturerSku(
+                $skyLinkManufacturerSku,
+                $existingProductMatches
+            );
         }
 
-        $parentIdsToOccurances = $this->getSortedParentIdsToOccurances($childrenProducts);
-
-        if (0 === count($parentIdsToOccurances)) {
-            return null;
-        }
-
-        $parentIdThatMeetsThreshold = $this->getFirstParentIdToMeetThreshold($parentIdsToOccurances);
-
-        if (null !== $parentIdThatMeetsThreshold) {
-            return $this->baseMagentoProductRepository->getById($parentIdThatMeetsThreshold);
-        }
-    }
-
-    private function findSimpleProductsBySkyLinkProductIds(array $skyLinkProductIds)
-    {
-        $magentoSimpleProducts = array_map(function (SkyLinkProductId $skyLinkProductId) {
-            return $this->magentoSimpleProductRepository->findBySkyLinkProductId($skyLinkProductId);
-        }, $skyLinkProductIds);
-
-        return array_values(array_filter($magentoSimpleProducts));
-    }
-
-    private function getSortedParentIdsToOccurances(array $childrenProducts)
-    {
-        // Grab the parent IDs
-        $parentIds = $this->getParentIds($childrenProducts);
-
-        // Transform the array into parent ID => occurances
-        $parentIdsToOccurances = array_count_values($parentIds);
-
-        // Sort the occurances by largest first, maintaining key (in this case, parent ID) association
-        arsort($parentIdsToOccurances);
-
-        return $parentIdsToOccurances;
-    }
-
-    private function getParentIds(array $childrenProducts)
-    {
-        $parentIds = array_map(function (ProductInterface $childProduct) {
-            return $this->magentoConfigurableProductLinkManagement->getParentProductId($childProduct);
-        }, $childrenProducts);
-
-        return array_values(array_filter($parentIds));
-    }
-
-    private function getFirstParentIdToMeetThreshold(array $parentIdsToOccurances)
-    {
-        // Determine the total occurances within the IDs to occurances array, note that
-        // this may not actually match the total number of products passed in, but what
-        // previously existed (this is by design that this is the way it works).
-        $totalOccurances = array_sum($parentIdsToOccurances);
-
-        $threshold = $this->productConfig->getConfigurableProductMatchThreshold();
-
-        foreach ($parentIdsToOccurances as $parentId => $occurances) {
-            $occurancesAsDecimal = $occurances / $totalOccurances;
-
-            // Compare our occurance against the configured threshold
-            if ($occurancesAsDecimal < $threshold->toNative()) {
-                continue;
-            }
-
-            return $parentId;
+        if ($existingProductMatches === 1) {
+            return current($existingProducts->getItems());
         }
     }
 }

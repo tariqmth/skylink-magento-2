@@ -8,13 +8,6 @@ use RetailExpress\SkyLink\Sdk\Catalogue\Products\MatrixPolicy as SkyLinkMatrixPo
 interface MagentoConfigurableProductLinkManagementInterface
 {
     /**
-     * Gets the ID of the parent product for the given child product.
-     *
-     * @return int|null
-     */
-    public function getParentProductId(ProductInterface $childProduct);
-
-    /**
      * Links the given children products to the configurable product provided.
      *
      * @param SkyLinkMatrixPolicy $skyLinkMatrixPolicy

@@ -79,10 +79,10 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
             return $skyLinkProduct->getId();
         }, $skyLinkMatrix->getProducts());
 
-        // Attempt to find an existing product using those IDs
+        // Attempt to find an existing product using it's manufacturer SKU
         $magentoConfigurableProduct = $this
             ->magentoConfigurableProductRepository
-            ->findBySkyLinkProductIds($skyLinkProductIds);
+            ->findBySkyLinkManufacturerSku($skyLinkMatrix->getManufacturerSku());
 
         if (null !== $magentoConfigurableProduct) {
             $this->logger->debug('Found existing Magento Configurable Product appropriate for SkyLink Simple Products in the SkyLink Product Matrix, updating it.', [

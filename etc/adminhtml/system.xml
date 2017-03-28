@@ -143,9 +143,9 @@
             </group>
             <group id="general" translate="label" type="text" sortOrder="200" showInDefault="1" showInWebsite="1">
                 <label>General Settings</label>
-                <field id="sales_channel_id" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1">
+                <field id="sales_channel_id" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1">
                     <label>Sales Channel ID</label>
-                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\SalesChannelId</source_model>
+                    <validate>not-negative-amount integer</validate>
                 </field>
             </group>
             <group id="customers" translate="label" type="text" sortOrder="300" showInDefault="1">

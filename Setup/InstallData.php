@@ -104,6 +104,9 @@ class InstallData implements InstallDataInterface
                 'label' => 'SkyLink Product ID',
                 'required' => false,
                 'user_defined' => true,
+                'is_used_in_grid' => true,
+                'is_visible_in_grid' => true,
+                'is_filterable_in_grid' => true,
             ]
         );
 
@@ -149,6 +152,9 @@ class InstallData implements InstallDataInterface
                         'input' => 'select',
                         'user_defined' => true,
                         'filterable' => 1, // Filterable (with results) @todo look for constant
+                        'is_used_in_grid' => true,
+                        'is_visible_in_grid' => true,
+                        'is_filterable_in_grid' => true,
                     ]
                 );
             }
@@ -182,6 +188,9 @@ class InstallData implements InstallDataInterface
                 'source' => PickupGroupSourceModel::class,
                 'default' => (string) PickupGroup::getDefault(),
                 'user_defined' => true,
+                'is_used_in_grid' => true,
+                'is_visible_in_grid' => true,
+                'is_filterable_in_grid' => true,
             ]
         );
 

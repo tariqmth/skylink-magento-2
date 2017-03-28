@@ -104,6 +104,7 @@ class InstallData implements InstallDataInterface
                 'label' => 'SkyLink Product ID',
                 'required' => false,
                 'user_defined' => true,
+                'apply_to' => 'simple',
                 'is_used_in_grid' => true,
                 'is_visible_in_grid' => true,
                 'is_filterable_in_grid' => true,

@@ -27,7 +27,7 @@ class MagentoCustomerServiceValidationPlugin
         callable $proceed,
         SkyLinkCustomer $skyLinkCustomer
     ) {
-        return $this->handelValidationErrors(
+        return $this->handleValidationErrors(
             function () use ($proceed, $skyLinkCustomer) {
                 return $proceed($skyLinkCustomer);
             },
@@ -41,7 +41,7 @@ class MagentoCustomerServiceValidationPlugin
         CustomerInterface $magentoCustomer,
         SkyLinkCustomer $skyLinkCustomer
     ) {
-        return $this->handelValidationErrors(
+        return $this->handleValidationErrors(
             function () use ($proceed, $magentoCustomer, $skyLinkCustomer) {
                 return $proceed($magentoCustomer, $skyLinkCustomer);
             },
@@ -49,7 +49,7 @@ class MagentoCustomerServiceValidationPlugin
         );
     }
 
-    private function handelValidationErrors(
+    private function handleValidationErrors(
         callable $callback,
         SkyLinkCustomer $skyLinkCustomer,
         CustomerInterface $magentoCustomer = null

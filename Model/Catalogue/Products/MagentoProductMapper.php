@@ -2,6 +2,7 @@
 
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
+use DateTimeImmutable;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product\Visibility;
 use Magento\Store\Api\Data\StoreInterface;
@@ -146,8 +147,32 @@ class MagentoProductMapper implements MagentoProductMapperInterface
     {
         // Setup pricing for product
         $magentoProduct->setPrice($skyLinkProduct->getPricingStructure()->getRegularPrice()->toNative());
+
         $magentoProduct->unsetData('special_price');
-        $magentoProduct->setCustomAttribute('special_price', $skyLinkProduct->getPricingStructure()->getSpecialPrice()->toNative());
+        $magentoProduct->unsetData('special_from_date');
+        $magentoProduct->unsetData('special_to_date');
+
+        if (false === $skyLinkProduct->getPricingStructure()->hasSpecialPrice()) {
+            return;
+        }
+
+        $skyLinkSpecialPrice = $skyLinkProduct->getPricingStructure()->getSpecialPrice();
+
+        $magentoProduct->setCustomAttribute('special_price', $skyLinkSpecialPrice->getPrice()->toNative());
+
+        if ($skyLinkSpecialPrice->hasStartDate()) {
+            $magentoProduct->setCustomAttribute(
+                'special_from_date',
+                $this->dateTimeToAttributeValue($skyLinkSpecialPrice->getStartDate())
+            );
+        }
+
+        if ($skyLinkSpecialPrice->hasEndDate()) {
+            $magentoProduct->setCustomAttribute(
+                'special_to_date',
+                $this->dateTimeToAttributeValue($skyLinkSpecialPrice->getEndDate())
+            );
+        }
     }
 
     private function mapAttributes(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
@@ -238,5 +263,8 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         return $magentoAttributeOption;
     }
 
-
+    private function dateTimeToAttributeValue(DateTimeImmutable $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 }

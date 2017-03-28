@@ -42,6 +42,14 @@
 
             </group>
         </section>
+        <section id="customer">
+            <group id="account_share">
+                <field id="scope">
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\CustomerScope</source_model>
+                    <comment>Becuase Customers are global in Retail Express, Customers can only be global in Magento.</comment>
+                </field>
+            </group>
+        </section>
         <section id="carriers">
             <group id="skylinkpickup" translate="label" type="text" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Click and Collect</label>

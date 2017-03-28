@@ -8,6 +8,8 @@ use Magento\Customer\Model\Customer;
 use Magento\Eav\Model\Config as EavConfig;
 use Magento\Eav\Setup\EavSetup;
 use Magento\Eav\Setup\EavSetupFactory;
+use Magento\Framework\App\Cache\Type\Config as ConfigCacheType;
+use Magento\Framework\App\Cache\TypeListInterface as CacheTypeListInterface;
 use Magento\Framework\App\Config\MutableScopeConfigInterface;
 use \Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Setup\InstallDataInterface;
@@ -27,6 +29,8 @@ class InstallData implements InstallDataInterface
 
     private $indexerRegistry;
 
+    private $cacheTypeList;
+
     /**
      * @todo rework this with \RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeRepository
      */
@@ -42,12 +46,14 @@ class InstallData implements InstallDataInterface
         EavSetupFactory $eavSetupFactory,
         EavConfig $eavConfig,
         MutableScopeConfigInterface $scopeConfig,
-        IndexerRegistry $indexerRegistry
+        IndexerRegistry $indexerRegistry,
+        CacheTypeListInterface $cacheTypeList
     ) {
         $this->eavSetupFactory = $eavSetupFactory;
         $this->eavConfig = $eavConfig;
         $this->scopeConfig = $scopeConfig;
         $this->indexerRegistry = $indexerRegistry;
+        $this->cacheTypeList = $cacheTypeList;
     }
 
     /**
@@ -67,6 +73,7 @@ class InstallData implements InstallDataInterface
         $this->disableConfiguredMultishipping($setup);
         $this->addQtyOnOrderToProducts($eavSetup);
         $this->makeProductPricingConfiguredPerWebsite($setup);
+        $this->makeCustomerSharingGlobal($setup);
     }
 
     private function addSkyLinkCustomerIdToCustomers(EavSetup $eavSetup)
@@ -206,6 +213,8 @@ class InstallData implements InstallDataInterface
                 'path = ?' => 'multishipping/options/checkout_multiple',
             ]
         );
+
+        $this->cacheTypeList->invalidate(ConfigCacheType::TYPE_IDENTIFIER);
     }
 
     private function addQtyOnOrderToProducts(EavSetup $eavSetup)
@@ -234,7 +243,20 @@ class InstallData implements InstallDataInterface
             ]
         );
 
+        $this->cacheTypeList->invalidate(ConfigCacheType::TYPE_IDENTIFIER);
         $this->indexerRegistry->get(ProductPriceIndexer::INDEXER_ID)->invalidate();
+    }
+
+    private function makeCustomerSharingGlobal(ModuleDataSetupInterface $setup)
+    {
+        $setup->getConnection()->delete(
+            $setup->getTable('core_config_data'),
+            [
+                'path = ?' => 'customer/account_share/scope',
+            ]
+        );
+
+        $this->cacheTypeList->invalidate(ConfigCacheType::TYPE_IDENTIFIER);
     }
 
     private function addAttributeToDefaultGroupInAllSets(EavSetup $eavSetup, $magentoAttributeCode, $entityType)

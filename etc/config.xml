@@ -23,6 +23,11 @@
                 <item_delivery_method>store</item_delivery_method>
             </skylinkpickup>
         </carriers>
+        <customer>
+            <account_share>
+                <scope>0</scope>
+            </account_share>
+        </customer>
         <multishipping>
             <options>
                 <checkout_multiple>0</checkout_multiple>

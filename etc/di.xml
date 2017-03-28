@@ -217,4 +217,11 @@
         </arguments>
     </type>
 
+    <!-- Configure the right bernard consumer instance to go into our observer for failed events -->
+    <type name="RetailExpress\SkyLink\Observer\CommandBus\WhenQueuedCommandFailed">
+        <arguments>
+            <argument name="consumer" xsi:type="object">bernardConsumer</argument>
+        </arguments>
+    </type>
+
 </config>

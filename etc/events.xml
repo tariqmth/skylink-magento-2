@@ -49,4 +49,9 @@
         <observer name="eds" instance="RetailExpress\SkyLink\Observer\Eds\WhenEdsEntityWasProcessed"/>
     </event>
 
+    <!-- When a queued command fails -->
+    <event name="bernard_reject">
+        <observer name="skylink_logger" instance="RetailExpress\SkyLink\Observer\CommandBus\WhenQueuedCommandFailed"/>
+    </event>
+
 </config>

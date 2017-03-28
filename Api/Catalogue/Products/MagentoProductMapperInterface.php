@@ -12,6 +12,9 @@ interface MagentoProductMapperInterface
      *
      * @param ProductInterface $magentoProduct
      * @param SkyLinkProduct   $skyLinkProduct
+     *
+     * @throws \RetailExpress\SkyLink\Exceptions\Products\AttributeNotMappedException
+     * @throws \RetailExpress\SkyLink\Exceptions\Products\AttributeOptionNotMappedException
      */
     public function mapMagentoProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct);
 

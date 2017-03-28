@@ -60,6 +60,7 @@ class InstallData implements InstallDataInterface
 
         $this->addSkyLinkCustomerIdToCustomers($eavSetup);
         $this->addSkyLinkProductIdsToProducts($eavSetup);
+        $this->addManufacturerSkuToProducts($eavSetup);
         $this->addSkyLinkAttributeCodesToProducts($eavSetup);
         $this->addManufacturerToAttributeSets($eavSetup);
         $this->addPickupGroupToProducts($eavSetup);
@@ -103,6 +104,26 @@ class InstallData implements InstallDataInterface
                 'label' => 'SkyLink Product ID',
                 'required' => false,
                 'user_defined' => true,
+            ]
+        );
+
+        $this->addAttributeToDefaultGroupInAllSets($eavSetup, $attributeCode, Product::ENTITY);
+    }
+
+    private function addManufacturerSkuToProducts(EavSetup $eavSetup)
+    {
+        $attributeCode = 'manufacturer_sku';
+
+        $eavSetup->addAttribute(
+            Product::ENTITY,
+            $attributeCode,
+            [
+                'label' => 'Manufacturer SKU',
+                'required' => false,
+                'user_defined' => true,
+                'is_used_in_grid' => true,
+                'is_visible_in_grid' => true,
+                'is_filterable_in_grid' => true,
             ]
         );
 

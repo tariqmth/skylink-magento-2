@@ -61,6 +61,10 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         }
 
         $magentoProduct->setSku((string) $skyLinkProduct->getSku());
+
+        $magentoProduct->unsetData('manufacturer_sku');
+        $magentoProduct->setData('manufacturer_sku', (string) $skyLinkProduct->getManufacturerSku());
+
         $this->mapName($magentoProduct, $skyLinkProduct);
 
         $this->mapPrices($magentoProduct, $skyLinkProduct);

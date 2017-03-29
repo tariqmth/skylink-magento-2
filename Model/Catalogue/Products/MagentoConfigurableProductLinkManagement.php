@@ -177,7 +177,7 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
         array_walk($childrenProducts, function (ProductInterface $childProduct) {
             $currentVisibility = $childProduct->getVisibility();
 
-            if (Visibility::VISIBILITY_NOT_VISIBLE === $currentVisibility) {
+            if (Visibility::VISIBILITY_NOT_VISIBLE == $currentVisibility) { // Non-strict comparison
                 return;
             }
 

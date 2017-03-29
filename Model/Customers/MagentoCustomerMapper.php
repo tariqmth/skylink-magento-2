@@ -5,6 +5,8 @@ namespace RetailExpress\SkyLink\Model\Customers;
 use Magento\Customer\Api\Data\AddressInterface;
 use Magento\Customer\Api\Data\CustomerExtensionFactory;
 use Magento\Customer\Api\Data\CustomerInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use RetailExpress\SkyLink\Api\Customers\MagentoCustomerAddressMapperInterface;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerGroupRepositoryInterface;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerMapperInterface;
 use RetailExpress\SkyLink\Api\Customers\ConfigInterface;
@@ -21,14 +23,22 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
 
     private $magentoCustomerGroupRepository;
 
+    private $magentoStoreManager;
+
+    private $magentoCustomerAddressMapper;
+
     public function __construct(
         ConfigInterface $customerConfig,
         MagentoCustomerGroupRepositoryInterface $magentoCustomerGroupRepository,
-        CustomerExtensionFactory $customerExtensionFactory
+        CustomerExtensionFactory $customerExtensionFactory,
+        StoreManagerInterface $magentoStoreManager,
+        MagentoCustomerAddressMapperInterface $magentoCustomerAddressMapper
     ) {
         $this->customerConfig = $customerConfig;
         $this->magentoCustomerGroupRepository = $magentoCustomerGroupRepository;
         $this->customerExtensionFactory = $customerExtensionFactory;
+        $this->magentoStoreManager = $magentoStoreManager;
+        $this->magentoCustomerAddressMapper = $magentoCustomerAddressMapper;
     }
 
     /**
@@ -54,11 +64,13 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
 
         $this->mapBasicInfo($magentoCustomer, $skyLinkBillingContact);
 
+        $this->assignToDefaultWebsite($magentoCustomer);
+
         $this->mapCustomerGroup($magentoCustomer, $skyLinkCustomer);
 
         $this->mapSubscription($magentoCustomer, $skyLinkCustomer);
 
-        $this->mapBillingAddress(
+        $this->magentoCustomerAddressMapper->mapBillingAddress(
             $magentoBillingAddress,
             $skyLinkBillingContact
         );
@@ -67,7 +79,7 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
         // Therefore, we don't need to update the shipping address (as it's a slightly less detailed
         // version of the billing address)
         if ($magentoShippingAddress !== $magentoBillingAddress) {
-            $this->mapShippingAddress(
+            $this->magentoCustomerAddressMapper->mapShippingAddress(
                 $magentoShippingAddress,
                 $skyLinkCustomer->getShippingContact()
             );
@@ -87,6 +99,18 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
             ->setFirstname((string) $skyLinkBillingContact->getName()->getFirstName())
             ->setLastname((string) $skyLinkBillingContact->getName()->getLastName())
             ->setEmail((string) $skyLinkBillingContact->getEmailAddress());
+    }
+
+    /**
+     * Because we force customers to be shared globally, then we will just assign the customer the default website.
+     *
+     * @param CustomerInterface $magentoCustomer
+     */
+    private function assignToDefaultWebsite(CustomerInterface $magentoCustomer)
+    {
+        $websiteId = $this->magentoStoreManager->getDefaultStoreView()->getWebsiteId();
+
+        $magentoCustomer->setWebsiteId($websiteId);
     }
 
     private function mapCustomerGroup(CustomerInterface $magentoCustomer, SkyLinkCustomer $skyLinkCustomer)
@@ -123,40 +147,5 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
         $extendedAttributes->setIsSubscribed(
             $skyLinkCustomer->getNewsletterSubscription()->toNative()
         );
-    }
-
-    private function mapBillingAddress(AddressInterface $magentoBillingAddress, SkyLinkBillingContact $skyLinkBillingContact)
-    {
-        $this->mapCommonAddressInfo($magentoBillingAddress, $skyLinkBillingContact);
-
-        $magentoBillingAddress->setFax((string) $skyLinkBillingContact->getFaxNumber());
-    }
-
-    private function mapShippingAddress(
-        AddressInterface $magentoShippingAddress,
-        SkyLinkShippingContact $skyLinkShippingContact
-    ) {
-        $this->mapCommonAddressInfo($magentoShippingAddress, $skyLinkShippingContact);
-    }
-
-    private function mapCommonAddressInfo(AddressInterface $magentoAddress, $skyLinkContact)
-    {
-        $magentoAddress
-            ->setFirstname((string) $skyLinkContact->getName()->getFirstName())
-            ->setLastname((string) $skyLinkContact->getName()->getLastName())
-            ->setCompany((string) $skyLinkContact->getCompanyName())
-            ->setStreet([
-                (string) $skyLinkContact->getAddress()->getLine1(),
-                (string) $skyLinkContact->getAddress()->getLine2(),
-                (string) $skyLinkContact->getAddress()->getLine3(),
-            ])
-            ->setCity((string) $skyLinkContact->getAddress()->getCity())
-            ->setPostcode((string) $skyLinkContact->getAddress()->getPostcode())
-            ->setTelephone((string) $skyLinkContact->getPhoneNumber());
-
-        $country = $skyLinkContact->getAddress()->getCountry();
-        if (null !== $country) {
-            $magentoAddress->setCountryId((string) $country->getCode());
-        }
     }
 }

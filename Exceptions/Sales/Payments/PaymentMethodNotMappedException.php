@@ -10,7 +10,7 @@ class PaymentMethodNotMappedException extends LocalizedException
     public static function withMagentoPaymentMethod(MethodInterface $magentoPaymentMethod)
     {
         return new self(__(
-            'Magento Payment Method "%s" has not been mapped to a Retail Express Payment Method. Please re-configure mappings.',
+            'Magento Payment Method "%1" has not been mapped to a Retail Express Payment Method. Please re-configure mappings.',
             $magentoPaymentMethod->getCode()
         ));
     }

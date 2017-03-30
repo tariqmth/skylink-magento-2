@@ -49,7 +49,7 @@ class BulkFulfillmentsCommand extends Command
         parent::configure();
 
         $this
-            ->setDescription('Gets a list of active Magento orders that are associated with SkyLink orders and queues a job to sync their fulfillments');
+            ->setDescription('Gets a list of active Magento Orders that are associated with SkyLink Orders and queues a command to sync their fulfillments');
     }
 
     /**
@@ -82,8 +82,8 @@ class BulkFulfillmentsCommand extends Command
         $progressBar->finish();
         $output->writeln('');
         $output->writeln(sprintf(<<<'MESSAGE'
-<info>%s Retail Express orders have had jobs queued to sync their fulfillments to Magento shipments.
-Ensure that an instance of 'retail-express:command-bus:consume-queue orders' is running to perform the actual sync.</info>
+<info>%s Retail Express Orders have had commands queued to sync their Fulfillments to Magento Shipments.
+Ensure that an instance of 'retail-express:command-bus:consume-queue fulfillments' is running to perform the actual sync.</info>
 MESSAGE
             ,
             count($magentoOrders)

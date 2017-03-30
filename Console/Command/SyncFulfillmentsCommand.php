@@ -35,7 +35,7 @@ class SyncFulfillmentsCommand extends Command
         $this
             ->setDescription('Syncs new fulfillments for an order from Retail Express')
             ->addArgument('skylink-order-id', InputArgument::REQUIRED, 'The SkyLink Order ID to sync fulfillments for')
-            ->addOption('queue', null, InputOption::VALUE_NONE, 'Flag to queue a job rather than sync inline');
+            ->addOption('queue', null, InputOption::VALUE_NONE, 'Flag to queue a command rather than sync inline');
     }
 
     /**

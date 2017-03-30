@@ -38,7 +38,7 @@ class BulkPriceGroupsCommand extends Command
         parent::configure();
 
         $this
-            ->setDescription('Gets a list of price groups from Retail Express and queues a job for each one to sync to a Magento customer group');
+            ->setDescription('Gets a list of Price Groups from Retail Express and queues a command for each one to sync to a Magento Customer Group');
     }
 
     /**
@@ -69,8 +69,8 @@ class BulkPriceGroupsCommand extends Command
         $progressBar->finish();
         $output->writeln('');
         $output->writeln(sprintf(<<<'MESSAGE'
-<info>%s Retail Express price groups have had jobs queued to sync them to Magento customer groups.
-Ensure that an instance of 'retail-express:command-bus:consume-queue customer_groups' is running to perform the actual sync.</info>
+<info>%s Retail Express Price Groups have had commands queued to sync them to Magento Customer Groups.
+Ensure that an instance of 'retail-express:command-bus:consume-queue price-groups' is running to perform the actual sync.</info>
 MESSAGE
             ,
             count($skyLinkPriceGroups)

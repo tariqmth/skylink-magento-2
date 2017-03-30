@@ -35,7 +35,7 @@ class SyncProductCommand extends Command
         $this
             ->setDescription('Syncs a product from Retail Express')
             ->addArgument('skylink-product-id', InputArgument::REQUIRED, 'The SkyLink Product ID to sync')
-            ->addOption('queue', null, InputOption::VALUE_NONE, 'Flag to queue a job rather than sync inline');
+            ->addOption('queue', null, InputOption::VALUE_NONE, 'Flag to queue a command rather than sync inline');
     }
 
     /**

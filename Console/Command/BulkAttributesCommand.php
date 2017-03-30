@@ -39,7 +39,7 @@ class BulkAttributesCommand extends Command
         parent::configure();
 
         $this
-            ->setDescription('Gets a list of attributes from Retail Express and queues a job for each one to sync to a Magento attribute');
+            ->setDescription('Gets a list of Attributes from Retail Express and queues a command for each one to sync');
     }
 
     /**
@@ -67,7 +67,7 @@ class BulkAttributesCommand extends Command
         $progressBar->finish();
         $output->writeln('');
         $output->writeln(sprintf(<<<'MESSAGE'
-<info>%s Retail Express attributes have had jobs queued to sync them to Magento attributes.
+<info>%s Retail Express Attributes have had commands queued to sync them.
 Ensure that an instance of 'retail-express:command-bus:consume-queue attributes' is running to perform the actual sync.</info>
 MESSAGE
             ,

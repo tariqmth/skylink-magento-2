@@ -35,7 +35,7 @@ class BulkCustomersCommand extends Command
     {
         parent::configure();
 
-        $this->setDescription('Gets a list of customers from Retail Express and queues a job for each one to sync');
+        $this->setDescription('Gets a list of Customers from Retail Express and queues a command for each one to sync');
     }
 
     /**
@@ -67,7 +67,7 @@ class BulkCustomersCommand extends Command
         $progressBar->finish();
         $output->writeln('');
         $output->writeln(sprintf(<<<'MESSAGE'
-<info>%s customers have had jobs queued to sync them.
+<info>%s Customers have had commands queued to sync them.
 Ensure that an instance of 'retail-express:command-bus:consume-queue customers' is running to perform the actual sync.</info>
 MESSAGE
             ,

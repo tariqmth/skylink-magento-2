@@ -37,7 +37,7 @@ class SyncPriceGroupCommand extends Command
             ->setDescription('Syncs a price group from Retail Express to a Magento Customer Group')
             ->addArgument('skylink-price-group-type', InputArgument::REQUIRED, 'The SkyLink Price Group Type (standard or fixed)')
             ->addArgument('skylink-price-group-id', InputArgument::REQUIRED, 'The SkyLink Price Group ID')
-            ->addOption('queue', null, InputOption::VALUE_NONE, 'Flag to queue a job rather than sync inline');
+            ->addOption('queue', null, InputOption::VALUE_NONE, 'Flag to queue a command rather than sync inline');
     }
 
     /**

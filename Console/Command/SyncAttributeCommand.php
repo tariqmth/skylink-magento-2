@@ -36,7 +36,7 @@ class SyncAttributeCommand extends Command
             ->setDescription('Syncs an attribute from Retail Express')
             ->addArgument('skylink-attribute-code', InputArgument::REQUIRED, 'The SkyLink attribute code to sync from')
             ->addArgument('magento-attribute-code', InputArgument::OPTIONAL, 'The Magento attribute code to sync to (leave empty to use existing, already mapped attribute code)')
-            ->addOption('queue', null, InputOption::VALUE_NONE, 'Flag to queue a job rather than sync inline');
+            ->addOption('queue', null, InputOption::VALUE_NONE, 'Flag to queue a command rather than sync inline');
     }
 
     /**

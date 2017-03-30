@@ -48,7 +48,7 @@ class BulkProductsCommand extends Command
         parent::configure();
 
         $this
-            ->setDescription('Gets a list of products from Retail Express and queues a job for each one to sync')
+            ->setDescription('Gets a list of products from Retail Express and queues a command for each one to sync')
             ->addOption('since', null, InputOption::VALUE_REQUIRED, 'Only products updated in Retail Express within the specified timeframe (in seconds) will be synced.');
     }
 
@@ -93,7 +93,7 @@ class BulkProductsCommand extends Command
         $progressBar->finish();
         $output->writeln('');
         $output->writeln(sprintf(<<<'MESSAGE'
-<info>%s products have had jobs queued to sync them.
+<info>%s products have had commands queued to sync them.
 Ensure that an instance of 'retail-express:command-bus:consume-queue products' is running to perform the actual sync.</info>
 MESSAGE
             ,

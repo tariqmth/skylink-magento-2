@@ -9,6 +9,8 @@ interface MagentoShipmentBuilderInterface
 {
     /**
      * @return Shipment
+     *
+     * @throws \RetailExpress\SkyLink\Exceptions\Sales\Orders\FulfillmentShippingMoreThanAvailableException
      */
     public function buildFromMagentoOrderAndGroupsOfMagentoOrderItemsAndSkyLinkFulfillments(
         Order $magentoOrder,

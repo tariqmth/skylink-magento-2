@@ -316,7 +316,9 @@ bin/magento retail-express:skylink:sync-fulfillments
 
 ### 3.3. Queue Workers
 
-It is required that you configure queue workers for the extension. These works can run on a **cron schedule**, or can be managed by a **process manager** *(Section 2.1.2)*. If possible, it is recommended to use a process manager as this continually synchronises data. This guide assumes the use of [Supervisor](http://supervisord.org) as the chosen process manager, although concepts can easily be introduced into alternative process managers.
+It is required that you configure queue workers for the extension. These workers can be managed by a **process manager** *(Section 2.1.2)*, run on a **cron schedule** or ran manually.
+
+If possible, it is recommended to use a process manager as this continually synchronises data. This guide assumes the use of [Supervisor](http://supervisord.org) as the chosen process manager, although concepts can easily be introduced into alternative process managers.
 
 We provide a single Magento CLI command to, as a Queue Worker, consume Queued Commands:
 
@@ -428,7 +430,7 @@ stderr_logfile=/var/log/supervisor/magento2/fulfillments.err.log
 ```
 
 > Because Queue Workers are long-running processes, they will not see any changes in the Magento codebase until they are restarted.
-> 
+>
 > **It is important to restart Supervisor if you make any changes to your Magento codebase (such as installing/updating any Magento extensions).**
 
 #### 3.3.2. Cron

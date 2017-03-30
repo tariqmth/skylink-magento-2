@@ -126,18 +126,8 @@ class MagentoCustomerAddressMapper implements MagentoCustomerAddressMapperInterf
 
     private function mapRegion(AddressInterface $magentoAddress, RegionInformationInterface $magentoRegion)
     {
-        /* @var \Magento\Customer\Api\Data\RegionInterface $customerRegion */
-        // $customerRegion = $this->magentoCustomerRegionFactory->create();
-
-        // $magentoAddress->setRegion(null);
+        $magentoAddress->setRegion(null);
         $magentoAddress->setRegionId($magentoRegion->getId());
-
-        // $customerRegion->setRegionId($magentoRegion->getId());
-        // $customerRegion->setRegionCode($magentoRegion->getCode());
-
-        // $magentoAddress->setRegion($customerRegion);
-
-        // dd($magentoAddress);
     }
 
     private function findMatchingRegionForState(array $magentoRegions, StringLiteral $state)

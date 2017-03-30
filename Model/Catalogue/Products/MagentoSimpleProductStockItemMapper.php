@@ -15,6 +15,7 @@ class MagentoSimpleProductStockItemMapper implements MagentoSimpleProductStockIt
         StockItemInterface $magentoStockItem,
         SkyLinkInventoryItem $skyLinkInventoryItem
     ) {
+        $magentoStockItem->setUseConfigManageStock(false); // Never use config, we'll track it
         $magentoStockItem->setManageStock($skyLinkInventoryItem->isManaged());
 
         $nativeQty = $skyLinkInventoryItem->getQty()->toNative();

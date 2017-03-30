@@ -145,13 +145,14 @@ class InstallData implements InstallDataInterface
                 ->getAttributeId(Product::ENTITY, $magentoAttributeCode);
 
             if (false === $hasExistingAttribute) {
+
                 $eavSetup->addAttribute(
                     Product::ENTITY,
                     $magentoAttributeCode,
                     [
                         'label' => $skyLinkAttributeCode->getLabel(),
                         'required' => false,
-                        'input' => 'select',
+                        'input' => $skyLinkAttributeCode->isPredefined() ? 'select' : 'text',
                         'user_defined' => true,
                         'filterable' => 1, // Filterable (with results) @todo look for constant
                     ]

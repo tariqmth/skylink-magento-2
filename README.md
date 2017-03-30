@@ -342,7 +342,7 @@ Arguments:
 Options:
  --max-runtime         # Maximum time in seconds the consumer will run.
  --max-messages        # Maximum number of messages that should be consumed.
-     # Stop consumer when queue is empty.
+ --stop-when-empty     # Stop consumer when queue is empty.
  --stop-on-error       # Stop consumer when an error occurs.
  --help (-h)           # Display this help message
  --quiet (-q)          # Do not output any message

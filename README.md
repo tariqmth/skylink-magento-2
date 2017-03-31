@@ -420,6 +420,14 @@ autorestart=true
 stdout_logfile=/var/log/supervisor/magento2/products.log
 stderr_logfile=/var/log/supervisor/magento2/products.err.log
 
+[program:magento2_payments]
+user=magento_user
+command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=18000 payments
+autostart=true
+autorestart=true
+stdout_logfile=/var/log/supervisor/magento2/payments.log
+stderr_logfile=/var/log/supervisor/magento2/payments.err.log
+
 [program:magento2_fulfillments]
 user=magento_user
 command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=18000 fulfillments
@@ -447,6 +455,7 @@ If you have installed Magento according to the [user guide](http://devdocs.magen
 */10 * * * * /var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=540 attributes
 */10 * * * * /var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=540 price-groups
 */10 * * * * /var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=540 products
+*/10 * * * * /var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=540 payments
 */10 * * * * /var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=540 fulfillments
 ```
 

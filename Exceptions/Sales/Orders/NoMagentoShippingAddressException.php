@@ -10,7 +10,7 @@ class NoMagentoShippingAddressException extends LocalizedException
     public static function withMagentoOrder(OrderInterface $magentoOrder)
     {
         return new self(__(
-            'Magento Order #%s does not have a shipping address persisted for it.',
+            'Magento Order #%1 does not have a shipping address persisted for it.',
             $magentoOrder->getIncrementId()
         ));
     }

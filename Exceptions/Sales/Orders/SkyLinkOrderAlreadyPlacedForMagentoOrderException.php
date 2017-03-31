@@ -13,7 +13,7 @@ class SkyLinkOrderAlreadyPlacedForMagentoOrderException extends LocalizedExcepti
         SkyLinkorderId $skyLinkOrderId
     ) {
         return new self(__(
-            'A SkyLink Order #%s has already been placed for Magento Order #%s.',
+            'A SkyLink Order #%1 has already been placed for Magento Order #%2.',
             $skyLinkOrderId,
             $magentoOrder->getIncrementId()
         ));

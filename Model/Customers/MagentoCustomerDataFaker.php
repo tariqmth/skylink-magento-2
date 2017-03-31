@@ -34,6 +34,12 @@ class MagentoCustomerDataFaker implements MagentoCustomerDataFakerInterface
                     $magentoCustomer->setLastname((string) $this->customerConfig->getFakeDataLastName());
                     break;
 
+                // The default group is assigned by an observer in the customer model, so we don't need to fake
+                // data here. We can't just change the priority of this plugin either, because it's an
+                // actual observer that does it, so we can't really help where we intercept. Meh!
+                case 'Group':
+                    break;
+
                 default:
                     throw new InvalidArgumentException("No fake data exists for Magento Customer field \"{$failedField}\".");
             }

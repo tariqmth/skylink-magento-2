@@ -8,11 +8,16 @@ use Magento\Sales\Api\InvoiceRepositoryInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 use RetailExpress\SkyLink\Api\Sales\Payments\SkyLinkPaymentBuilderInterface;
 use RetailExpress\SkyLink\Exceptions\Sales\Payments\SkyLinkPaymentAlreadyCreatedForMagentoInvoiceException;
+use RetailExpress\SkyLink\Exceptions\Sales\Payments\SkyLinkOrderIdRequiredForMagentoOrderException;
 use RetailExpress\SkyLink\Model\Sales\Invoices\InvoiceExtensionAttributes;
 use RetailExpress\SkyLink\Sdk\Sales\Payments\PaymentRepositoryFactory;
+use RuntimeException;
 
 class CreateSkyLinkPaymentFromMagentoInvoiceHandler
 {
+    const MAX_ATTEMPTS = 6;
+    const ATTEMPTS_DELAY = 10;
+
     use InvoiceExtensionAttributes;
 
     private $magentoInvoiceRepository;
@@ -47,6 +52,24 @@ class CreateSkyLinkPaymentFromMagentoInvoiceHandler
     }
 
     public function handle(CreateSkyLinkPaymentFromMagentoInvoiceCommand $command)
+    {
+        $attempts = 0;
+        do {
+            try {
+                return $this->doHandle($command);
+            } catch (SkyLinkOrderIdRequiredForMagentoOrderException $e) {
+                sleep(self::ATTEMPTS_DELAY);
+                // We probably tried the command too early, let's fail out
+            }
+        } while ($attempts++ < self::MAX_ATTEMPTS);
+
+        throw new RuntimeException(sprintf(
+            'Tried to sync Magento Invoice to SkyLink Payment more than %d time(s) and failed. Please re-run command manually.',
+            self::MAX_ATTEMPTS
+        ));
+    }
+
+    private function doHandle(CreateSkyLinkPaymentFromMagentoInvoiceCommand $command)
     {
         /* @var \Magento\Sales\Api\Data\InvoiceInterface $magentoInvoice */
         $magentoInvoice = $this->magentoInvoiceRepository->get($command->magentoInvoiceId);

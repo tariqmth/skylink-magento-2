@@ -8,6 +8,7 @@ use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderRepositoryInterface;
 use RetailExpress\SkyLink\Api\Sales\Shipments\MagentoShipmentServiceInterface;
 use RetailExpress\SkyLink\Api\Sales\Shipments\MagentoShipmentRepositoryInterface;
+use RetailExpress\SkyLink\Exceptions\Sales\Orders\SkyLinkOrderDoesNotExistException;
 use RetailExpress\SkyLink\Sdk\Sales\Fulfillments\Batch as SkyLinkFulfillmentBatch;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\OrderId as SkyLinkOrderId;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\OrderRepositoryFactory as SkyLinkOrderRepositoryFactory;
@@ -70,6 +71,18 @@ class SyncSkyLinkFulfillmentBatchesToMagentoShipmentsHandler
 
         /* @var \RetailExpress\SkyLink\Sdk\Sales\Orders\Order $skyLinkOrder */
         $skyLinkOrder = $skyLinkOrderRepository->get($skyLinkOrderId);
+
+        if (null === $skyLinkOrder) {
+            $e = SkyLinkOrderDoesNotExistException::withSkyLinkOrderId($skyLinkOrderId);
+
+            $this->logger->error('Cannot find SkyLink Order to sync Fulfillment Batches for. Has it been cancelled in Retail Express and hidden from the API?', [
+                'Error' => $e->getMessage(),
+                'Magento Order ID' => $magentoOrder->getIncrementId(),
+                'SkyLink Order ID' => $skyLinkOrderId,
+            ]);
+
+            throw $e;
+        }
 
         if (false === $skyLinkOrder->hasFulfillmentBatches()) {
             $this->logger->debug('There are no Fulfillments for SkyLink Order', [

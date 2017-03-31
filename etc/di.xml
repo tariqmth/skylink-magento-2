@@ -36,7 +36,8 @@
 
     <type name="Magento\Customer\Api\CustomerRepositoryInterface">
 
-        <plugin name="skylink_customer_repository_data_faker" type="RetailExpress\SkyLink\Plugin\Magento\Customers\CustomerRepositoryDataFakerPlugin" sortOrder="10" disabled="false"/>
+        <!-- @todo Determine why this breaks the frontend registration -->
+        <!-- <plugin name="skylink_customer_repository_data_faker" type="RetailExpress\SkyLink\Plugin\Magento\Customers\CustomerRepositoryDataFakerPlugin" sortOrder="10" disabled="false"/> -->
 
         <!-- Create a plugin to sync the customer when they're saved -->
         <plugin name="skylink_customer_repository_syncer" type="RetailExpress\SkyLink\Plugin\Magento\Customers\CustomerRepositorySyncerPlugin" sortOrder="20" disabled="false"/>

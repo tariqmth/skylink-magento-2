@@ -1,4 +1,23 @@
+[v-cloak] {
+  display: none;
+}
+
 .logging {
+  .logging-header {
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
+    background-color: #f0f0f0;
+  }
+
+  .logging-autoscroll {
+    margin-left: 20px;
+  }
+
+  .logging-clear {
+    float: right;
+  }
+
   .logs {
     max-height: 800px;
     overflow-y: scroll;
@@ -34,10 +53,6 @@
       right: 0;
     }
 
-    pre {
-      margin-bottom: 0;
-    }
-
     .log-message {
       float: left;
     }
@@ -49,6 +64,25 @@
 
     .log-context {
       clear: both;
+      margin: 20px;
+      padding: 20px;
+      list-style: none;
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .log-context li {
+      overflow-x: scroll;
+    }
+
+    .log-context-key {
+      font-style: italic;
+      opacity: 0.8;
+    }
+
+    .log-context-value {
+      unicode-bidi: embed;
+      font-family: monospace;
+      white-space: pre;
     }
   }
 

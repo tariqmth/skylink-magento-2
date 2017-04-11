@@ -2,7 +2,7 @@
 
 namespace RetailExpress\SkyLink\Api\Debugging;
 
-interface LogViewerInterface
+interface LogManagerInterface
 {
     /**
      * Gets a list of log entries, with an optional ID to pass in as the "since"
@@ -13,4 +13,11 @@ interface LogViewerInterface
      * @return array
      */
     public function getList($sinceId = null);
+
+    /**
+     * Clears all logs.
+     *
+     * @return void
+     */
+    public function clearAll();
 }

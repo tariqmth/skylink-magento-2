@@ -1,29 +1,53 @@
 <div id="logging" class="logging">
 
-    <label for="logging-level"><?=__('Filter Level')?></label>
-    <select id="logging-level" v-model="currentLevelFilter">
-        <?php foreach ($block->getHumanLevels() as $humanLevel => $level): ?>
-            <option value="<?=$block->escapeHtml($level)?>"><?=$block->escapeHtml($humanLevel)?></option>
-        <?php endforeach ?>
-    </select>
+    <div class="logging-header">
+        <label for="logging-level"><?=__('Filter Level')?></label>
+        <select id="logging-level" v-model="currentLevelFilter">
+            <?php
 
-    <button v-if="autoscroll" @click="toggleAutoscroll">
-        <?=__('Disable Autoscroll')?>
-    </button>
-    <button v-else @click="toggleAutoscroll">
-        <?=__('Enable Autoscroll')?>
-    </button>
+            $i = 0;
+            foreach ($block->getHumanLevels() as $humanLevel => $level): ?>
+                <option value="<?=$block->escapeHtml($level)?>">
+                    <?=$block->escapeHtml($humanLevel)?>
+                    <?php if ($i++ > 0): ?>
+                        <?=__('(and higher)')?>
+                    <?php endif ?>
+                </option>
+            <?php endforeach ?>
+        </select>
 
-    <ul class="logs" id="logs">
-        <li v-for="log in filteredLogs()" :class="getCssClass(log)">
-            <p class="log-summary">
-                <strong class="log-message">{{ log.message }}</strong>
-                <em class="log-date">{{ log.human_logged_at }}</em>
-            </p>
+        <button class="logging-autoscroll" v-if="autoscroll" @click="toggleAutoscroll">
+            <?=__('Disable Autoscroll')?>
+        </button>
+        <button class="logging-autoscroll" v-else @click="toggleAutoscroll">
+            <?=__('Enable Autoscroll')?>
+        </button>
 
-            <pre class="log-context">{{ log.context }}</pre>
-        </li>
-    </ul>
+        <button class="logging-clear" v-show="filteredLogs.length" @click="clearLogs">
+            <?=__('Clear Logs')?>
+        </button>
+    </div>
+
+    <div v-if="filteredLogs.length" v-cloak>
+
+        <ul class="logs" id="logs">
+            <li v-for="log in filteredLogs" :class="getCssClass(log)">
+                <p class="log-summary abs-clearfix">
+                    <strong class="log-message">{{ log.message }}</strong>
+                    <em class="log-date">{{ log.human_logged_at }}</em>
+                </p>
+
+                <ul class="log-context">
+                    <li v-for="(value, key) in log.context">
+                        <span class="log-context-key">{{ key }}</span>: <span class="log-context-value">{{ value }}</span>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="message message-notice notice" v-else v-cloak>
+        <?=__('There\'s currently nothing logged... This screen will update automatically as logs roll in.')?>
+    </div>
 
 </div>
 
@@ -32,10 +56,12 @@
         "#logging": {
             "skyLinkLogging": {
                 "log_viewer_url": "<?=$block->escapeHtml($block->getLogViewerUrl())?>",
+                "log_clearer_url": "<?=$block->escapeHtml($block->getLogClearerUrl())?>?foo=bar",
                 "levels": <?=json_encode($block->getLevels())?>,
-                "default_level": <?=$block->getLevels()[0]?>,
+                "default_level": <?=$block->getDefaultLevel()?>,
                 "update_timeout": 1000,
-                "logs": "#logs"
+                "logs": "#logs",
+                "logs_to_keep": <?=$block->getLogsToKeep()?>
             }
         }
     }

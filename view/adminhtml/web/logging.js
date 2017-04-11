@@ -13,16 +13,22 @@ define(['jquery', 'underscore', 'skyLinkVue'], function ($, _, vue) {
         latestLogId: null,
         autoscroll: true
       },
-      watch: {
-        currentLevelFilter: function (newFilter) {
-          this.currentLevelFilter = newFilter;
-          this.updateLogs();
+      computed: {
+
+        filteredLogs: function () {
+          var me = this;
+          return this.logs.filter(function (log) {
+            return log.level >= me.currentLevelFilter;
+          });
         }
+
       },
       methods: {
+
         toggleAutoscroll: function() {
           this.autoscroll = !this.autoscroll;
         },
+
         autoscrollIfNeeded: function () {
           if (false === this.autoscroll) {
             return;
@@ -33,9 +39,11 @@ define(['jquery', 'underscore', 'skyLinkVue'], function ($, _, vue) {
             $logs.scrollTop($logs[0].scrollHeight);
           }, 50);
         },
+
         getCssClass: function (log) {
           return 'log log-level-'+log.level;
         },
+
         updateLogs: function () {
           var parameters = {};
 
@@ -50,6 +58,11 @@ define(['jquery', 'underscore', 'skyLinkVue'], function ($, _, vue) {
 
             if (response.length > 0) {
               me.logs.push.apply(me.logs, response);
+
+              // We'll make sure we're syncing our logs to keep with the server
+              me.logs.splice(0, Math.max(me.logs.length - config.logs_to_keep, 0));
+
+              // And now we'll autoscroll if needed
               me.autoscrollIfNeeded();
             }
 
@@ -62,10 +75,11 @@ define(['jquery', 'underscore', 'skyLinkVue'], function ($, _, vue) {
             }, config.update_timeout);
           });
         },
-        filteredLogs: function () {
+
+        clearLogs: function () {
           var me = this;
-          return this.logs.filter(function (log) {
-            return log.level >= me.currentLevelFilter;
+          $.post(config.log_clearer_url, { form_key: window.FORM_KEY }, function (response) {
+            me.logs = [];
           });
         }
       }

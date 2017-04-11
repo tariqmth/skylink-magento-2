@@ -140,7 +140,7 @@
 
     <!-- Debugging implementations -->
     <preference for="RetailExpress\SkyLink\Api\Debugging\ConfigInterface" type="RetailExpress\SkyLink\Model\Debugging\Config"/>
-    <preference for="RetailExpress\SkyLink\Api\Debugging\LogViewerInterface" type="RetailExpress\SkyLink\Model\Debugging\LogViewer"/>
+    <preference for="RetailExpress\SkyLink\Api\Debugging\LogManagerInterface" type="RetailExpress\SkyLink\Model\Debugging\LogManager"/>
     <preference for="RetailExpress\SkyLink\Api\Debugging\SkyLinkMonologHandlerInterface" type="RetailExpress\SkyLink\Model\Debugging\SkyLinkMonologHandler"/>
     <preference for="RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface" type="RetailExpress\SkyLink\Model\Debugging\SkyLinkLogger"/>
 

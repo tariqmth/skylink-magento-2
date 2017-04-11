@@ -3,9 +3,9 @@
 namespace RetailExpress\SkyLink\Model\Debugging;
 
 use DateTimeImmutable;
-use RetailExpress\SkyLink\Api\Debugging\LogViewerInterface;
+use RetailExpress\SkyLink\Api\Debugging\LogManagerInterface;
 
-class LogViewer implements LogViewerInterface
+class LogManager implements LogManagerInterface
 {
     use LogHelper;
 
@@ -30,5 +30,13 @@ class LogViewer implements LogViewerInterface
 
             return $row;
         }, $result);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clearAll()
+    {
+        $this->getConnection()->delete($this->getLogsTable());
     }
 }

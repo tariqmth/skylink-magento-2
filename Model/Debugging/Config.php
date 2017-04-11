@@ -40,6 +40,14 @@ class Config implements ConfigInterface
         return new Integer($this->scopeConfig->getValue('skylink/debugging/captured_logs_to_keep'));
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function shouldLogRawApiCalls()
+    {
+        return (bool) $this->scopeConfig->getValue('skylink/debugging/should_log_raw_api_calls');
+    }
+
     public function getPurgingChance()
     {
         return new Real($this->scopeConfig->getValue('skylink/debugging/purging_chance'));

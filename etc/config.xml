@@ -75,6 +75,7 @@
                 <should_capture_logs>0</should_capture_logs>
                 <uncaptured_logs_to_keep>1000</uncaptured_logs_to_keep>
                 <captured_logs_to_keep>10000</captured_logs_to_keep>
+                <should_log_raw_api_calls>0</should_log_raw_api_calls>
                 <purging_chance>0.1</purging_chance>
             </debugging>
         </skylink>

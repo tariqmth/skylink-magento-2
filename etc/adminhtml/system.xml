@@ -241,7 +241,11 @@
                         <field id="should_capture_logs">1</field>
                     </depends>
                 </field>
-                <field id="purging_chance" translate="label" type="select" sortOrder="400" showInDefault="1" canRestore="1">
+                <field id="should_log_raw_api_calls" translate="label" type="select" sortOrder="400" showInDefault="1" canRestore="1">
+                    <label>Should Log Raw API calls to/from Retail Express</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="purging_chance" translate="label" type="select" sortOrder="500" showInDefault="1" canRestore="1">
                     <label>Purging Chance</label>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\PurgingChance</source_model>
                     <comment>To improve efficiency, you can specify how likely SkyLink is to purge old logs. The greater the chance, the more often old logs are removed, however this comes at a minor performance hit.</comment>

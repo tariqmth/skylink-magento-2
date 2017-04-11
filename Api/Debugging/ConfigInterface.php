@@ -26,6 +26,13 @@ interface ConfigInterface
     public function getCapturedLogsToKeep();
 
     /**
+     * Returns if we should log raw API calls or not.
+     *
+     * @return bool
+     */
+    public function shouldLogRawApiCalls();
+
+    /**
      * Returns the chance that logs should be purged.
      *
      * @return \ValueObjects\Number\Real

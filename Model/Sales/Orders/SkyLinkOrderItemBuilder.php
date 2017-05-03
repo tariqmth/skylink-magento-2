@@ -49,7 +49,7 @@ class SkyLinkOrderItemBuilder implements SkyLinkOrderItemBuilderInterface
             $skyLinkProductIdAttribute->getValue(),
             $magentoOrderItem->getQtyOrdered(),
             $magentoOrderItem->getQtyShipped(), // @todo Should this always be 0?
-            $magentoOrderItem->getPrice(),
+            $magentoOrderItem->getPriceInclTax() - $magentoOrderItem->getDiscountAmount(),
             $magentoOrderItem->getTaxAmount() / $magentoOrderItem->getPrice()
         );
     }

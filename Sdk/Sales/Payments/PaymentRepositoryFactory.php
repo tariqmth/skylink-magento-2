@@ -4,7 +4,7 @@ namespace RetailExpress\SkyLink\Sdk\Sales\Payments;
 
 use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Model\Factory;
-use RetailExpress\SkyLink\Sdk\Apis\V2Factory as V2ApiFactory;
+use RetailExpress\SkyLink\Sdk\Apis\V2\ApiFactory as V2ApiFactory;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\OrderRepositoryFactory;
 
 class PaymentRepositoryFactory

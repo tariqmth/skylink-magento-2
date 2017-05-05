@@ -11,14 +11,6 @@
     <preference for="RetailExpress\SkyLink\Api\Eds\ChangeSetRepositoryInterface" type="RetailExpress\SkyLink\Model\Eds\ChangeSetRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Eds\ChangeSetServiceInterface" type="RetailExpress\SkyLink\Model\Eds\ChangeSetService"/>
 
-    <!-- Create a plugin to log API calls (including EDS) -->
-    <type name="RetailExpress\SkyLink\Sdk\Apis\V2">
-        <plugin name="skylink_v2_api_logger" type="RetailExpress\SkyLink\Plugin\SkyLink\Sdk\Apis\V2ApiLoggingPlugin" sortOrder="10" disabled="false"/>
-    </type>
-    <type name="RetailExpress\SkyLink\Eds\V2ChangeSetDeserialiser">
-        <plugin name="skylink_v2_api_logger" type="RetailExpress\SkyLink\Plugin\SkyLink\Eds\ChangeSetDeserialiserLoggingPlugin" sortOrder="10" disabled="false"/>
-    </type>
-
     <!-- Customer implementations -->
     <preference for="RetailExpress\SkyLink\Api\Customers\ConfigInterface" type="RetailExpress\SkyLink\Model\Customers\Config"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\SkyLinkContactBuilderInterface" type="RetailExpress\SkyLink\Model\Customers\SkyLinkContactBuilder"/>

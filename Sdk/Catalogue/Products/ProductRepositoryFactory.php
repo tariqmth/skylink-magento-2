@@ -4,7 +4,7 @@ namespace RetailExpress\SkyLink\Sdk\Catalogue\Products;
 
 use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\ConfigInterface as ProductConfigInterface;
-use RetailExpress\SkyLink\Sdk\Apis\V2Factory as V2ApiFactory;
+use RetailExpress\SkyLink\Sdk\Apis\V2\ApiFactory as V2ApiFactory;
 use RetailExpress\SkyLink\Model\Factory;
 
 class ProductRepositoryFactory

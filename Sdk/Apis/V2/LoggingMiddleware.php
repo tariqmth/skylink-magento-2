@@ -1,15 +1,15 @@
 <?php
 
-namespace RetailExpress\SkyLink\Plugin\SkyLink\Sdk\Apis;
+namespace RetailExpress\SkyLink\Sdk\Apis\V2;
 
 use DOMDocument;
 use Exception;
-use RetailExpress\SkyLink\Sdk\Apis\V2 as V2Api;
 use RetailExpress\SkyLink\Api\Debugging\ConfigInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
+use SoapFault;
 use Throwable;
 
-class V2ApiLoggingPlugin
+class LoggingMiddleware implements Middleware
 {
     private $config;
 
@@ -21,16 +21,18 @@ class V2ApiLoggingPlugin
         $this->logger = $logger;
     }
 
-    public function aroundCall(V2Api $subject, callable $proceed, $method, array $arguments = [], callable $postProcesing = null)
+    /**
+     * {@inheritdoc}
+     */
+    public function execute($request, &$response, SoapFault $soapFault = null, callable $next)
     {
-        // We'll exit early if we don't need to log
         if (false === $this->config->shouldLogRawApiCalls()) {
-            return $proceed($method, $arguments, $postProcesing);
+            return $next($request, $response, $soapFault);
         }
 
         try {
-            $response = $proceed($method, $arguments, $postProcesing);
-            $this->logRequestAndResponse($method, $arguments, $response);
+            $response = $next($request, $response, $soapFault);
+            $this->logRequestAndResponse($request, $response);
             return $response;
         } catch (Throwable $e) { // PHP 7+
             goto fail;
@@ -39,24 +41,23 @@ class V2ApiLoggingPlugin
         }
 
         fail:
-        $this->logRequestAndException($method, $arguments, $e);
+        $this->logRequestResponseAndException($request, $response, $e);
         throw $e;
     }
 
-    private function logRequestAndResponse($method, array $arguments = [], $response)
+    private function logRequestAndResponse($request, $response)
     {
         $this->logger->debug(__('V2 API call'), [
-            'Method' => $method,
-            'Arguments' => $arguments,
+            'Request' => $this->formatXml($request),
             'Response' => $this->formatXml($response),
         ]);
     }
 
-    private function logRequestAndException($method, array $arguments = [], Exception $exception)
+    private function logRequestResponseAndException($request, $response, Exception $exception)
     {
         $this->logger->critical('V2 API call failed', [
-            'Method' => $method,
-            'Arguments' => $arguments,
+            'Request' => $this->formatXml($request),
+            'Response' => $this->formatXml($response),
             'Exception' => [
                 'Name' => class_basename($exception),
                 'Message' => $exception->getMessage(),

@@ -3,7 +3,7 @@
 namespace RetailExpress\SkyLink\Eds;
 
 use RetailExpress\SkyLink\Api\ConfigInterface;
-use RetailExpress\SkyLink\Sdk\Apis\V2Factory as V2ApiFactory;
+use RetailExpress\SkyLink\Sdk\Apis\V2\ApiFactory as V2ApiFactory;
 use RetailExpress\SkyLink\Model\Factory;
 
 class ChangeSetServiceFactory

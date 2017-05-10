@@ -10,7 +10,6 @@ use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionService
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeServiceInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeTypeManagerInterface;
-use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 use RetailExpress\SkyLink\Exceptions\Products\AttributeNotMappedException;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeRepositoryFactory;
@@ -21,8 +20,6 @@ use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAtt
 // @todo refactor this - it smells so bad!
 class SyncSkyLinkAttributeToMagentoAttributeHandler
 {
-    private $config;
-
     private $attributeRepositoryFactory;
 
     private $baseMagentoProductAttributeRepository;
@@ -52,7 +49,6 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
     private $eventManager;
 
     public function __construct(
-        ConfigInterface $config,
         AttributeRepositoryFactory $attributeRepositoryFactory,
         BaseProductAttributeRepositoryInterface $baseMagentoProductAttributeRepository,
         MagentoAttributeRepositoryInterface $magentoAttributeRepository,
@@ -63,7 +59,6 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
         SkyLinkLoggerInterface $logger,
         EventManagerInterface $eventManager
     ) {
-        $this->config = $config;
         $this->attributeRepositoryFactory = $attributeRepositoryFactory;
         $this->baseMagentoProductAttributeRepository = $baseMagentoProductAttributeRepository;
         $this->magentoAttributeRepository = $magentoAttributeRepository;
@@ -81,10 +76,7 @@ class SyncSkyLinkAttributeToMagentoAttributeHandler
         $attributeRepository = $this->attributeRepositoryFactory->create();
 
         // Grab our attribute
-        $skyLinkAttribute = $attributeRepository->find(
-            SkyLinkAttributeCode::get($command->skyLinkAttributeCode),
-            $this->config->getSalesChannelId()
-        );
+        $skyLinkAttribute = $attributeRepository->find(SkyLinkAttributeCode::get($command->skyLinkAttributeCode));
 
         $skyLinkAttributeCode = $skyLinkAttribute->getCode();
 

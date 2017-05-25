@@ -254,7 +254,7 @@ class InstallData implements InstallDataInterface
             $eavSetup->addAttributeToGroup(
                 $entityType,
                 $attributeSetId,
-                $eavSetup->getDefaultAttributeGroupId($attributeSetId), // @todo should this be another group?
+                $eavSetup->getDefaultAttributeGroupId($entityType, $attributeSetId),
                 $magentoAttributeCode
             );
         }

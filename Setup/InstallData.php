@@ -61,6 +61,8 @@ class InstallData implements InstallDataInterface
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
+        $setup->startSetup();
+
         /* @var \Magento\Eav\Setup\EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
 
@@ -74,6 +76,8 @@ class InstallData implements InstallDataInterface
         $this->addQtyOnOrderToProducts($eavSetup);
         $this->makeProductPricingConfiguredPerWebsite($setup);
         $this->makeCustomerSharingGlobal($setup);
+
+        $setup->endSetup();
     }
 
     private function addSkyLinkCustomerIdToCustomers(EavSetup $eavSetup)

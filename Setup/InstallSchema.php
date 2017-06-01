@@ -16,6 +16,7 @@ class InstallSchema implements InstallSchemaInterface
     public function install(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
         $installer = $setup;
+        $installer->startSetup();
 
         $this->installEds($setup, $context);
         $this->installAttributeMappings($setup, $context);
@@ -26,6 +27,8 @@ class InstallSchema implements InstallSchemaInterface
         $this->installCustomerGroupAttributes($setup, $context);
         $this->installOutletsTable($setup, $context);
         $this->installLoggingTable($setup, $context);
+
+        $installer->endSetup();
     }
 
     private function installEds(SchemaSetupInterface $setup, ModuleContextInterface $context)

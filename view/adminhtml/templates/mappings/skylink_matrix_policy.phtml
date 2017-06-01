@@ -1,0 +1,79 @@
+<?php /* @var \RetailExpress\SkyLink\Block\Adminhtml\Setup\SkyLinkMatrixPolicy $block */ ?>
+<?php
+
+/* @var \RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption[] $skyLinkProductTypes */
+$skyLinkProductTypes = $block->getSkyLinkProductTypes();
+?>
+<h3><?=__('Map SkyLink Product Types to SkyLink Matrix Policies')?></h3>
+
+<?php if (!$block->hasSkyLinkAttributeCodes()): ?>
+
+    <div class="message message-notice notice">
+        <?=__('You must map SkyLink Attributes prior to mapping Matrix Policies so that we can determine what attributes can be used.')?>
+    </div>
+
+<?php else: ?>
+    <?php
+    /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode[] $skyLinkAttributeCodes */
+    $skyLinkAttributeCodes = $block->getSkyLinkAttributeCodes();
+    ?>
+
+    <p>
+        <?=__('This allows you to choose the attributes used when creating composite (configurable) products. Each product type in Retail Express can be used with unique combinations of attributes. Note, to create a composite product, all simple products must contain values for all attributes chosen here and each simple product must have a unique combination (as per Magent\'s rules.')?>
+    </p>
+
+    <form action="<?php /* @escapeNotVerified */ echo $block->getSaveUrl() ?>" method="post">
+        <input name="form_key" type="hidden" value="<?php /* @escapeNotVerified */ echo $block->getFormKey() ?>" />
+        <table class="data-grid">
+            <thead>
+                <tr>
+                    <th class="data-grid-th"><?=__('SkyLink Product Type')?></th>
+                    <th class="data-grid-th"><?=__('SkyLink Matrix Policy')?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption $skyLinkProductType */ ?>
+                <?php foreach ($skyLinkProductTypes as $skyLinkProductType): ?>
+                    <?php
+                    /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Products\MatrixPolicy $chosenMatrixPolicy */
+                    $chosenMatrixPolicy = $block->getMatrixPolicyForProductType($skyLinkProductType);
+                    ?>
+                    <tr>
+                        <td>
+                            <?=$block->escapeHtml($skyLinkProductType->getLabel())?>
+                        </td>
+                        <td>
+                            <select name="skylink_matrix_policy_mappings[<?php /* @escapeNotVerified */ echo $skyLinkProductType->getId() ?>][]"
+                                    size="<?=count($skyLinkAttributeCodes)?>"
+                                    multiple
+                            >
+                                <?php /* @var \Magento\Catalog\Api\Data\ProductAttributeInterface $skyLinkAttributeCode */ ?>
+                                <?php foreach ($skyLinkAttributeCodes as $skyLinkAttributeCode): ?>
+                                    <option
+                                        value="<?php /* @escapeNotVerified */ echo $skyLinkAttributeCode ?>""
+                                        <?php if ($chosenMatrixPolicy->usesAttributeCode($skyLinkAttributeCode)): ?>
+                                            selected
+                                        <?php endif ?>
+                                    >
+                                        <?=$block->escapeHtml($skyLinkAttributeCode->getLabel())?>
+                                    </option>
+                                <?php endforeach ?>
+                            </select>
+                        </td>
+                    </tr>
+                <?php endforeach ?>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2">
+                        <button type="submit"><?=__('Save Mappings')?></button>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </form>
+<?php endif ?>
+
+
+
+<br><br><br>

@@ -4,6 +4,7 @@
         <referenceContainer name="content">
             <block class="RetailExpress\SkyLink\Block\Adminhtml\Mappings\MagentoAttribute" name="retail_express_skylink_mappings_magento_attribute" template="mappings/magento_attribute.phtml"/>
             <block class="RetailExpress\SkyLink\Block\Adminhtml\Mappings\MagentoAttributeSet" name="retail_express_skylink_mappings_magento_attribute_set" template="mappings/magento_attribute_set.phtml"/>
+            <block class="RetailExpress\SkyLink\Block\Adminhtml\Mappings\SkyLinkMatrixPolicy" name="retail_express_skylink_mappings_skylink_matrix_policy" template="mappings/skylink_matrix_policy.phtml"/>
             <block class="RetailExpress\SkyLink\Block\Adminhtml\Mappings\MagentoPaymentMethod" name="retail_express_skylink_mappings_magento_payment_method" template="mappings/magento_payment_method.phtml"/>
         </referenceContainer>
     </body>

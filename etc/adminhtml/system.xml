@@ -120,7 +120,7 @@
         <section id="skylink" translate="label" type="text" sortOrder="400" showInDefault="1" showInWebsite="1">
             <label>SkyLink</label>
             <tab>service</tab>
-            <resource>RetailExpress_SkyLink::system_config</resource>
+            <resource>RetailExpress_SkyLink::skylink_config</resource>
             <group id="api" translate="label" type="text" sortOrder="100" showInDefault="1">
                 <label>API</label>
                 <field id="version_2_url" translate="label" type="text" sortOrder="200" showInDefault="1" canRestore="1">

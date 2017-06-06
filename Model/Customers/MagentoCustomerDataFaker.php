@@ -82,6 +82,9 @@ class MagentoCustomerDataFaker implements MagentoCustomerDataFakerInterface
                     $magentoAddress->setTelephone((string) $this->customerConfig->getFakeDataTelephone());
                     break;
 
+                case 'regionId':
+                    throw new InvalidArgumentException('Due to the way Magento uses a either dropdown or a freeform text for states and that the state is required for this Address (this is configurable in Magento), we cannot provide a fake state as it would be change depending on the country this Address uses. Please add a state for the Customer in Retail Express and try syncing again.');
+
                 default:
                     throw new InvalidArgumentException("No fake data exists for Magento Address field \"{$failedField}\".");
             }

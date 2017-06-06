@@ -164,6 +164,49 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>The minimum requirements for Customer data (such as telephone, address information) differs between Retail Express and Magento. Where Magento rejects a Customer due to lack of information, you have the ability to use fake data to populate the Customer so as to avoid the sync being rejected. If you choose to not use fake data, all validation errors will be visible in your SkyLink logs.</comment>
                 </field>
+                <field id="fake_data_first_name" translate="label" type="text" sortOrder="400" showInDefault="1" canRestore="1">
+                    <label>Fake First Name</label>
+                    <depends>
+                        <field id="use_fake_data">1</field>
+                    </depends>
+                </field>
+                <field id="fake_data_last_name" translate="label" type="text" sortOrder="500" showInDefault="1" canRestore="1">
+                    <label>Fake Last Name</label>
+                    <depends>
+                        <field id="use_fake_data">1</field>
+                    </depends>
+                </field>
+                <field id="fake_data_street" translate="label" type="text" sortOrder="600" showInDefault="1" canRestore="1">
+                    <label>Fake Street</label>
+                    <depends>
+                        <field id="use_fake_data">1</field>
+                    </depends>
+                </field>
+                <field id="fake_data_city" translate="label" type="text" sortOrder="700" showInDefault="1" canRestore="1">
+                    <label>Fake City</label>
+                    <depends>
+                        <field id="use_fake_data">1</field>
+                    </depends>
+                </field>
+                <field id="fake_data_postcode" translate="label" type="text" sortOrder="800" showInDefault="1" canRestore="1">
+                    <label>Fake Postcode</label>
+                    <depends>
+                        <field id="use_fake_data">1</field>
+                    </depends>
+                </field>
+                <field id="fake_data_country_code" translate="label" type="select" sortOrder="900" showInDefault="1" canRestore="1">
+                    <label>Fake Country</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                    <depends>
+                        <field id="use_fake_data">1</field>
+                    </depends>
+                </field>
+                <field id="fake_data_telephone" translate="label" type="text" sortOrder="1000" showInDefault="1" canRestore="1">
+                    <label>Fake Telephone</label>
+                    <depends>
+                        <field id="use_fake_data">1</field>
+                    </depends>
+                </field>
             </group>
             <group id="products" translate="label" type="text" sortOrder="400" showInDefault="1" showInWebsite="1">
                 <label>Products</label>

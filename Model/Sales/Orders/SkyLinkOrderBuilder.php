@@ -213,7 +213,7 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
 
     private function getShippingCharge(OrderInterface $magentoOrder)
     {
-        $price = $magentoOrder->getShippingAmount();
+        $price = $magentoOrder->getShippingInclTax();
 
         if ($price > 0) {
             $taxRate = $magentoOrder->getShippingTaxAmount() / $price;

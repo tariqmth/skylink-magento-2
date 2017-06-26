@@ -7,8 +7,8 @@ use Magento\Catalog\Api\Data\ProductWebsiteLinkInterfaceFactory;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Api\ProductWebsiteLinkRepositoryInterface;
 use Magento\Catalog\Model\Product\WebsiteFactory as MagentoProductWebsiteFactory;
+use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
-use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductCustomerGroupPriceServiceInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductWebsiteManagementInterface;
 use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
@@ -25,8 +25,6 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
 
     private $magentoProductRepository;
 
-    private $magentoCustomerGroupPriceService;
-
     private $magentoProductWebsiteLinkRepository;
 
     private $magentoProductWebsiteLinkFactory;
@@ -35,7 +33,6 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
         MagentoStoreEmulatorInterface $magentoStoreEmulator,
         MagentoProductMapperInterface $magentoProductMapper,
         ProductRepositoryInterface $magentoProductRepository,
-        MagentoProductCustomerGroupPriceServiceInterface $magentoCustomerGroupPriceService,
         MagentoWebsiteRepositoryInterface $magentoWebsiteRepository,
         ProductWebsiteLinkRepositoryInterface $magentoProductWebsiteLinkRepository,
         ProductWebsiteLinkInterfaceFactory $magentoProductWebsiteLinkFactory
@@ -43,7 +40,6 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
         $this->magentoStoreEmulator = $magentoStoreEmulator;
         $this->magentoProductMapper = $magentoProductMapper;
         $this->magentoProductRepository = $magentoProductRepository;
-        $this->magentoCustomerGroupPriceService = $magentoCustomerGroupPriceService;
         $this->magentoWebsiteRepository = $magentoWebsiteRepository;
         $this->magentoProductWebsiteLinkRepository = $magentoProductWebsiteLinkRepository;
         $this->magentoProductWebsiteLinkFactory = $magentoProductWebsiteLinkFactory;
@@ -56,7 +52,7 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
      * @param SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup
      */
     public function overrideMagentoProductForSalesChannelGroup(
-        ProductInterface &$magentoProduct,
+        ProductInterface $magentoProduct,
         SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup
     ) {
         /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Products\Product $skyLinkProduct */
@@ -66,28 +62,30 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
         $magentoWebsites = $skyLinkProductInSalesChannelGroup->getSalesChannelGroup()->getMagentoWebsites();
 
         // Loop through all the Magento Websites that the Sales Channel Group uses and scope into each
-        array_map(function (WebsiteInterface $magentoWebsite) use (&$magentoProduct, $skyLinkProduct) {
+        array_map(function (WebsiteInterface $magentoWebsite) use ($magentoProduct, $skyLinkProduct) {
+            $this->magentoStoreEmulator->onWebsite(
+                $magentoWebsite,
+                function (StoreInterface $magentoStore, WebsiteInterface $magentoWebsite) use ($magentoProduct, $skyLinkProduct) {
 
-            // Map the product in the context of the given Magento Website
-            $this->magentoStoreEmulator->onWebsite($magentoWebsite, function () use ($magentoProduct, $skyLinkProduct) {
-                $this->magentoProductMapper->mapMagentoProductForWebsite($magentoProduct, $skyLinkProduct);
-            });
+                    // Load the product in the context of the website's store
+                    $magentoProduct = $this->magentoProductRepository->getById(
+                        $magentoProduct->getId(),
+                        false,
+                        $magentoStore->getId()
+                    );
 
-            // Save the product
-            $magentoProduct = $this->magentoProductRepository->save($magentoProduct);
+                    // Map and save the product
+                    $this->magentoProductMapper->mapMagentoProductForWebsite(
+                        $magentoProduct,
+                        $skyLinkProduct,
+                        $magentoWebsite
+                    );
 
-            // And sync Customer Group Prices for the given Magento Website
-            $this->magentoStoreEmulator->onWebsite($magentoWebsite, function () use ($magentoProduct, $skyLinkProduct) {
-                $this->magentoCustomerGroupPriceService->syncCustomerGroupPrices(
-                    $magentoProduct,
-                    $skyLinkProduct->getPricingStructure()
-                );
-            });
+                    $this->magentoProductRepository->save($magentoProduct);
+                }
+            );
+
         }, $magentoWebsites);
-
-        // Refresh the referenced instance of the product (as the last customer
-        // group price sync in the loop did not do this)...
-        $magentoProduct = $this->magentoProductRepository->get($magentoProduct->getSku());
     }
 
     /**

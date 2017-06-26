@@ -3,6 +3,7 @@
 namespace RetailExpress\SkyLink\Api\Catalogue\Products;
 
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Store\Api\Data\WebsiteInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 
 interface MagentoProductMapperInterface
@@ -23,6 +24,11 @@ interface MagentoProductMapperInterface
      *
      * @param ProductInterface $magentoProduct
      * @param SkyLinkProduct   $skyLinkProduct
+     * @param WebsiteInterface $magentoWebsite
      */
-    public function mapMagentoProductForWebsite(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct);
+    public function mapMagentoProductForWebsite(
+        ProductInterface $magentoProduct,
+        SkyLinkProduct $skyLinkProduct,
+        WebsiteInterface $magentoWebsite
+    );
 }

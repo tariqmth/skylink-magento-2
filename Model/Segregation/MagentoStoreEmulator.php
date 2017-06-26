@@ -29,16 +29,21 @@ class MagentoStoreEmulator implements MagentoStoreEmulatorInterface
     {
         $this->assertImplementationOfWebsiteInterface($magentoWebsite);
 
-        return $this->onStore($magentoWebsite->getDefaultStore(), $callback);
+        return $this->onStoreForWebsite($magentoWebsite->getDefaultStore(), $magentoWebsite, $callback);
     }
 
     public function onStore(StoreInterface $magentoStore, callable $callback)
+    {
+        return $this->onStoreForWebsite($magentoStore, $magentoStore->getWebsite(), $callback);
+    }
+
+    private function onStoreForWebsite(StoreInterface $magentoStore, WebsiteInterface $magentoWebsite, callable $callback)
     {
         $currentStore = $this->magentoStoreManager->getStore();
 
         try {
             $this->magentoStoreManager->setCurrentStore($magentoStore->getCode());
-            $response = $callback();
+            $response = $callback($magentoStore, $magentoWebsite);
             $this->magentoStoreManager->setCurrentStore($currentStore);
             return $response;
         } catch (Throwable $e) { // PHP 7+

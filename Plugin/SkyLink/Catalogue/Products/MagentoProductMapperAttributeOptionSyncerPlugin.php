@@ -41,8 +41,6 @@ class MagentoProductMapperAttributeOptionSyncerPlugin
                     'SkyLink Attribute Code' => $skyLinkAttributeOption->getAttribute()->getCode(),
                 ]);
 
-                dump($skyLinkAttributeOption);
-
                 $command = new SyncSkyLinkAttributeToMagentoAttributeCommand();
                 $command->skyLinkAttributeCode = (string) $skyLinkAttributeOption->getAttribute()->getCode();
                 $command->shouldBeQueued = false;

@@ -13,13 +13,11 @@ use Magento\CatalogInventory\Api\Data\StockItemInterfaceFactory;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
-use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductCustomerGroupPriceServiceInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductStockItemMapperInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 use RetailExpress\SkyLink\Api\Catalogue\Products\UrlKeyGeneratorInterface;
 use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
-use RetailExpress\SkyLink\Api\Segregation\MagentoStoreEmulatorInterface;
 use RetailExpress\SkyLink\Api\Segregation\MagentoWebsiteRepositoryInterface;
 
 class MagentoSimpleProductService implements MagentoSimpleProductServiceInterface
@@ -51,10 +49,6 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
 
     private $magentoWebsiteRepository;
 
-    private $magentoStoreEmulator;
-
-    private $magentoCustomerGroupPriceService;
-
     public function __construct(
         MagentoProductMapperInterface $magentoProductMapper,
         MagentoSimpleProductStockItemMapperInterface $magentoStockItemMapper,
@@ -65,9 +59,7 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         ProductWebsiteLinkInterfaceFactory $magentoProductWebsiteLinkFactory,
         StockRegistryInterface $magentoStockRegistry,
         UrlKeyGeneratorInterface $urlKeyGenerator,
-        MagentoWebsiteRepositoryInterface $magentoWebsiteRepository,
-        MagentoStoreEmulatorInterface $magentoStoreEmulator,
-        MagentoProductCustomerGroupPriceServiceInterface $magentoCustomerGroupPriceService
+        MagentoWebsiteRepositoryInterface $magentoWebsiteRepository
     ) {
         $this->magentoProductMapper = $magentoProductMapper;
         $this->magentoStockItemMapper = $magentoStockItemMapper;
@@ -79,8 +71,6 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         $this->magentoStockRegistry = $magentoStockRegistry;
         $this->urlKeyGenerator = $urlKeyGenerator;
         $this->magentoWebsiteRepository = $magentoWebsiteRepository;
-        $this->magentoStoreEmulator = $magentoStoreEmulator;
-        $this->magentoCustomerGroupPriceService = $magentoCustomerGroupPriceService;
     }
 
     /**
@@ -105,7 +95,7 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
     /**
      * {@inheritdoc}
      */
-    public function updateMagentoProduct(ProductInterface &$magentoProduct, SkyLinkProduct $skyLinkProduct)
+    public function updateMagentoProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
     {
         /* @var StockItemInterface $magentoStockItem */
         $magentoStockItem = $this->magentoStockRegistry->getStockItemBySku($magentoProduct->getSku());
@@ -127,32 +117,12 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
     }
 
     private function mapStockAndSave(
-        ProductInterface &$magentoProduct,
+        ProductInterface $magentoProduct,
         StockItemInterface $magentoStockItem,
         SkyLinkProduct $skyLinkProduct
     ) {
         $this->magentoStockItemMapper->mapStockItem($magentoStockItem, $skyLinkProduct->getInventoryItem());
-        $magentoProduct = $this->baseMagentoProductRepository->save($magentoProduct);
+        $this->baseMagentoProductRepository->save($magentoProduct);
         $this->magentoStockRegistry->updateStockItemBySku($magentoProduct->getSku(), $magentoStockItem);
-
-        $this->syncCustomerGroupPrices($magentoProduct, $skyLinkProduct);
-    }
-
-    private function syncCustomerGroupPrices(ProductInterface &$magentoProduct, SkyLinkProduct $skyLinkProduct)
-    {
-        // Loop through Magento Websites that are configured for the global scope,
-        // shoot into the website scope and sync customer group prices for that
-        // website. Customer Group Prices can't be both global and scoped,
-        // so we just scope them all instead. Much simpler ;) NOT!
-        array_map(function (WebsiteInterface $magentoWebsite) use (&$magentoProduct, $skyLinkProduct) {
-            $this->magentoStoreEmulator->onWebsite($magentoWebsite, function () use ($magentoProduct, $skyLinkProduct) {
-                $this->magentoCustomerGroupPriceService->syncCustomerGroupPrices(
-                    $magentoProduct,
-                    $skyLinkProduct->getPricingStructure()
-                );
-            });
-
-            $magentoProduct = $this->baseMagentoProductRepository->get($magentoProduct->getSku());
-        }, $this->magentoWebsiteRepository->getListFilteredByGlobalSalesChannelId());
     }
 }

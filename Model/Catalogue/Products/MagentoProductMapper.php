@@ -13,12 +13,15 @@ use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetRepository
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeTypeManagerInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\ConfigInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
+use RetailExpress\SkyLink\Api\Customers\MagentoCustomerGroupRepositoryInterface;
 use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
+use RetailExpress\SkyLink\Exceptions\Customers\CustomerGroupNotSyncedException;
 use RetailExpress\SkyLink\Exceptions\Products\AttributeNotMappedException;
 use RetailExpress\SkyLink\Exceptions\Products\AttributeOptionNotMappedException;
 use RetailExpress\SkyLink\Model\Catalogue\SyncStrategy;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
+use RetailExpress\SkyLink\Sdk\Catalogue\Products\PriceGroupPrice as SkyLinkPriceGroupPrice;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 
 class MagentoProductMapper implements MagentoProductMapperInterface
@@ -35,18 +38,22 @@ class MagentoProductMapper implements MagentoProductMapperInterface
 
     private $attributeOptionRepository;
 
+    private $magentoCustomerGroupRepository;
+
     public function __construct(
         ConfigInterface $productConfig,
         MagentoAttributeSetRepositoryInterface $attributeSetRepository,
         MagentoAttributeRepositoryInterface $attributeRepository,
         MagentoAttributeTypeManagerInterface $attributeTypeManager,
-        MagentoAttributeOptionRepositoryInterface $attributeOptionRepository
+        MagentoAttributeOptionRepositoryInterface $attributeOptionRepository,
+        MagentoCustomerGroupRepositoryInterface $magentoCustomerGroupRepository
     ) {
         $this->productConfig = $productConfig;
         $this->attributeSetRepository = $attributeSetRepository;
         $this->attributeRepository = $attributeRepository;
         $this->attributeTypeManager = $attributeTypeManager;
         $this->attributeOptionRepository = $attributeOptionRepository;
+        $this->magentoCustomerGroupRepository = $magentoCustomerGroupRepository;
     }
 
     /**
@@ -67,8 +74,8 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         $magentoProduct->setData('manufacturer_sku', (string) $skyLinkProduct->getManufacturerSku());
 
         $this->mapName($magentoProduct, $skyLinkProduct);
-
         $this->mapPrices($magentoProduct, $skyLinkProduct);
+        $this->mapCustomerGroupPrices($magentoProduct, $skyLinkProduct);
 
         // Use the cubic weight for the given product
         // @todo this should be configuration-based
@@ -86,9 +93,14 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         $this->mapAttributes($magentoProduct, $skyLinkProduct);
     }
 
-    public function mapMagentoProductForWebsite(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
-    {
+    public function mapMagentoProductForWebsite(
+        ProductInterface $magentoProduct,
+        SkyLinkProduct $skyLinkProduct,
+        WebsiteInterface $magentoWebsite
+    ) {
+        $this->mapName($magentoProduct, $skyLinkProduct);
         $this->mapPrices($magentoProduct, $skyLinkProduct);
+        $this->mapCustomerGroupPrices($magentoProduct, $skyLinkProduct, $magentoWebsite);
     }
 
     /**
@@ -173,6 +185,60 @@ class MagentoProductMapper implements MagentoProductMapperInterface
                 $this->dateTimeToAttributeValue($skyLinkSpecialPrice->getEndDate())
             );
         }
+    }
+
+    private function mapCustomerGroupPrices(
+        ProductInterface $magentoProduct,
+        SkyLinkProduct $skyLinkProduct,
+        WebsiteInterface $magentoWebsite = null
+    ) {
+        $magentoWebsiteId = isset($magentoWebsite) ? $magentoWebsite->getId() : 0;
+
+        // We'll loop through all of the price group prices
+        // @todo what about orphaned prices? Deleted stores? IDK
+        array_map(function (SkyLinkPriceGroupPrice $skyLinkPriceGroupPrice) use ($magentoProduct, $magentoWebsiteId) {
+
+            /* @var \Magento\Customer\Api\Data\GroupInterface|null $magentoCustomerGroup */
+            $magentoCustomerGroup = $this
+                ->magentoCustomerGroupRepository
+                ->findBySkyLinkPriceGroupKey($skyLinkPriceGroupPrice->getKey());
+
+            if (null === $magentoCustomerGroup) {
+                throw CustomerGroupNotSyncedException::withSkyLinkPriceGroupKey($skyLinkPriceGroupPrice->getKey());
+            }
+
+            // Grab our tier prices
+            $tierPrices = $magentoProduct->getData('tier_price');
+
+            // Let's filter down our tier prices by the given criteria, which allows us to preserve the key
+            // so we can later merge existing tier prices back in
+            $matching = array_filter(
+                $tierPrices,
+                function (array $tierPrice) use ($magentoWebsiteId, $magentoCustomerGroup) {
+                    return $magentoWebsiteId == $tierPrice['website_id'] &&
+                        $magentoCustomerGroup->getId() == $tierPrice['cust_group'] &&
+                        1 == $tierPrice['price_qty'];
+                }
+            );
+
+            // Grab a matching tier price or create one
+            $tierPrice = count($matching) > 0 ? current($matching) : [
+                'website_id' => $magentoWebsiteId,
+                'cust_group' => $magentoCustomerGroup->getId(),
+                'price_qty' => 1,
+            ];
+
+            // Update the price for the tier price
+            $tierPrice['price'] = $tierPrice['website_price']  = $skyLinkPriceGroupPrice->getPrice()->toNative();
+
+            if (count($matching) > 0) {
+                $tierPrices[key($matching)] = $tierPrice;
+            } else {
+                $tierPrices[] = $tierPrice;
+            }
+
+            $magentoProduct->setData('tier_price', $tierPrices);
+        }, $skyLinkProduct->getPricingStructure()->getPriceGroupPrices());
     }
 
     private function mapAttributes(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)

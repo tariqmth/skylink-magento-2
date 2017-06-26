@@ -50,7 +50,7 @@ class ProductRepositoryWebsiteIdWorkaroundPlugin
         return $magentoProduct;
     }
 
-    private function restoreWebsiteIds(Product &$magentoProduct, array $properWebsiteIds)
+    private function restoreWebsiteIds(Product $magentoProduct, array $properWebsiteIds)
     {
         $incorrectWebsiteIds = array_map('intval', $magentoProduct->getWebsiteIds());
         $properWebsiteIds = array_map('intval', $properWebsiteIds);

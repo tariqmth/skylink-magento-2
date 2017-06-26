@@ -13,7 +13,7 @@ use Magento\ConfigurableProduct\Api\Data\OptionValueInterfaceFactory;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductLinkManagementInterface;
 use RetailExpress\SkyLink\Exceptions\Products\TooManyParentProductsException;
-use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\Attribute as SkyLinkAttribute;
+use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\MatrixPolicy as SkyLinkMatrixPolicy;
 
 class MagentoConfigurableProductLinkManagement implements MagentoConfigurableProductLinkManagementInterface
@@ -94,15 +94,11 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
     private function getConfigurableProductOptions(SkyLinkMatrixPolicy $skyLinkMatrixPolicy, array $childrenProducts)
     {
         /* @var \Magento\Catalog\Api\Data\ProductAttributeInterface[] $magentoAttributes */
-        $magentoAttributes = array_map(function (SkyLinkAttribute $skyLinkAttribute) {
-
-            /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode[] $skyLinkAttributeCodes */
-            $skyLinkAttributeCode = $skyLinkAttribute->getCode();
-
+        $magentoAttributes = array_map(function (SkyLinkAttributeCode $skyLinkAttributeCode) {
             return $this
                 ->magentoAttributeRepository
                 ->getMagentoAttributeForSkyLinkAttributeCode($skyLinkAttributeCode);
-        }, $skyLinkMatrixPolicy->getAttributes());
+        }, $skyLinkMatrixPolicy->getAttributeCodes());
 
         // Transform each product attribute into a configurable product option
         return array_map(function ($magentoAttibute) use (&$options, $childrenProducts) {

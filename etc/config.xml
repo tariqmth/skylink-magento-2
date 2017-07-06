@@ -10,7 +10,10 @@
             <options>
                 <eta_enabled>0</eta_enabled>
                 <eta_button_title>Check ETA</eta_button_title>
-                <eta_button_disclaimer>This date is when we expect to receive the product in our warehouse, then we will ship it to you.</eta_button_disclaimer>
+                <eta_disclaimer_label>This date is when we expect to receive the product in our warehouse, then we will ship it to you.</eta_disclaimer_label>
+                <eta_no_date_label>An ETA could not be displayed, please contact us for more information.</eta_no_date_label>
+                <eta_replace_product_stock_status>0</eta_replace_product_stock_status>
+                <eta_replace_product_stock_status_label>Check ETA Before Ordering</eta_replace_product_stock_status_label>
             </options>
         </cataloginventory>
         <carriers>

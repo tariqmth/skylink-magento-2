@@ -24,7 +24,7 @@
     }
   ],
   "autoload": {
-    "files": ["registration.php"],
+    "files": ["helpers.php", "registration.php"],
     "psr-4": {
       "RetailExpress\\SkyLink\\": ""
     }

@@ -9,7 +9,7 @@ define(['jquery'], function ($) {
     $button.on('mouseup', function (e) {
       $button
         .attr('disabled', 'disabled')
-        .html(config.check_waiting_text);
+        .html(config.check_waiting_label);
 
       checkEta();
     });
@@ -22,7 +22,7 @@ define(['jquery'], function ($) {
 
           $responseDate.html(date.toLocaleDateString());
         } else {
-          $responseDate.html(config.no_eta_text);
+          $responseDate.html(config.no_date_label);
         }
 
         $button.addClass('checked');

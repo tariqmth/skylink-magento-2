@@ -2,60 +2,59 @@
 
 namespace RetailExpress\SkyLink\Block\Catalogue\Eta;
 
-use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Element\Template\Context as TemplateContext;
 use RetailExpress\SkyLink\Api\Catalogue\Eta\ConfigInterface as EtaConfigInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Eta\HelperInterface as EtaHelperInterface;
 
 class Button extends Template
 {
     private $registry;
 
-    private $stockRegistry;
+    private $config;
 
-    private $etaConfig;
+    private $helper;
 
-    private $product;
-
-    private $skyLinkProductId;
-
-    private $stockItem;
+    private $magentoProduct;
 
     public function __construct(
         TemplateContext $context,
         Registry $registry,
-        StockRegistryInterface $stockRegistry,
-        EtaConfigInterface $etaConfig,
+        EtaConfigInterface $config,
+        EtaHelperInterface $helper,
         array $data = []
     ) {
         $this->registry = $registry;
-        $this->stockRegistry = $stockRegistry;
-        $this->etaConfig = $etaConfig;
+        $this->config = $config;
+        $this->helper = $helper;
 
         parent::__construct($context, $data);
     }
 
     public function canShow()
     {
-        return $this->etaConfig->canUse() &&
-            true === $this->hasSkyLinkProductId() &&
-            false == $this->getMagentoStockItem()->getIsInStock();
+        return $this->helper->canShow($this->getMagentoProduct());
     }
 
     public function getTitle()
     {
-        return $this->etaConfig->getButtonTitle();
+        return $this->config->getButtonTitle();
     }
 
-    public function hasDisclaimer()
+    public function hasDisclaimerLabel()
     {
-        return strlen($this->getDisclaimer()) > 0;
+        return strlen($this->getDisclaimerLabel()) > 0;
     }
 
-    public function getDisclaimer()
+    public function getDisclaimerLabel()
     {
-        return $this->etaConfig->getButtonDisclaimer();
+        return $this->config->getDisclaimerLabel();
+    }
+
+    public function getNoDateLabel()
+    {
+        return $this->config->getNoDateLabel();
     }
 
     public function getEtaUrl()
@@ -63,35 +62,16 @@ class Button extends Template
         return sprintf(
             '%s?%s',
             $this->getUrl('skylink/catalogue_eta/index'),
-            http_build_query(['magento_product_id' => $this->getMagentoProductId()])
+            http_build_query(['magento_product_id' => $this->getMagentoProduct()->getId()])
         );
-    }
-
-    public function hasSkyLinkProductId()
-    {
-        return null !== $this->getMagentoProduct()->getCustomAttribute('skylink_product_id');
     }
 
     public function getMagentoProduct()
     {
-        if (null === $this->product) {
-            $this->product = $this->registry->registry('product');
+        if (null === $this->magentoProduct) {
+            $this->magentoProduct = $this->registry->registry('product');
         }
 
-        return $this->product;
-    }
-
-    public function getMagentoProductId()
-    {
-        return $this->getMagentoProduct()->getId();
-    }
-
-    public function getMagentoStockItem()
-    {
-        if (null === $this->stockItem) {
-            $this->stockItem = $this->stockRegistry->getStockItem($this->getMagentoProductId());
-        }
-
-        return $this->stockItem;
+        return $this->magentoProduct;
     }
 }

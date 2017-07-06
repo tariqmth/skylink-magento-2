@@ -71,6 +71,7 @@
 
     <!-- Catalogue eta implementations -->
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Eta\ConfigInterface" type="RetailExpress\SkyLink\Model\Catalogue\Eta\Config"/>
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Eta\HelperInterface" type="RetailExpress\SkyLink\Model\Catalogue\Eta\Helper"/>
 
     <!-- Catalogue product implementations -->
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\ConfigInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\Config"/>

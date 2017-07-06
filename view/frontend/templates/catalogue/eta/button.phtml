@@ -1,16 +1,22 @@
+<?php
+/* @var \RetailExpress\SkyLink\Block\Catalogue\Eta\Button $block */
+?>
 <?php if ($block->canShow()): ?>
     <div id="eta-button">
         <button id="eta-button-button" class="action eta-button">
             <?=$block->escapeHtml($block->getTitle())?>
         </button>
         <div id="eta-button-response-wrapper" class="eta-button-response-wrapper not-ready">
-            <p>
+            <p class="eta-button-eta">
                 <?=__('ETA:')?> <span id="eta-button-response-date"></span>
             </p>
-            <?php if ($block->hasDisclaimer()): ?>
-                <p class="eta-button-disclaimer"><em><?=$block->escapeHtml($block->getDisclaimer())?></em></p>
+            <?php if ($block->hasDisclaimerLabel()): ?>
+                <p class="eta-button-disclaimer"><?=$block->escapeHtml($block->getDisclaimerLabel())?></p>
             <?php endif ?>
         </div>
+        <p id="eta-button-no-date-wrapper" class="eta-button-no-date-wrapper not-ready">
+            <?=$block->escapeHtml($block->getNoDateLabel())?>
+        </p>
         <p id="eta-button-failed-response-wrapper" class="eta-button-failed-response-wrapper not-ready">
             <?=__('An error occured while checking the ETA')?>
         </p>
@@ -20,12 +26,12 @@
         {
             "#eta-button": {
                 "skyLinkEtaButton": {
-                    "check_waiting_text": "<?=__('Checking ETA...')?>",
-                    "no_eta_text": "<?=__('Unknown ETA')?>",
+                    "check_waiting_label": "<?=__('Checking ETA...')?>",
                     "eta_url": "<?=$block->escapeHtml($block->getEtaUrl())?>",
                     "button": "#eta-button-button",
                     "response_wrapper": "#eta-button-response-wrapper",
                     "response_date": "#eta-button-response-date",
+                    "no_date_wrapper": "#eta-button-no-date-wrapper",
                     "failed_response_wrapper": "#eta-button-failed-response-wrapper"
                 }
             }

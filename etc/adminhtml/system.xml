@@ -12,31 +12,55 @@
         <section id="cataloginventory">
             <group id="options">
 
-                <!-- Magento was daft and didn't leave any spacing in the sort order for us -->
-                <field id="stock_threshold_qty" sortOrder="7"/>
-
                 <!-- Shove this right in below the backorders dropdown -->
-                <field id="eta_enabled" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="eta_enabled" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>ETA Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>If a product is on order in Retail Express, show a button to check it's ETA.</comment>
+                    <comment><![CDATA[<strong>ETA will only show when a product's available quantity is 0 and there is a quantity on order.</strong>]]></comment>
                     <depends>
-                        <field id="show_out_of_stock" negative="1">0</field>
                         <field id="display_product_stock_status">1</field>
                     </depends>
                 </field>
 
-                <field id="eta_button_title" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="eta_button_title" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>ETA Button Title</label>
                     <depends>
+                        <field id="display_product_stock_status">1</field>
                         <field id="eta_enabled">1</field>
                     </depends>
                 </field>
 
-                <field id="eta_button_disclaimer" translate="label" type="textarea" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>ETA Button Disclaimer</label>
+                <field id="eta_disclaimer_label" translate="label" type="textarea" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>ETA Disclaimer Label</label>
                     <depends>
+                        <field id="display_product_stock_status">1</field>
                         <field id="eta_enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="eta_no_date_label" translate="label" type="textarea" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>ETA No Date Label</label>
+                    <depends>
+                        <field id="display_product_stock_status">1</field>
+                        <field id="eta_enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="eta_replace_product_stock_status" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Replace Products Availability on Storefront when ETA is Showing</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="display_product_stock_status">1</field>
+                        <field id="eta_enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="eta_replace_product_stock_status_label" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Label to Replace Products Availability with on Storefront when ETA is Showing</label>
+                    <depends>
+                        <field id="display_product_stock_status">1</field>
+                        <field id="eta_enabled">1</field>
+                        <field id="eta_replace_product_stock_status">1</field>
                     </depends>
                 </field>
 

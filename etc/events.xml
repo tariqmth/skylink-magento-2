@@ -54,4 +54,9 @@
         <observer name="skylink_logger" instance="RetailExpress\SkyLink\Observer\CommandBus\WhenQueuedCommandFailed"/>
     </event>
 
+    <!-- Before the layout is loaded, we can conditionally add a handle to switch out alll availability calls if needed. -->
+    <event name="layout_load_before">
+        <observer name="skylink_eta" instance="RetailExpress\SkyLink\Observer\Catalogue\Eta\WhenLayoutIsLoading"/>
+    </event>
+
 </config>

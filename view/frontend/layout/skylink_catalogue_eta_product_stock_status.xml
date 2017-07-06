@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!--
+    When this handle is loaded due to the setting of ETA configuration through
+    \RetailExpress\SkyLink\Observer\Catalogue\Eta\WhenLayoutIsLoading
+    we will replace occurances of the regular "in stock"/"out of stock" templates
+    with our own overrides.
+
+    We're basing our overrides off the default Magento output, however your theme
+    might override these templates (without changing them). In that case, it's
+    likely the HTML that's outputted by this extension won't match your theme.
+
+    To restore compatibility, you'll need to either:
+
+      (a) Copy conflicting files to the same location within your theme and resolve issues manually.
+      (b) Set the template back to the original template and introduce ETA functionality.
+
+    Either way is appropriate, however option (a) is recommended as it decouples your theme from ETA.
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+
+        <!-- Stock status for simple products on the product page -->
+        <referenceBlock name="product.info.simple">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">RetailExpress_SkyLink::catalogue/eta/catalog/product/view/type/default.phtml</argument>
+            </action>
+        </referenceBlock>
+
+    </body>
+</page>

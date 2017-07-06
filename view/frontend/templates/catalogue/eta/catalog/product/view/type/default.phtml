@@ -1,0 +1,33 @@
+<?php
+/**
+ * Copyright © 2016 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php /* @var $block \Magento\Catalog\Block\Product\View\AbstractView */?>
+<?php $_product = $block->getProduct() ?>
+
+<?php if ($block->displayProductStockStatus()): ?>
+
+    <?php /* START: ETA */ ?>
+    <?php if (eta_replaces_stock_status($_product)): ?>
+
+        <div class="stock available available-eta" title="<?php /* @escapeNotVerified */ echo __('Availability') ?>">
+            <span><?php echo $block->escapeHtml(eta_stock_status_label()) ?></span>
+        </div>
+
+    <?php elseif ($_product->isAvailable()): ?>
+    <?php /* END: ETA */ ?>
+
+        <div class="stock available" title="<?php /* @escapeNotVerified */ echo __('Availability') ?>">
+            <span><?php /* @escapeNotVerified */ echo __('In stock') ?></span>
+        </div>
+    <?php else: ?>
+        <div class="stock unavailable" title="<?php /* @escapeNotVerified */ echo __('Availability') ?>">
+            <span><?php /* @escapeNotVerified */ echo __('Out of stock') ?></span>
+        </div>
+    <?php endif; ?>
+<?php endif; ?>

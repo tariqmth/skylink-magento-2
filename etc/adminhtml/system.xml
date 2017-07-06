@@ -230,17 +230,23 @@
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ProductPriceAttribute</source_model>
                     <comment><![CDATA[Choose the attribute in Retail Express to map to a product's regular price attribute <strong>(falling back to <kbd>POS Price [With Discounts]</kbd> if your chosen attribute is not available for a given product)</strong>.]]></comment>
                 </field>
-                <field id="url_key_attribute_code_1" translate="label" type="select" sortOrder="500" showInDefault="1" canRestore="1">
+                <field id="quantity_calculation" translate="label" type="select" sortOrder="500" showInDefault="1" canRestore="1">
+                    <label>Quantity Calculation</label>
+                    <source_model>RetailExpress\SkyLink\Model\System\Config\Source\QuantityCalculation</source_model>
+                    <comment><![CDATA[Choose how a product's quantity in Magento is calculated.]]></comment>
+                </field>
+
+                <field id="url_key_attribute_code_1" translate="label" type="select" sortOrder="600" showInDefault="1" canRestore="1">
                     <label>URL Key Attribute 1</label>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\UrlKeyAttribute</source_model>
                     <comment><![CDATA[Choose a product attribute that we will use to generate the URL key. To avoid duplicate URL keys, we suffix a <kbd>-1</kbd>, <kbd>-2</kbd> etc until we find a unique URL key. URL keys are only ever assigned during product creation, they do not change when a product is updated.]]></comment>
                 </field>
-                <field id="url_key_attribute_code_2" translate="label" type="select" sortOrder="600" showInDefault="1" canRestore="1">
+                <field id="url_key_attribute_code_2" translate="label" type="select" sortOrder="700" showInDefault="1" canRestore="1">
                     <label>URL Key Attribute 2</label>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\OptionalUrlKeyAttribute</source_model>
                     <comment>Choose an optional second product attribute that we will use to generate the URL key.</comment>
                 </field>
-                <field id="url_key_attribute_code_3" translate="label" type="select" sortOrder="700" showInDefault="1" canRestore="1">
+                <field id="url_key_attribute_code_3" translate="label" type="select" sortOrder="800" showInDefault="1" canRestore="1">
                     <label>URL Key Attribute 3</label>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\OptionalUrlKeyAttribute</source_model>
                     <comment>Choose an optional third product attribute that we will use to generate the URL key using.</comment>

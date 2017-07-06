@@ -4,6 +4,7 @@ namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\ConfigInterface;
+use RetailExpress\SkyLink\Model\Catalogue\Products\QuantityCalculation;
 use RetailExpress\SkyLink\Model\Catalogue\SyncStrategy;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductNameAttribute as SkyLinkProductNameAttribute;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductPriceAttribute as SkyLinkProductPriceAttribute;
@@ -52,6 +53,16 @@ class Config implements ConfigInterface
     {
         return SkyLinkProductPriceAttribute::get(
             $this->scopeConfig->getValue('skylink/products/special_price_attribute')
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getQuantityCalculation()
+    {
+        return QuantityCalculation::get(
+            $this->scopeConfig->getValue('skylink/products/quantity_calculation')
         );
     }
 

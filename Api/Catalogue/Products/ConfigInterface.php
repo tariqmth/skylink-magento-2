@@ -33,6 +33,13 @@ interface ConfigInterface
     public function getSpecialPriceAttribute();
 
     /**
+     * Get the quantity calculation for a product.
+     *
+     * @return \RetailExpress\SkyLink\Model\Catalogue\Products\QuantityCalculation
+     */
+    public function getQuantityCalculation();
+
+    /**
      * Returns the URL Key Attribute Codes.
      *
      * @return string[]

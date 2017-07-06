@@ -76,18 +76,11 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         $this->mapName($magentoProduct, $skyLinkProduct);
         $this->mapPrices($magentoProduct, $skyLinkProduct);
         $this->mapCustomerGroupPrices($magentoProduct, $skyLinkProduct);
+        $this->mapQuantities($magentoProduct, $skyLinkProduct);
 
         // Use the cubic weight for the given product
         // @todo this should be configuration-based
         $magentoProduct->setWeight($skyLinkProduct->getPhysicalPackage()->getWeight()->toNative());
-
-        // Until we extend the stock item itself, we are storing the qty on order against the product itself
-        $magentoProduct->unsetData('qty_on_order');
-        if ($skyLinkProduct->getInventoryItem()->hasQtyOnOrder()) {
-            $magentoProduct->setCustomAttribute('qty_on_order', $skyLinkProduct->getInventoryItem()->getQtyOnOrder()->toNative());
-        } else {
-            $magentoProduct->setCustomAttribute('qty_on_order', 0);
-        }
 
         // All other attributes
         $this->mapAttributes($magentoProduct, $skyLinkProduct);
@@ -239,6 +232,22 @@ class MagentoProductMapper implements MagentoProductMapperInterface
 
             $magentoProduct->setData('tier_price', $tierPrices);
         }, $skyLinkProduct->getPricingStructure()->getPriceGroupPrices());
+    }
+
+    /**
+     * @ Until we extend the stock item itself, we are storing additional quantities on order against the product itself
+     */
+    private function mapQuantities(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
+    {
+        $magentoProduct->unsetData('qty_available');
+        $magentoProduct->setCustomAttribute('qty_available', $skyLinkProduct->getInventoryItem()->getQtyAvailable()->toNative());
+
+        $magentoProduct->unsetData('qty_on_order');
+        if ($skyLinkProduct->getInventoryItem()->hasQtyOnOrder()) {
+            $magentoProduct->setCustomAttribute('qty_on_order', $skyLinkProduct->getInventoryItem()->getQtyOnOrder()->toNative());
+        } else {
+            $magentoProduct->setCustomAttribute('qty_on_order', 0);
+        }
     }
 
     private function mapAttributes(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)

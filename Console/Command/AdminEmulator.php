@@ -5,6 +5,7 @@ namespace RetailExpress\SkyLink\Console\Command;
 use Exception;
 use Magento\Backend\App\Area\FrontNameResolver as BackendFrontNameResolver;
 use Magento\Framework\App\State as AppState;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Registry;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
@@ -68,7 +69,16 @@ class AdminEmulator
 
         // Set into admin mode
         $this->registry->register('isSecureArea', true);
-        $this->appState->setAreaCode(BackendFrontNameResolver::AREA_CODE);
+
+        // We can't actually revert the admin area code being set, so on subsequent calls we'll see an exception thrown
+        try {
+            $this->appState->setAreaCode(BackendFrontNameResolver::AREA_CODE);
+        } catch (LocalizedException $e) {
+            if ('Area code is already set' !== $e->getRawMessage()) {
+                throw $e;
+            }
+        }
+
         $this->storeManager->setCurrentStore(Store::ADMIN_CODE); // http://magento.stackexchange.com/a/151162
     }
 

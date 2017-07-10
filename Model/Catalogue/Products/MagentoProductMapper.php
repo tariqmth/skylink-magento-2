@@ -201,7 +201,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
             }
 
             // Grab our tier prices
-            $tierPrices = $magentoProduct->getData('tier_price');
+            $tierPrices = $magentoProduct->getData('tier_price') ?: [];
 
             // Let's filter down our tier prices by the given criteria, which allows us to preserve the key
             // so we can later merge existing tier prices back in

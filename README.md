@@ -266,28 +266,34 @@ For this, we provide a number of commands in Magento's CLI:
 ```bash
 # Logged in as the Magento filesystem owner...
 
-# Gets a list of Customers from Retail Express
-# and queues a command for each one to sync
+# All of the commands below by default are Queued Commands,
+# however, by appending the `--inline` option, you can
+# make the actual sync occur in the same process
+# rather than pushing the work onto the Queue.
+# See Section 3.3 for more information.
+
+# Syncs Customers from Retail Express
 bin/magento retail-express:skylink:bulk-customers
+bin/magento retail-express:skylink:bulk-customers --inline
 
-# Gets a list of Attributes from Retail Express
-# and queues a command for each one to sync
+# Syncs Attributes from Retail Express
 bin/magento retail-express:skylink:bulk-attributes
+bin/magento retail-express:skylink:bulk-attributes --inline
 
-# Gets a list of Price Groups from Retail Express
-# and queues a command for each one to sync
-# to a Magento Customer Group
+# Syncs Price Groups from Retail Express to Magento Customer Groups
 bin/magento retail-express:skylink:bulk-price-groups
+bin/magento retail-express:skylink:bulk-price-groups --inline
 
-# Gets a list of products from Retail Express
-# and queues a command for each one to sync
+# Syncs Products from Retail Express
 bin/magento retail-express:skylink:bulk-products
+bin/magento retail-express:skylink:bulk-products --inline
 
-# Gets a list of active Magento Orders that are
-# associated with SkyLink Orders and queues a
-# command to sync their fulfillments
+# Syncs Fulfillments from Retail Express to active Magento Orders
 bin/magento retail-express:skylink:bulk-fulfillments
+bin/magento retail-express:skylink:bulk-fulfillments --inline
 ```
+
+> Note, each of these commands has one or more arguments and options. Simply prepend `--help` to any of the aforementioned commands to see what arguments and options are available.
 
 ### 3.2. Individual Sync
 
@@ -296,23 +302,33 @@ It is possible to manually sync data on an individual-entity level. Typically, t
 ```bash
 # Logged in as the Magento filesystem owner...
 
+# All of the commands below by default are regular Commands,
+# however, by appending the `--queue` option, you can
+# make them Queued Commands. See Section 3.3 for
+# more information on Queue Workers.
+
 # Syncs a customer from Retail Express
-bin/magento retail-express:skylink:sync-customer
+bin/magento retail-express:skylink:sync-customer :id
+bin/magento retail-express:skylink:sync-customer :id --queue
 
 # Syncs an attribute from Retail Express
-bin/magento retail-express:skylink:sync-attribute
+bin/magento retail-express:skylink:sync-attribute :code
+bin/magento retail-express:skylink:sync-attribute :code --queue
 
 # Syncs a price group from Retail Express to a Magento Customer Group
-bin/magento retail-express:skylink:sync-price-group
+bin/magento retail-express:skylink:sync-price-group :id
+bin/magento retail-express:skylink:sync-price-group :id --queue
 
 # Syncs a product from Retail Express
-bin/magento retail-express:skylink:sync-product
+bin/magento retail-express:skylink:sync-product :id
+bin/magento retail-express:skylink:sync-product :id --queue
 
-# Syncs new fulfillments for an order from Retail Express
-bin/magento retail-express:skylink:sync-fulfillments
+# Syncs new Retail Express Fulfillments to Magento Shipments for the given Magento Order
+bin/magento retail-express:skylink:sync-fulfillments :id
+bin/magento retail-express:skylink:sync-fulfillments :id --queue
 ```
 
-> Note, each of these commands has one or more arguments and options. **For example, the `--queue` option allows a Queued Command to be created so that a Queue Worker may Handle it at a later stage** *(Section 1.2)*. Simply prepend `--help` to any of the aforementioned commands to see what arguments and options are available.
+> Note, each of these commands has one or more arguments and options. Simply prepend `--help` to any of the aforementioned commands to see what arguments and options are available.
 
 ### 3.3. Queue Workers
 

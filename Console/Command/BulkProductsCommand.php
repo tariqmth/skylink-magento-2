@@ -26,16 +26,20 @@ class BulkProductsCommand extends Command
 
     private $timezone;
 
+    private $adminEmulator;
+
     public function __construct(
         ConfigInterface $config,
         ProductRepositoryFactory $skyLinkProductRepositoryFactory,
         CommandBusInterface $commandBus,
-        TimezoneInterface $timezone
+        TimezoneInterface $timezone,
+        AdminEmulator $adminEmulator
     ) {
         $this->config = $config;
         $this->skyLinkProductRepositoryFactory = $skyLinkProductRepositoryFactory;
         $this->commandBus = $commandBus;
         $this->timezone = $timezone;
+        $this->adminEmulator = $adminEmulator;
 
         parent::__construct('retail-express:skylink:bulk-products');
     }
@@ -49,7 +53,8 @@ class BulkProductsCommand extends Command
 
         $this
             ->setDescription('Gets a list of products from Retail Express and queues a command for each one to sync')
-            ->addOption('since', null, InputOption::VALUE_REQUIRED, 'Only products updated in Retail Express within the specified timeframe (in seconds) will be synced.');
+            ->addOption('since', null, InputOption::VALUE_REQUIRED, 'Only products updated in Retail Express within the specified timeframe (in seconds) will be synced.')
+            ->addOption('inline', null, InputOption::VALUE_NONE, 'Flag to sync inline rather than queue a command');
     }
 
     /**
@@ -63,13 +68,25 @@ class BulkProductsCommand extends Command
         /* @var \RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId $salesChannelId */
         $salesChannelId = $this->config->getSalesChannelId();
 
+        /* @var bool $shouldBeQueued */
+        $shouldBeQueued = $this->shouldBeQueued($input);
+
         /* @var DateTimeImmutable|null $sinceDate */
         $sinceDate = $this->getSinceDate($input);
 
-        $output->writeln('Fetching Product IDs from Retail Express...');
+        if (true === $shouldBeQueued) {
+            $output->writeln('Fetching Product IDs from Retail Express...');
+        } else {
+            $output->writeln('Syncing Products from Retail Express...');
+        }
 
         /* @var SkyLinkProductId[] $skyLinkProductIds */
         $skyLinkProductIds = $skyLinkProductRepository->allIds($salesChannelId, $sinceDate);
+
+        if (0 === count($skyLinkProductIds)) {
+            $output->writeln('<info>There are no Products in Retail Express.</info>');
+            return;
+        }
 
         $progressBar = new ProgressBar($output, count($skyLinkProductIds));
         $progressBar->start();
@@ -77,14 +94,21 @@ class BulkProductsCommand extends Command
         // Loop over our IDs and add dispatch a command to sync each
         array_walk(
             $skyLinkProductIds,
-            function (SkyLinkProductId $skyLinkProductId) use ($progressBar) {
+            function (SkyLinkProductId $skyLinkProductId) use ($shouldBeQueued, $progressBar) {
 
                 // Create a new command to sync the product
                 $command = new SyncSkyLinkProductToMagentoProductCommand();
                 $command->skyLinkProductId = (string) $skyLinkProductId;
                 $command->potentialCompositeProductRerun = true;
+                $command->shouldBeQueued = $shouldBeQueued;
 
-                $this->commandBus->handle($command);
+                if (true === $shouldBeQueued) {
+                    $this->commandBus->handle($command);
+                } else {
+                    $this->adminEmulator->onAdmin(function () use ($command) {
+                        $this->commandBus->handle($command);
+                    });
+                }
 
                 $progressBar->advance();
             }
@@ -92,13 +116,18 @@ class BulkProductsCommand extends Command
 
         $progressBar->finish();
         $output->writeln('');
-        $output->writeln(sprintf(<<<'MESSAGE'
-<info>%s products have had commands queued to sync them.
+
+        if (true === $shouldBeQueued) {
+            $output->writeln(sprintf(<<<'MESSAGE'
+<info>%s Products have had commands queued to sync them.
 Ensure that an instance of 'retail-express:command-bus:consume-queue products' is running to perform the actual sync.</info>
 MESSAGE
-            ,
-            count($skyLinkProductIds)
-        ));
+                ,
+                count($skyLinkProductIds)
+            ));
+        } else {
+            $output->writeln(sprintf('<info>%s Products have been synced.</info>', count($skyLinkProductIds)));
+        }
     }
 
     /**
@@ -118,5 +147,15 @@ MESSAGE
         $nowDate = new DateTimeImmutable('now', $timezone);
 
         return $nowDate->modify(sprintf('-%d seconds', $sinceSeconds));
+    }
+
+    /**
+     * Determines if the command should be qeueud.
+     *
+     * @return bool
+     */
+    private function shouldBeQueued(InputInterface $input)
+    {
+        return !$input->getOption('inline');
     }
 }

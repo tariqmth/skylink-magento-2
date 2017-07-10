@@ -18,12 +18,16 @@ class BulkCustomersCommand extends Command
 
     private $commandBus;
 
+    private $adminEmulator;
+
     public function __construct(
         CustomerRepositoryFactory $skyLinkCustomerRepositoryFactory,
-        CommandBusInterface $commandBus
+        CommandBusInterface $commandBus,
+        AdminEmulator $adminEmulator
     ) {
         $this->skyLinkCustomerRepositoryFactory = $skyLinkCustomerRepositoryFactory;
         $this->commandBus = $commandBus;
+        $this->adminEmulator = $adminEmulator;
 
         parent::__construct('retail-express:skylink:bulk-customers');
     }
@@ -35,7 +39,9 @@ class BulkCustomersCommand extends Command
     {
         parent::configure();
 
-        $this->setDescription('Gets a list of Customers from Retail Express and queues a command for each one to sync');
+        $this
+            ->setDescription('Gets a list of Customers from Retail Express and queues a command for each one to sync')
+            ->addOption('inline', null, InputOption::VALUE_NONE, 'Flag to sync inline rather than queue a command');
     }
 
     /**
@@ -46,7 +52,14 @@ class BulkCustomersCommand extends Command
         /* @var \RetailExpress\SkyLink\Sdk\Customers\CustomerRepository $skyLinkCustomerRepository */
         $skyLinkCustomerRepository = $this->skyLinkCustomerRepositoryFactory->create();
 
-        $output->writeln('Fetching Customer IDs from Retail Express...');
+        /* @var bool $shouldBeQueued */
+        $shouldBeQueued = $this->shouldBeQueued($input);
+
+        if (true === $shouldBeQueued) {
+            $output->writeln('Fetching Customer IDs from Retail Express...');
+        } else {
+            $output->writeln('Syncing Customers from Retail Express...');
+        }
 
         /* @var SkyLinkCustomerId[] $skyLinkCustomerIds */
         $skyLinkCustomerIds = $skyLinkCustomerRepository->allIds();
@@ -54,24 +67,54 @@ class BulkCustomersCommand extends Command
         $progressBar = new ProgressBar($output, count($skyLinkCustomerIds));
         $progressBar->start();
 
+        if (0 === count($skyLinkCustomerIds)) {
+            $output->writeln('<info>There are no Customers in Retail Express.</info>');
+            return;
+        }
+
         // Loop over our IDs and add dispatch a command to sync each
-        array_walk($skyLinkCustomerIds, function (SkyLinkCustomerId $skyLinkCustomerId) use ($progressBar) {
-            $command = new SyncSkyLinkCustomerToMagentoCustomerCommand();
-            $command->skyLinkCustomerId = (string) $skyLinkCustomerId;
+        array_walk(
+            $skyLinkCustomerIds,
+            function (SkyLinkCustomerId $skyLinkCustomerId) use ($shouldBeQueued, $progressBar) {
+                $command = new SyncSkyLinkCustomerToMagentoCustomerCommand();
+                $command->skyLinkCustomerId = (string) $skyLinkCustomerId;
+                $command->shouldBeQueued = $shouldBeQueued;
 
-            $this->commandBus->handle($command);
+                if (true === $shouldBeQueued) {
+                    $this->commandBus->handle($command);
+                } else {
+                    $this->adminEmulator->onAdmin(function () use ($command) {
+                        $this->commandBus->handle($command);
+                    });
+                }
 
-            $progressBar->advance();
-        });
+                $progressBar->advance();
+            }
+        );
 
         $progressBar->finish();
         $output->writeln('');
-        $output->writeln(sprintf(<<<'MESSAGE'
+
+        if (true === $shouldBeQueued) {
+            $output->writeln(sprintf(<<<'MESSAGE'
 <info>%s Customers have had commands queued to sync them.
 Ensure that an instance of 'retail-express:command-bus:consume-queue customers' is running to perform the actual sync.</info>
 MESSAGE
-            ,
-            count($skyLinkCustomerIds)
-        ));
+                ,
+                count($skyLinkCustomerIds)
+            ));
+        } else {
+            $output->writeln(sprintf('<info>%s Customers have been synced.</info>', count($skyLinkCustomerIds)));
+        }
+    }
+
+    /**
+     * Determines if the command should be qeueud.
+     *
+     * @return bool
+     */
+    private function shouldBeQueued(InputInterface $input)
+    {
+        return !$input->getOption('inline');
     }
 }

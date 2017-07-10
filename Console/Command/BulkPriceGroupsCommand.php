@@ -20,12 +20,16 @@ class BulkPriceGroupsCommand extends Command
 
     private $commandBus;
 
+    private $adminEmulator;
+
     public function __construct(
         PriceGroupRepositoryFactory $skyLinkPriceGroupRepositoryFactory,
-        CommandBusInterface $commandBus
+        CommandBusInterface $commandBus,
+        AdminEmulator $adminEmulator
     ) {
         $this->skyLinkPriceGroupRepositoryFactory = $skyLinkPriceGroupRepositoryFactory;
         $this->commandBus = $commandBus;
+        $this->adminEmulator = $adminEmulator;
 
         parent::__construct('retail-express:skylink:bulk-price-groups');
     }
@@ -38,7 +42,8 @@ class BulkPriceGroupsCommand extends Command
         parent::configure();
 
         $this
-            ->setDescription('Gets a list of Price Groups from Retail Express and queues a command for each one to sync to a Magento Customer Group');
+            ->setDescription('Gets a list of Price Groups from Retail Express and queues a command for each one to sync to a Magento Customer Group')
+            ->addOption('inline', null, InputOption::VALUE_NONE, 'Flag to sync inline rather than queue a command');
     }
 
     /**
@@ -46,34 +51,73 @@ class BulkPriceGroupsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /* @var bool $shouldBeQueued */
+        $shouldBeQueued = $this->shouldBeQueued($input);
+
+        if (true === $shouldBeQueued) {
+            $output->writeln('Fetching Price Groups from Retail Express...');
+        } else {
+            $output->writeln('Syncing Price Groups from Retail Express...');
+        }
+
         /* @var \RetailExpress\SkyLink\Sdk\Customers\PriceGroups\PriceGroupRepository $skyLinkPriceGroupRepository */
         $skyLinkPriceGroupRepository = $this->skyLinkPriceGroupRepositoryFactory->create();
-
-        $progressBar = new ProgressBar($output);
-        $progressBar->start();
 
         /* @var SkyLinkPriceGroup[] $skyLinkPriceGroups */
         $skyLinkPriceGroups = $skyLinkPriceGroupRepository->all();
 
+        if (0 === count($skyLinkPriceGroups)) {
+            $output->writeln('<info>There are no Price Groups in Retail Express.</info>');
+            return;
+        }
+
+        $progressBar = new ProgressBar($output, count($skyLinkPriceGroups));
+        $progressBar->start();
+
         // Loop over our Price Groups and add dispatch a command to sync each
-        array_walk($skyLinkPriceGroups, function (SkyLinkPriceGroup $skyLinkPriceGroup) use ($progressBar) {
+        array_walk(
+            $skyLinkPriceGroups,
+            function (SkyLinkPriceGroup $skyLinkPriceGroup) use ($shouldBeQueued, $progressBar) {
 
-            $command = new SyncSkyLinkPriceGroupToMagentoCustomerGroupCommand();
-            $command->skyLinkPriceGroupKey = (string) $skyLinkPriceGroup->getKey();
+                $command = new SyncSkyLinkPriceGroupToMagentoCustomerGroupCommand();
+                $command->skyLinkPriceGroupKey = (string) $skyLinkPriceGroup->getKey();
+                $command->shouldBeQueued = $shouldBeQueued;
 
-            $this->commandBus->handle($command);
+                if (true === $shouldBeQueued) {
+                    $this->commandBus->handle($command);
+                } else {
+                    $this->adminEmulator->onAdmin(function () use ($command) {
+                        $this->commandBus->handle($command);
+                    });
+                }
 
-            $progressBar->advance();
-        });
+                $progressBar->advance();
+            }
+        );
 
         $progressBar->finish();
         $output->writeln('');
-        $output->writeln(sprintf(<<<'MESSAGE'
+
+        if (true === $shouldBeQueued) {
+            $output->writeln(sprintf(<<<'MESSAGE'
 <info>%s Retail Express Price Groups have had commands queued to sync them to Magento Customer Groups.
 Ensure that an instance of 'retail-express:command-bus:consume-queue price-groups' is running to perform the actual sync.</info>
 MESSAGE
-            ,
-            count($skyLinkPriceGroups)
-        ));
+                ,
+                count($skyLinkPriceGroups)
+            ));
+        } else {
+            $output->writeln(sprintf('<info>%s Price Groups have been synced to Magento Customer Groups.</info>', count($skyLinkPriceGroups)));
+        }
+    }
+
+    /**
+     * Determines if the command should be qeueud.
+     *
+     * @return bool
+     */
+    private function shouldBeQueued(InputInterface $input)
+    {
+        return !$input->getOption('inline');
     }
 }

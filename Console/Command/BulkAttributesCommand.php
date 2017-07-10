@@ -21,12 +21,16 @@ class BulkAttributesCommand extends Command
 
     private $commandBus;
 
+    private $adminEmulator;
+
     public function __construct(
         SkyLinkAttributeCodeRepositoryInterface $skyLinkAttributeCodeRepository,
-        CommandBusInterface $commandBus
+        CommandBusInterface $commandBus,
+        AdminEmulator $adminEmulator
     ) {
         $this->skyLinkAttributeCodeRepository = $skyLinkAttributeCodeRepository;
         $this->commandBus = $commandBus;
+        $this->adminEmulator = $adminEmulator;
 
         parent::__construct('retail-express:skylink:bulk-attributes');
     }
@@ -39,7 +43,8 @@ class BulkAttributesCommand extends Command
         parent::configure();
 
         $this
-            ->setDescription('Gets a list of Attributes from Retail Express and queues a command for each one to sync');
+            ->setDescription('Gets a list of Attributes from Retail Express and queues a command for each one to sync')
+            ->addOption('inline', null, InputOption::VALUE_NONE, 'Flag to sync inline rather than queue a command');
     }
 
     /**
@@ -47,31 +52,65 @@ class BulkAttributesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $progressBar = new ProgressBar($output);
-        $progressBar->start();
+        /* @var bool $shouldBeQueued */
+        $shouldBeQueued = $this->shouldBeQueued($input);
+
+        if (true === $shouldBeQueued) {
+            $output->writeln('Fetching Attributes from Retail Express...');
+        } else {
+            $output->writeln('Syncing Attributes from Retail Express...');
+        }
 
         /* @var SkyLinkAttributeCode[] $skyLinkAttributeCodes */
         $skyLinkAttributeCodes = $this->skyLinkAttributeCodeRepository->getList();
 
+        $progressBar = new ProgressBar($output, count($skyLinkAttributeCodes));
+        $progressBar->start();
+
         // Loop over our Price Groups and add dispatch a command to sync each
-        array_walk($skyLinkAttributeCodes, function (SkyLinkAttributeCode $skyLinkAttributeCode) use ($progressBar) {
+        array_walk(
+            $skyLinkAttributeCodes,
+            function (SkyLinkAttributeCode $skyLinkAttributeCode) use ($shouldBeQueued, $progressBar) {
 
-            $command = new SyncSkyLinkAttributeToMagentoAttributeCommand();
-            $command->skyLinkAttributeCode = (string) $skyLinkAttributeCode;
+                $command = new SyncSkyLinkAttributeToMagentoAttributeCommand();
+                $command->skyLinkAttributeCode = (string) $skyLinkAttributeCode;
+                $command->shouldBeQueued = $shouldBeQueued;
 
-            $this->commandBus->handle($command);
+                if (true === $shouldBeQueued) {
+                    $this->commandBus->handle($command);
+                } else {
+                    $this->adminEmulator->onAdmin(function () use ($command) {
+                        $this->commandBus->handle($command);
+                    });
+                }
 
-            $progressBar->advance();
-        });
+                $progressBar->advance();
+            }
+        );
 
         $progressBar->finish();
         $output->writeln('');
-        $output->writeln(sprintf(<<<'MESSAGE'
+
+        if (true === $shouldBeQueued) {
+            $output->writeln(sprintf(<<<'MESSAGE'
 <info>%s Retail Express Attributes have had commands queued to sync them.
 Ensure that an instance of 'retail-express:command-bus:consume-queue attributes' is running to perform the actual sync.</info>
 MESSAGE
-            ,
-            count($skyLinkAttributeCodes)
-        ));
+                ,
+                count($skyLinkAttributeCodes)
+            ));
+        } else {
+            $output->writeln(sprintf('<info>%s Attributes have been synced.</info>', count($skyLinkAttributeCodes)));
+        }
+    }
+
+    /**
+     * Determines if the command should be qeueud.
+     *
+     * @return bool
+     */
+    private function shouldBeQueued(InputInterface $input)
+    {
+        return !$input->getOption('inline');
     }
 }

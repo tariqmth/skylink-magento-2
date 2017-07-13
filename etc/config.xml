@@ -42,13 +42,16 @@
             </options>
         </checkout>
         <skylink>
+
             <api>
                 <version>2</version>
                 <version_2_url>https://api.retailexpress.com.au/ecommerce?singleWsdl</version_2_url>
             </api>
+
             <general>
                 <sales_channel_id>1</sales_channel_id>
             </general>
+
             <customers>
                 <customer_group_tax_class_id>3</customer_group_tax_class_id>
                 <price_group_type>standard</price_group_type>
@@ -61,6 +64,18 @@
                 <fake_data_country_code>AU</fake_data_country_code>
                 <fake_data_telephone>No telephone</fake_data_telephone>
             </customers>
+
+            <!--
+                These default attribute mappings are used to determine the attributes that are
+                created during setup and suggested in the admin screen. We use this to map
+                things such as "brand" in Retail Express to "manufacturer" in Magento.
+            -->
+            <default_attribute_mappings>
+                <brand>manufacturer</brand>
+                <colour>color</colour>
+                <product_type>skylink_product_type</product_type>
+            </default_attribute_mappings>
+
             <products>
                 <name_attribute>description</name_attribute>
                 <name_sync_strategy>always</name_sync_strategy>
@@ -72,9 +87,11 @@
                 <url_key_attribute_code_3>0</url_key_attribute_code_3>
                 <composite_product_sync_rerun_threshold>3600</composite_product_sync_rerun_threshold>
             </products>
+
             <orders>
                 <item_delivery_method>home</item_delivery_method>
             </orders>
+
             <debugging>
                 <should_capture_logs>0</should_capture_logs>
                 <uncaptured_logs_to_keep>1000</uncaptured_logs_to_keep>
@@ -82,6 +99,7 @@
                 <should_log_raw_api_calls>0</should_log_raw_api_calls>
                 <purging_chance>0.1</purging_chance>
             </debugging>
+
         </skylink>
     </default>
 </config>

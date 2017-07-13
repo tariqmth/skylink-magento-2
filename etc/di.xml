@@ -59,6 +59,7 @@
     </type>
 
     <!-- Catalogue attribute implementations -->
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\DefaultAttributeMappingProviderInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\DefaultAttributeMappingProvider"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeOptionRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeOptionService"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeRepository"/>

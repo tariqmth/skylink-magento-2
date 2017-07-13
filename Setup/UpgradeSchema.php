@@ -10,6 +10,8 @@ use Magento\Framework\Setup\ModuleContextInterface;
 
 class UpgradeSchema implements UpgradeSchemaInterface
 {
+
+
     /**
      * {@inheritdoc}
      */

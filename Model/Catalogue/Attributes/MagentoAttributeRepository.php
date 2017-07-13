@@ -6,6 +6,7 @@ use Magento\Catalog\Api\Data\EavAttributeInterface;
 use Magento\Catalog\Api\ProductAttributeRepositoryInterface;
 use Magento\Framework\Api\SortOrderBuilder;
 use Magento\Framework\App\ResourceConnection;
+use RetailExpress\SkyLink\Api\Catalogue\Attributes\DefaultAttributeMappingProviderInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeTypeManagerInterface;
 use RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeType;
@@ -23,6 +24,13 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
      * @var ProductAttributeRepositoryInterface
      */
     private $magentoProductAttributeRepository;
+
+    /**
+     * The class that provides the default Magento Mappings for SkyLink.
+     *
+     * @var DefaultAttributeMappingProviderInterface
+     */
+    private $defaultAttributeMappingsProvider;
 
     /**
      * The Magento Attribute Type Manger instance.
@@ -46,36 +54,25 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
     private $attributeMappings;
 
     /**
-     * Return an array of attribute mapping overrides whereby we use a different
-     * attribute code within Magento to represent a SkyLink Attribute Code.
-     *
-     * @return array
-     */
-    private static function getDefaultAttributeMappingOverrides()
-    {
-        return [
-            'brand' => 'manufacturer',
-            'colour' => 'color',
-        ];
-    }
-
-    /**
      * Create a new Magento Attribute Repository.
      *
-     * @param ResourceConnection                  $resourceConnection
-     * @param ProductAttributeRepositoryInterface $magentoProductAttributeRepository
-     * @param SortOrderBuilder                    $sortOrderBuilder
-     * @param array|null                          $attributeMappings
+     * @param ResourceConnection                       $resourceConnection
+     * @param ProductAttributeRepositoryInterface      $magentoProductAttributeRepository
+     * @param DefaultAttributeMappingProviderInterface $defaultAttributeMappingsProvider
+     * @param SortOrderBuilder                         $sortOrderBuilder
+     * @param array|null                               $attributeMappings
      */
     public function __construct(
         ResourceConnection $resourceConnection,
         ProductAttributeRepositoryInterface $magentoProductAttributeRepository,
+        DefaultAttributeMappingProviderInterface $defaultAttributeMappingsProvider,
         MagentoAttributeTypeManagerInterface $magentoAttributeTypeManager,
         SortOrderBuilder $sortOrderBuilder,
         array $attributeMappings = null
     ) {
         $this->connection = $resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
         $this->magentoProductAttributeRepository = $magentoProductAttributeRepository;
+        $this->defaultAttributeMappingsProvider = $defaultAttributeMappingsProvider;
         $this->magentoAttributeTypeManager = $magentoAttributeTypeManager;
         $this->sortOrderBuilder = $sortOrderBuilder;
 
@@ -169,7 +166,7 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
         $defaultMappings = array_combine($skylinkAttributeCodeStrings, $skylinkAttributeCodeStrings);
 
         // Override with mapping overrides
-        $defaultMappings = array_merge($defaultMappings, self::getDefaultAttributeMappingOverrides());
+        $defaultMappings = array_merge($defaultMappings, $this->defaultAttributeMappingsProvider->getDefaultMappings());
 
         return $defaultMappings;
     }

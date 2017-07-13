@@ -15,12 +15,15 @@ use \Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Attributes\DefaultAttributeMappingProviderInterface;
 use RetailExpress\SkyLink\Model\Eav\Entity\Attribute\Source\PickupGroup as PickupGroupSourceModel;
 use RetailExpress\SkyLink\Model\Pickup\PickupGroup;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 
 class InstallData implements InstallDataInterface
 {
+    use DataHelper;
+
     private $eavSetupFactory;
 
     private $eavConfig;
@@ -31,29 +34,22 @@ class InstallData implements InstallDataInterface
 
     private $cacheTypeList;
 
-    /**
-     * @todo rework this with \RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeRepository
-     */
-    private static function getDefaultAttributeMappings()
-    {
-        return [
-            'brand' => 'manufacturer',
-            'colour' => 'color',
-        ];
-    }
+    private $defaultAttributeMappingsProvider;
 
     public function __construct(
         EavSetupFactory $eavSetupFactory,
         EavConfig $eavConfig,
         MutableScopeConfigInterface $scopeConfig,
         IndexerRegistry $indexerRegistry,
-        CacheTypeListInterface $cacheTypeList
+        CacheTypeListInterface $cacheTypeList,
+        DefaultAttributeMappingProviderInterface $defaultAttributeMappingsProvider
     ) {
         $this->eavSetupFactory = $eavSetupFactory;
         $this->eavConfig = $eavConfig;
         $this->scopeConfig = $scopeConfig;
         $this->indexerRegistry = $indexerRegistry;
         $this->cacheTypeList = $cacheTypeList;
+        $this->defaultAttributeMappingsProvider = $defaultAttributeMappingsProvider;
     }
 
     /**
@@ -143,7 +139,7 @@ class InstallData implements InstallDataInterface
     {
         array_map(function ($skyLinkAttributeCodeString) use ($eavSetup) {
             $skyLinkAttributeCode = SkyLinkAttributeCode::get($skyLinkAttributeCodeString);
-            $magentoAttributeCode = $this->getDefaultMagentoAttributeCode($skyLinkAttributeCode);
+            $magentoAttributeCode = $this->getMagentoAttributeCode($skyLinkAttributeCode);
 
             $hasExistingAttribute = (bool) $eavSetup
                 ->getAttributeId(Product::ENTITY, $magentoAttributeCode);
@@ -252,26 +248,14 @@ class InstallData implements InstallDataInterface
         $this->cacheTypeList->invalidate(ConfigCacheType::TYPE_IDENTIFIER);
     }
 
-    private function addAttributeToDefaultGroupInAllSets(EavSetup $eavSetup, $magentoAttributeCode, $entityType)
-    {
-        foreach ($eavSetup->getAllAttributeSetIds($entityType) as $attributeSetId) {
-            $eavSetup->addAttributeToGroup(
-                $entityType,
-                $attributeSetId,
-                $eavSetup->getDefaultAttributeGroupId($entityType, $attributeSetId),
-                $magentoAttributeCode
-            );
-        }
-    }
-
     /**
-     * @todo rework this with \RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeRepository
+     * Gets the Magento Attribute Code to use for the  given SkyLink Attribute Code.
      *
      * @return string
      */
-    private function getDefaultMagentoAttributeCode(SkyLinkAttributeCode $skyLinkAttributeCode)
+    private function getMagentoAttributeCode(SkyLinkAttributeCode $skyLinkAttributeCode)
     {
-        $defaultAttributeMappings = self::getDefaultAttributeMappings();
+        $defaultAttributeMappings = $this->defaultAttributeMappingsProvider->getDefaultMappings();
 
         if (array_key_exists($skyLinkAttributeCode->getValue(), $defaultAttributeMappings)) {
             return $defaultAttributeMappings[$skyLinkAttributeCode->getValue()];

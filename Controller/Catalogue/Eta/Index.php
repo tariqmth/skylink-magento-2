@@ -10,6 +10,7 @@ use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory as JsonResultFactory;
 use Magento\Framework\Stdlib\DateTime;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Eta\EtaQty as SkyLinkEtaQty;
 use RetailExpress\SkyLink\Sdk\Catalogue\Eta\EtaRepositoryFactory as SkyLinkEtaRepositoryFactory;
@@ -23,6 +24,8 @@ class Index extends Action
 
     private $skyLinkEtaRepositoryFactory;
 
+    private $storeManager;
+
     private $jsonResultFactory;
 
     private $dateTime;
@@ -34,6 +37,7 @@ class Index extends Action
         ConfigInterface $config,
         ProductRepositoryInterface $baseMagentoProductRepository,
         SkyLinkEtaRepositoryFactory $skyLinkEtaRepositoryFactory,
+        StoreManagerInterface $storeManager,
         JsonResultFactory $jsonResultFactory,
         DateTime $dateTime,
         TimezoneInterface $timezone
@@ -43,6 +47,7 @@ class Index extends Action
         $this->config = $config;
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
         $this->skyLinkEtaRepositoryFactory = $skyLinkEtaRepositoryFactory;
+        $this->storeManager = $storeManager;
         $this->jsonResultFactory = $jsonResultFactory;
         $this->dateTime = $dateTime;
         $this->timezone = $timezone;
@@ -81,7 +86,7 @@ class Index extends Action
         $skyLinkEta = $skyLinkEtaRepository->find(
             $skyLinkProductId,
             $skyLinkEtaQty,
-            $this->config->getSalesChannelId() // @todo change to the current website's sales channel id
+            $this->config->getSalesChannelIdForWebsite($this->storeManager->getWebsite()->getCode())
         );
 
         if (null === $skyLinkEta) {

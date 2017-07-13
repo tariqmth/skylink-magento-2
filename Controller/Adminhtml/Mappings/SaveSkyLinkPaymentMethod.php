@@ -59,4 +59,12 @@ class SaveSkyLinkPaymentMethod extends Action
 
         return $resultRedirect;
     }
+
+    /**
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        return $this->_authorization->isAllowed('RetailExpress_SkyLink::skylink_mappings_save');
+    }
 }

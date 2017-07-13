@@ -9,7 +9,7 @@ class Index extends Action
     public function execute()
     {
         $this->_view->loadLayout();
-        $this->_setActiveMenu('RetailExpress_SkyLink::skylink_setup');
+        $this->_setActiveMenu('RetailExpress_SkyLink::skylink_mappings');
         $this->_view->getPage()->getConfig()->getTitle()->prepend(__('Mappings'));
         $this->_addBreadcrumb(__('Mappings'), __('Mappings'));
         $this->_view->renderLayout();
@@ -20,6 +20,6 @@ class Index extends Action
      */
     protected function _isAllowed()
     {
-        return $this->_authorization->isAllowed('RetailExpress_SkyLink::skylink_setup');
+        return $this->_authorization->isAllowed('RetailExpress_SkyLink::skylink_mappings');
     }
 }

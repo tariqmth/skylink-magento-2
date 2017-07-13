@@ -48,6 +48,6 @@ class SaveMagentoAttribute extends Action
      */
     protected function _isAllowed()
     {
-        return $this->_authorization->isAllowed('RetailExpress_SkyLink::skylink_setup_save');
+        return $this->_authorization->isAllowed('RetailExpress_SkyLink::skylink_mappings_save');
     }
 }

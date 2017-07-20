@@ -96,6 +96,11 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
             );
         }
 
+        $this->magentoProductWebsiteManagement->assignMagentoProductToWebsitesForSalesChannelGroups(
+            $magentoProduct,
+            $skyLinkProductInSalesChannelGroups
+        );
+
         // If there were no variations in different sales channel groups, we can end now
         if (count($skyLinkProductInSalesChannelGroups) > 0) {
             $this->logDebug(
@@ -150,11 +155,6 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
                     $skyLinkProductInSalesChannelGroups
                 ),
             ]
-        );
-
-        $this->magentoProductWebsiteManagement->assignMagentoProductToWebsitesForSalesChannelGroups(
-            $magentoProduct,
-            $skyLinkProductInSalesChannelGroups
         );
 
         return $magentoProduct;

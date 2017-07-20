@@ -68,7 +68,7 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
                 function (StoreInterface $magentoStore, WebsiteInterface $magentoWebsite) use ($magentoProduct, $skyLinkProduct) {
 
                     // Load the product in the context of the website's store
-                    $magentoProduct = $this->magentoProductRepository->getById(
+                    $scopedMagentoProduct = $this->magentoProductRepository->getById(
                         $magentoProduct->getId(),
                         false,
                         $magentoStore->getId()
@@ -76,12 +76,12 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
 
                     // Map and save the product
                     $this->magentoProductMapper->mapMagentoProductForWebsite(
-                        $magentoProduct,
+                        $scopedMagentoProduct,
                         $skyLinkProduct,
                         $magentoWebsite
                     );
 
-                    $this->magentoProductRepository->save($magentoProduct);
+                    $this->magentoProductRepository->save($scopedMagentoProduct);
                 }
             );
 

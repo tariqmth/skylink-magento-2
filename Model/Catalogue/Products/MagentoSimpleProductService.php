@@ -117,12 +117,12 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
     }
 
     private function mapStockAndSave(
-        ProductInterface $magentoProduct,
+        ProductInterface &$magentoProduct,
         StockItemInterface $magentoStockItem,
         SkyLinkProduct $skyLinkProduct
     ) {
         $this->magentoStockItemMapper->mapStockItem($magentoStockItem, $skyLinkProduct->getInventoryItem());
-        $this->baseMagentoProductRepository->save($magentoProduct);
+        $magentoProduct = $this->baseMagentoProductRepository->save($magentoProduct);
         $this->magentoStockRegistry->updateStockItemBySku($magentoProduct->getSku(), $magentoStockItem);
     }
 }

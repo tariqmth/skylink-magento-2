@@ -108,7 +108,7 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
     }
 
     private function updateStockAndSave(
-        ProductInterface $magentoConfigurableProduct,
+        ProductInterface &$magentoConfigurableProduct,
         StockItemInterface $magentoStockItem
     ) {
         $this->magentoStockItemUpdater->updateStockItem($magentoStockItem);

@@ -81,7 +81,7 @@
                 <name_sync_strategy>always</name_sync_strategy>
                 <regular_price_attribute>default_price</regular_price_attribute>
                 <special_price_attribute>promotional_price</special_price_attribute>
-                <quantity_calculation>available_on_order</quantity_calculation>
+                <quantity_calculation>available</quantity_calculation>
                 <url_key_attribute_code_1>name</url_key_attribute_code_1>
                 <url_key_attribute_code_2>0</url_key_attribute_code_2>
                 <url_key_attribute_code_3>0</url_key_attribute_code_3>

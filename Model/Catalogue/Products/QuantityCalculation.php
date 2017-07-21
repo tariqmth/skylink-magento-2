@@ -6,7 +6,7 @@ use ValueObjects\Enum\Enum;
 
 class QuantityCalculation extends Enum
 {
-    const AVAILABLE = 'initial';
+    const AVAILABLE = 'available';
     const AVAILABLE_ON_ORDER = 'available_on_order';
 
     public function getLabel()

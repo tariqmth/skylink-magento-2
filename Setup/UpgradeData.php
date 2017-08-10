@@ -53,6 +53,11 @@ class UpgradeData implements UpgradeDataInterface
             $this->addNewProductTypeAttributeIfNoneExists($eavSetup);
         }
 
+        // Upgarding to 1.3.0
+        if (version_compare($context->getVersion(), '1.3.0') < 0) {
+            $this->addSkyLinkProductIdToApplicableProductTypes($eavSetup);
+        }
+
         $setup->endSetup();
     }
 
@@ -115,5 +120,20 @@ class UpgradeData implements UpgradeDataInterface
         );
 
         $this->addAttributeToDefaultGroupInAllSets($eavSetup, $intendedAttributeCode, Product::ENTITY);
+    }
+
+    /**
+     * Previously, only simple products could have a SkyLink Product ID associated with them.
+     * There's no need to restrict this to just those products, so we'll open it up to both
+     * virtual and downloadable products as well.
+     */
+    private function addSkyLinkProductIdToApplicableProductTypes(EavSetup $eavSetup)
+    {
+        $eavSetup->updateAttribute(
+            Product::ENTITY,
+            'skylink_product_id',
+            'apply_to',
+            'simple,virtual,downloadable'
+        );
     }
 }

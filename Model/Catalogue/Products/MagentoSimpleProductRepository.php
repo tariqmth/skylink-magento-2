@@ -6,12 +6,15 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product\Type as ProductType;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\ResourceConnection;
+use RetailExpress\SkyLink\Api\Catalogue\Products\ConfigInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
 use RetailExpress\SkyLink\Exceptions\Products\TooManyProductMatchesException;
 
 class MagentoSimpleProductRepository implements MagentoSimpleProductRepositoryInterface
 {
+    private $productConfig;
+
     private $baseMagentoProductRepository;
 
     private $searchCriteriaBuilder;
@@ -24,10 +27,12 @@ class MagentoSimpleProductRepository implements MagentoSimpleProductRepositoryIn
     private $connection;
 
     public function __construct(
+        ConfigInterface $productConfig,
         ProductRepositoryInterface $baseMagentoProductRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder,
         ResourceConnection $resourceConnection
     ) {
+        $this->productConfig = $productConfig;
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->connection = $resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
@@ -71,8 +76,13 @@ class MagentoSimpleProductRepository implements MagentoSimpleProductRepositoryIn
      */
     public function findBySkyLinkProductId(SkyLinkProductId $skyLinkProductId)
     {
-        // Search simple products by the given SkyLink Product ID
-        $this->searchCriteriaBuilder->addFilter('type_id', ProductType::TYPE_SIMPLE);
+        // Search products by the given SkyLink Product ID
+        $this->searchCriteriaBuilder->addFilter(
+            'type_id',
+            $this->productConfig->getProductTypesForSimpleProductSync(),
+            'in'
+        );
+
         $this->searchCriteriaBuilder->addFilter('skylink_product_id', (string) $skyLinkProductId);
         $searchCriteria = $this->searchCriteriaBuilder->create();
 

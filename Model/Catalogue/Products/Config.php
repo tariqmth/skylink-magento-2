@@ -99,4 +99,14 @@ class Config implements ConfigInterface
             $this->scopeConfig->getValue('skylink/products/composite_product_sync_rerun_threshold')
         );
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getProductTypesForSimpleProductSync()
+    {
+        return array_map('trim',
+            explode(',', $this->scopeConfig->getValue('skylink/products/product_types_for_simple_product_sync'))
+        );
+    }
 }

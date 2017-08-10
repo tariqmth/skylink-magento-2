@@ -52,4 +52,11 @@ interface ConfigInterface
      * @return \ValueObjects\Number\Integer
      */
     public function getCompositeProductSyncRerunThreshold();
+
+    /**
+     * Get the Magento product types that simple products can be synchronised to.
+     *
+     * @return string[]
+     */
+    public function getProductTypesForSimpleProductSync();
 }

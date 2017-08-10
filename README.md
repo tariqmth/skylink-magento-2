@@ -201,12 +201,11 @@ To do this, merge the following into your `composer.json` file:
 }
 ```
 
-#### 2.3.4. Composer update
-
-If you have edited your `composer.json` file, you will need to tell Composer to update the required packages by running:
+Then run:
 
 ```bash
-composer update
+# Logged in as the Magento filesystem owner...
+composer update monolog/monolog
 ```
 
 ### 2.4. Enable Extension

@@ -90,7 +90,7 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
                 $skyLinkProduct,
                 $magentoProduct
             );
-        } elseif ($existingMagentoProduct = $this->baseMagentoProductRepository->get((string) $skyLinkProduct->getSku())) {
+        } elseif ($existingMagentoProduct = $this->getMagentoProduct((string) $skyLinkProduct->getSku())) {
             throw ProductAlreadyExistsAsTheWrongTypeException::withSimpleProduct($skyLinkProduct, $existingMagentoProduct);
         } else {
             $this->logDebug(
@@ -169,6 +169,15 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
         );
 
         return $magentoProduct;
+    }
+
+    private function getMagentoProduct($sku)
+    {
+        try {
+            return $this->baseMagentoProductRepository->get($sku);
+        } catch (\Magento\Framework\Exception\NoSuchEntityException $e){
+            return false;
+        }
     }
 
     private function logDebug($message, SkyLinkProduct $skyLinkProduct, ProductInterface $magentoProduct = null, array $additional = null)

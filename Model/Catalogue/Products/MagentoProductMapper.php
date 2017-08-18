@@ -169,6 +169,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         $magentoProduct->unsetData('special_to_date');
 
         if (false === $skyLinkProduct->getPricingStructure()->hasSpecialPrice()) {
+            $this->removeSpecialPrices($magentoProduct);
             return;
         }
 
@@ -177,25 +178,44 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         // If the end date is before now, we do not need to put a new special price on at all, as
         // it cannot end in the past. In fact, Magento will let you save it, but won't let
         // subsequent saves from the admin interface occur.
-        if ($skyLinkSpecialPrice->hasEndDate() && $skyLinkSpecialPrice->getEndDate() < new DateTimeImmutable()) {
+        $now = new DateTimeImmutable();
+        if ($skyLinkSpecialPrice->hasEndDate() && $skyLinkSpecialPrice->getEndDate() < $now) {
+            $this->removeSpecialPrices($magentoProduct);
             return;
         }
 
         $magentoProduct->setCustomAttribute('special_price', $skyLinkSpecialPrice->getPrice()->toNative());
 
-        if ($skyLinkSpecialPrice->hasStartDate()) {
+        // If there's a start date at least now or in the future, we'll use that...
+        if ($skyLinkSpecialPrice->hasStartDate() && $skyLinkSpecialPrice->getStartDate() >= $now) {
             $magentoProduct->setCustomAttribute(
                 'special_from_date',
                 $this->dateTimeToLocalisedAttributeValue($skyLinkSpecialPrice->getStartDate())
             );
+
+            // Otherwise, we'll use a start date from now
+        } else {
+            $magentoProduct->setCustomAttribute('special_from_date', $this->dateTimeToLocalisedAttributeValue($now));
         }
 
+        // If there's an end date, we'll just use that
         if ($skyLinkSpecialPrice->hasEndDate()) {
             $magentoProduct->setCustomAttribute(
                 'special_to_date',
                 $this->dateTimeToLocalisedAttributeValue($skyLinkSpecialPrice->getEndDate())
             );
+
+            // Otherwise, it's indefinite
+        } else {
+            $magentoProduct->setCustomAttribute('special_to_date', null);
         }
+    }
+
+    private function removeSpecialPrices(ProductInterface $magentoProduct)
+    {
+        $magentoProduct->setCustomAttribute('special_price', null);
+        $magentoProduct->setCustomAttribute('special_from_date', null);
+        $magentoProduct->setCustomAttribute('special_to_date', null);
     }
 
     private function mapCustomerGroupPrices(
@@ -257,10 +277,8 @@ class MagentoProductMapper implements MagentoProductMapperInterface
      */
     private function mapQuantities(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
     {
-        $magentoProduct->unsetData('qty_available');
         $magentoProduct->setCustomAttribute('qty_available', $skyLinkProduct->getInventoryItem()->getQtyAvailable()->toNative());
 
-        $magentoProduct->unsetData('qty_on_order');
         if ($skyLinkProduct->getInventoryItem()->hasQtyOnOrder()) {
             $magentoProduct->setCustomAttribute('qty_on_order', $skyLinkProduct->getInventoryItem()->getQtyOnOrder()->toNative());
         } else {
@@ -281,7 +299,6 @@ class MagentoProductMapper implements MagentoProductMapperInterface
 
             // If there's no value for the SkyLink Attribute Option, we'll wipe the custom attribute value
             if (null === $skyLinkAttributeOption) {
-                $magentoProduct->unsetData($magentoAttribute->getAttributeCode());
                 $magentoProduct->setCustomAttribute($magentoAttribute->getAttributeCode(), null);
                 continue;
             }
@@ -300,7 +317,6 @@ class MagentoProductMapper implements MagentoProductMapperInterface
             }
 
             // Now we'll set the custom attribute value
-            $magentoProduct->unsetData($magentoAttribute->getAttributeCode());
             $magentoProduct->setCustomAttribute(
                 $magentoAttribute->getAttributeCode(),
                 $magentoAttributeValue
@@ -367,6 +383,6 @@ class MagentoProductMapper implements MagentoProductMapperInterface
     {
         $date = $date->setTimezone(new DateTimeZone($this->timezone->getConfigTimezone()));
 
-        $this->dateTime->formatDate($date->getTimestamp());
+        return $this->dateTime->formatDate($date->getTimestamp());
     }
 }

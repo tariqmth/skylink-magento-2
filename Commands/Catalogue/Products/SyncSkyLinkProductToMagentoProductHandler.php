@@ -98,16 +98,27 @@ class SyncSkyLinkProductToMagentoProductHandler
         /* @var SkyLinkProduct $skyLinkProduct */
         $skyLinkProduct = $this->getSkyLinkProduct($skyLinkProductId);
 
+        // We'll now grab the product in the context of any additional Sales Channel Groups. We'll
+        // use this to determine what websites to copy the product across to and also allow the
+        // syncer to work on any specifics for the product in that Sales Channel Group.
+
+        /* @var SkyLinkProductInSalesChannelGroupInterface[] $skyLinkProductInSalesChannelGroups */
+        $skyLinkProductInSalesChannelGroups = $this->getSkyLinkProductInSalesChannelGroups($skyLinkProductId);
+
         // @todo should this be located here or in the repository?
         if (null === $skyLinkProduct) {
-            $e = SkyLinkProductDoesNotExistException::withSkyLinkProductId($skyLinkProductId);
+            if (!empty($skyLinkProductInSalesChannelGroups)) {
+                $skyLinkProduct = $skyLinkProductInSalesChannelGroups[0];
+            } else {
+                $e = SkyLinkProductDoesNotExistException::withSkyLinkProductId($skyLinkProductId);
 
-            $this->logger->error('SkyLink Product does not exist on the Retail Express API, is it part of a package?', [
-                'Error' => $e->getMessage(),
-                'SkyLink Product ID' => $skyLinkProductId,
-            ]);
+                $this->logger->error('SkyLink Product does not exist on the Retail Express API, is it part of a package?', [
+                    'Error' => $e->getMessage(),
+                    'SkyLink Product ID' => $skyLinkProductId,
+                ]);
 
-            throw $e;
+                throw $e;
+            }
         }
 
         // If we care about composite product reruns (i.e. on a bulk sync)
@@ -136,13 +147,6 @@ class SyncSkyLinkProductToMagentoProductHandler
                 'SkyLink Product SKU' => $skyLinkProduct->getSku(),
                 'Syncer' => $syncer->getName(),
             ]);
-
-            // We'll now grab the product in the context of any additional Sales Channel Groups. We'll
-            // use this to determine what websites to copy the product across to and also allow the
-            // syncer to work on any specifics for the product in that Sales Channel Group.
-
-            /* @var SkyLinkProductInSalesChannelGroupInterface[] $skyLinkProductInSalesChannelGroups */
-            $skyLinkProductInSalesChannelGroups = $this->getSkyLinkProductInSalesChannelGroups($skyLinkProductId);
 
             // Grab our Magento Product from the syncer (we'll use this in event dispatching later on)
             $magentoProduct = $syncer->sync(

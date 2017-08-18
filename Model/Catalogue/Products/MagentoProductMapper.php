@@ -3,8 +3,11 @@
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
 use DateTimeImmutable;
+use DateTimeZone;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Model\Product\Visibility;
+use Magento\Framework\Stdlib\DateTime;
+use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionRepositoryInterface;
@@ -40,13 +43,19 @@ class MagentoProductMapper implements MagentoProductMapperInterface
 
     private $magentoCustomerGroupRepository;
 
+    private $dateTime;
+
+    private $timezone;
+
     public function __construct(
         ConfigInterface $productConfig,
         MagentoAttributeSetRepositoryInterface $attributeSetRepository,
         MagentoAttributeRepositoryInterface $attributeRepository,
         MagentoAttributeTypeManagerInterface $attributeTypeManager,
         MagentoAttributeOptionRepositoryInterface $attributeOptionRepository,
-        MagentoCustomerGroupRepositoryInterface $magentoCustomerGroupRepository
+        MagentoCustomerGroupRepositoryInterface $magentoCustomerGroupRepository,
+        DateTime $dateTime,
+        TimezoneInterface $timezone
     ) {
         $this->productConfig = $productConfig;
         $this->attributeSetRepository = $attributeSetRepository;
@@ -54,6 +63,8 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         $this->attributeTypeManager = $attributeTypeManager;
         $this->attributeOptionRepository = $attributeOptionRepository;
         $this->magentoCustomerGroupRepository = $magentoCustomerGroupRepository;
+        $this->dateTime = $dateTime;
+        $this->timezone = $timezone;
     }
 
     /**
@@ -163,19 +174,26 @@ class MagentoProductMapper implements MagentoProductMapperInterface
 
         $skyLinkSpecialPrice = $skyLinkProduct->getPricingStructure()->getSpecialPrice();
 
+        // If the end date is before now, we do not need to put a new special price on at all, as
+        // it cannot end in the past. In fact, Magento will let you save it, but won't let
+        // subsequent saves from the admin interface occur.
+        if ($skyLinkSpecialPrice->hasEndDate() && $skyLinkSpecialPrice->getEndDate() < new DateTimeImmutable()) {
+            return;
+        }
+
         $magentoProduct->setCustomAttribute('special_price', $skyLinkSpecialPrice->getPrice()->toNative());
 
         if ($skyLinkSpecialPrice->hasStartDate()) {
             $magentoProduct->setCustomAttribute(
                 'special_from_date',
-                $this->dateTimeToAttributeValue($skyLinkSpecialPrice->getStartDate())
+                $this->dateTimeToLocalisedAttributeValue($skyLinkSpecialPrice->getStartDate())
             );
         }
 
         if ($skyLinkSpecialPrice->hasEndDate()) {
             $magentoProduct->setCustomAttribute(
                 'special_to_date',
-                $this->dateTimeToAttributeValue($skyLinkSpecialPrice->getEndDate())
+                $this->dateTimeToLocalisedAttributeValue($skyLinkSpecialPrice->getEndDate())
             );
         }
     }
@@ -276,7 +294,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
                 $magentoAttributeValue = $this
                     ->getMagentoAttributeOptionFromSkyLinkAttributeOption($skyLinkAttributeOption)
                     ->getValue();
-            // Otherweise, we'll use the label for the SkyLink Attribute Option
+                // Otherweise, we'll use the label for the SkyLink Attribute Option
             } else {
                 $magentoAttributeValue = $skyLinkAttributeOption->getLabel()->toNative();
             }
@@ -338,8 +356,17 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         return $magentoAttributeOption;
     }
 
-    private function dateTimeToAttributeValue(DateTimeImmutable $date)
+    /**
+     * Takes the given DateTime and compares it against the current DateTime. If it's
+     * less, we'll modify it to be at least the current DateTime, then we'll
+     * format it in the required Timezone in the required format.
+     *
+     * @return string
+     */
+    private function dateTimeToLocalisedAttributeValue(DateTimeImmutable $date)
     {
-        return $date->format('Y-m-d H:i:s');
+        $date = $date->setTimezone(new DateTimeZone($this->timezone->getConfigTimezone()));
+
+        $this->dateTime->formatDate($date->getTimestamp());
     }
 }

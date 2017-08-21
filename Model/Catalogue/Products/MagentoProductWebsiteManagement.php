@@ -111,7 +111,7 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
         /* @var WebsiteInterface[] $allowedWebsites */
         $allowedWebsites = $this
             ->magentoWebsiteRepository
-            ->getListFilteredByGlobalSalesChannelIdAndSalesChannelGroups($salesChannelGroups);
+            ->getListFilteredBySalesChannelGroups($salesChannelGroups);
 
         /* @var int[] $allowedWebsiteIds */
         $allowedWebsiteIds = array_map(function (WebsiteInterface $allowedWebsite) {

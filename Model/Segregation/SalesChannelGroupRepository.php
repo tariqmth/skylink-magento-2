@@ -61,10 +61,6 @@ class SalesChannelGroupRepository implements SalesChannelGroupRepositoryInterfac
             $valuesToGroups[$value][] = $group;
         });
 
-        // We'll make sure we remove any values to websites that match the global config value
-        $globalConfigValue = $this->config->getSalesChannelId()->toNative();
-        $valuesToGroups = array_diff_key($valuesToGroups, array_flip([$globalConfigValue]));
-
         // Now we'll convert our payload to the requested group
         $salesChannelGroups = [];
         array_walk($valuesToGroups, function (array $groups, $value) use (&$salesChannelGroups) {

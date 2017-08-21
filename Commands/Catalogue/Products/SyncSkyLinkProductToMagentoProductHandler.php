@@ -108,7 +108,7 @@ class SyncSkyLinkProductToMagentoProductHandler
         // @todo should this be located here or in the repository?
         if (null === $skyLinkProduct) {
             if (!empty($skyLinkProductInSalesChannelGroups)) {
-                $skyLinkProduct = $skyLinkProductInSalesChannelGroups[0];
+                $skyLinkProduct = $skyLinkProductInSalesChannelGroups[0]->getSkyLinkProduct();
             } else {
                 $e = SkyLinkProductDoesNotExistException::withSkyLinkProductId($skyLinkProductId);
 

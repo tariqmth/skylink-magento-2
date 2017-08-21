@@ -10,6 +10,7 @@ use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Commands\Catalogue\Products\SyncSkyLinkProductToMagentoProductCommand;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductRepositoryFactory;
+use RetailExpress\SkyLink\Api\Segregation\SalesChannelGroupRepositoryInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,13 +34,15 @@ class BulkProductsCommand extends Command
         ProductRepositoryFactory $skyLinkProductRepositoryFactory,
         CommandBusInterface $commandBus,
         TimezoneInterface $timezone,
-        AdminEmulator $adminEmulator
+        AdminEmulator $adminEmulator,
+        SalesChannelGroupRepositoryInterface $salesChannelGroupRepository
     ) {
         $this->config = $config;
         $this->skyLinkProductRepositoryFactory = $skyLinkProductRepositoryFactory;
         $this->commandBus = $commandBus;
         $this->timezone = $timezone;
         $this->adminEmulator = $adminEmulator;
+        $this->salesChannelGroupRepository = $salesChannelGroupRepository;
 
         parent::__construct('retail-express:skylink:bulk-products');
     }
@@ -65,9 +68,6 @@ class BulkProductsCommand extends Command
         /* @var \RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductRepository $skyLinkProductRepository */
         $skyLinkProductRepository = $this->skyLinkProductRepositoryFactory->create();
 
-        /* @var \RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId $salesChannelId */
-        $salesChannelId = $this->config->getSalesChannelId();
-
         /* @var bool $shouldBeQueued */
         $shouldBeQueued = $this->shouldBeQueued($input);
 
@@ -80,8 +80,14 @@ class BulkProductsCommand extends Command
             $output->writeln('Syncing Products from Retail Express...');
         }
 
-        /* @var SkyLinkProductId[] $skyLinkProductIds */
-        $skyLinkProductIds = $skyLinkProductRepository->allIds($salesChannelId, $sinceDate);
+        $skyLinkProductIds = [];
+
+        foreach ($this->salesChannelGroupRepository->getList() as $salesChannel) {
+            $salesChannelId = $salesChannel->getSalesChannelId();
+            $productsForChannel = $skyLinkProductRepository->allIds($salesChannelId, $sinceDate);
+            $skyLinkProductIds = array_merge($skyLinkProductIds, $productsForChannel);
+            $skyLinkProductIds = array_unique($skyLinkProductIds);
+        }
 
         if (0 === count($skyLinkProductIds)) {
             $output->writeln('<info>There are no Products in Retail Express.</info>');

@@ -19,7 +19,7 @@ interface MagentoWebsiteRepositoryInterface
      *
      * @return \Magento\Store\Api\Data\WebsiteInterface[]
      */
-    public function getListFilteredBySalesChannelGroups(array $salesChannelGroups)
+    public function getListFilteredBySalesChannelGroups(array $salesChannelGroups);
 
     /**
      * Gets a list of Magento Websites that use the globally configured

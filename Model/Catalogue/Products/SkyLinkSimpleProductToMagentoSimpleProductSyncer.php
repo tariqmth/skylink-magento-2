@@ -171,15 +171,6 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
         return $magentoProduct;
     }
 
-    private function getMagentoProduct($sku)
-    {
-        try {
-            return $this->baseMagentoProductRepository->get($sku);
-        } catch (\Magento\Framework\Exception\NoSuchEntityException $e){
-            return false;
-        }
-    }
-
     private function logDebug($message, SkyLinkProduct $skyLinkProduct, ProductInterface $magentoProduct = null, array $additional = null)
     {
         $this->log('debug', $message, $skyLinkProduct, $magentoProduct, $additional);

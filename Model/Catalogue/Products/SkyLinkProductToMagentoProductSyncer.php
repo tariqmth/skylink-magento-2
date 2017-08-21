@@ -11,4 +11,16 @@ trait SkyLinkProductToMagentoProductSyncer
     {
         return self::NAME;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getMagentoProduct($sku)
+    {
+        try {
+            return $this->baseMagentoProductRepository->get($sku);
+        } catch (\Magento\Framework\Exception\NoSuchEntityException $e){
+            return false;
+        }
+    }
 }

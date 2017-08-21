@@ -12,6 +12,16 @@ interface MagentoWebsiteRepositoryInterface
     public function getListFilteredByGlobalSalesChannelId();
 
     /**
+     * Gets a list of Magento Websites that use the
+     * Sales Channel IDs in the given Sales Channel Groups.
+     *
+     * @param \RetailExpress\SkyLink\Api\Data\Segregation\SalesChannelGroupInterface[] $salesChannelGroups
+     *
+     * @return \Magento\Store\Api\Data\WebsiteInterface[]
+     */
+    public function getListFilteredBySalesChannelGroups(array $salesChannelGroups)
+
+    /**
      * Gets a list of Magento Websites that use the globally configured
      * Sales Channel ID and those in the given Sales Channel Groups.
      *

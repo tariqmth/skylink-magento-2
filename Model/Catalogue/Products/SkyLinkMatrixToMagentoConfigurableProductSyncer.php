@@ -27,8 +27,6 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
 
     private $magentoConfigurableProductLinkManagement;
 
-    private $baseMagentoProductRepository;
-
     private $magentoProductWebsiteManagement;
 
     private $simpleProductSyncer;
@@ -103,11 +101,9 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
             $this
                 ->magentoConfigurableProductService
                 ->updateMagentoProduct($skyLinkMatrix, $magentoConfigurableProduct, $magentoSimpleProducts);
-
-        } elseif ($existingMagentoProduct = $this->baseMagentoProductRepository->get((string) $skyLinkMatrix->getSku())) {
+        } elseif ($existingMagentoProduct = $this->getMagentoProduct((string) $skyLinkMatrix->getSku())) {
             throw ProductAlreadyExistsAsTheWrongTypeException::withMatrix($skyLinkMatrix, $existingMagentoProduct);
         } else {
-
             $this->logger->debug('Couldn\'t find existing Magento Configurable Product appropriate for SkyLink Simple Products in the SkyLink Product Matrix, creating one.', [
                 'SkyLink Product Matrix SKU' => $skyLinkMatrix->getSku(),
                 'SkyLink Simple Product IDs' => array_map(function (SkyLinkProductId $skyLinkProductId) {

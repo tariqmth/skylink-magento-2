@@ -14,13 +14,6 @@ interface SkyLinkProductToMagentoProductSyncerInterface
     public function getName();
 
     /**
-     * Get a Magento product by SKU or return false (without an exception).
-     *
-     * @return \Magento\Catalog\Model\Product|boolean
-     */
-    public function getMagentoProduct($sku);
-
-    /**
      * Determine if the syncer accepts the given SkyLink Product to sync.
      *
      * @param SkyLinkProduct $skyLinkProduct

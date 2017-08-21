@@ -24,7 +24,7 @@ trait SkyLinkProductToMagentoProductSyncer
      *
      * @return \Magento\Catalog\Api\ProductRepositoryInterface|null
      */
-    public function getMagentoProduct($sku)
+    private function getMagentoProduct($sku)
     {
         try {
             return $this->baseMagentoProductRepository->get($sku);

@@ -45,9 +45,9 @@
     </event>
 
     <!-- When an EDS entity was processed -->
-    <event name="retail_express_skylink_eds_entity_was_processed">
+    <!-- <event name="retail_express_skylink_eds_entity_was_processed">
         <observer name="eds" instance="RetailExpress\SkyLink\Observer\Eds\WhenEdsEntityWasProcessed"/>
-    </event>
+    </event> -->
 
     <!-- When a queued command fails -->
     <event name="bernard_reject">

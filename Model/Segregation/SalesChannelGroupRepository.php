@@ -48,11 +48,6 @@ class SalesChannelGroupRepository implements SalesChannelGroupRepositoryInterfac
      */
     public function getList()
     {
-        // Let's save some time if there's only a single store in Magento
-        if ($this->storeManager->hasSingleStore()) {
-            return [];
-        }
-
         $groups = $this->getGroupsOfStoresWithWebsite();
         $valuesToGroups = [];
 

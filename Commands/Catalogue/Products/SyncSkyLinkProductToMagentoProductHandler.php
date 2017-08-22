@@ -191,6 +191,8 @@ class SyncSkyLinkProductToMagentoProductHandler
     {
         $salesChannelGroups = $this->salesChannelGroupRepository->getList();
 
+        $globalSalesChannelId = $this->config->getSalesChannelId();
+
         // We'll loop through the Sales Channel Groups and grab the product in the context of each
         $productInSalesChannelGroups = [];
         array_walk(
@@ -209,7 +211,11 @@ class SyncSkyLinkProductToMagentoProductHandler
                 $productInSalesChannelGroup->setSkyLinkProduct($skyLinkProduct);
                 $productInSalesChannelGroup->setSalesChannelGroup($salesChannelGroup);
 
-                $productInSalesChannelGroups[] = $productInSalesChannelGroup;
+                if ($salesChannelGroup->getSalesChannelId() == $globalSalesChannelId) {
+                    array_unshift($productInSalesChannelGroups, $productInSalesChannelGroup);
+                } else {
+                    $productInSalesChannelGroups[] = $productInSalesChannelGroup;
+                }
             }
         );
 

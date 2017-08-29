@@ -164,14 +164,14 @@ Alternatively (or for more granular versioning control), you may merge the follo
 // Recommended...
 {
 	"require": {
-		"retail-express/skylink-magento-2": "^1.0"
+		"retail-express/skylink-magento-2": "^1.2"
 	}
 }
 
 // For beta releases (not recommended in production)...
 {
 	"require": {
-		"retail-express/skylink-magento-2": "^1.0"
+		"retail-express/skylink-magento-2": "^1.2"
 	},
 	"minimum-stabiliy": "beta"
 }
@@ -179,11 +179,9 @@ Alternatively (or for more granular versioning control), you may merge the follo
 // For bleeding edge of all code (not recommended)...
 {
 	"require": {
-		"retail-express/command-bus-magento-2": "dev-master",
-		"retail-express/skylink-eds": "dev-master",
-		"retail-express/skylink-magento-2": "dev-master",
-		"retail-express/skylink-sdk": "dev-master"
-	}
+		"retail-express/skylink-magento-2": "^1.3"
+	},
+  "minimum-stabiliy": "dev"
 }
 ```
 

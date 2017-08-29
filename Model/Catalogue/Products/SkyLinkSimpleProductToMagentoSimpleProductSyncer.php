@@ -67,7 +67,6 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
         }
 
         if (null !== $magentoProduct) {
-
             $this->logDebug(
                 'Found Magento Simple Product already mapped to the SkyLink Product, updating it.',
                 $skyLinkProduct,
@@ -139,7 +138,6 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
             [
                 'Sales Channel Groups' => array_map(
                     function (SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup) {
-
                         $salesChannelGroup = $skyLinkProductInSalesChannelGroup->getSalesChannelGroup();
 
                         return [

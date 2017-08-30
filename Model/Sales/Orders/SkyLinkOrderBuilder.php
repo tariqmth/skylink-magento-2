@@ -163,6 +163,11 @@ class SkyLinkOrderBuilder implements SkyLinkOrderBuilderInterface
     {
         $this->assertImplementationOfOrder($magentoOrder);
 
+        // If there's no shipping method, we'll return the default configured fulfillment method
+        if (!$magentoOrder->getShippingMethod()) { // @todo fix non-strict comparison
+            return $this->orderConfig->getItemFulfillmentMethod();
+        }
+
         $carrierCode = $magentoOrder->getShippingMethod(true)->getData('carrier_code');
         $matchingCarrier = $this->magentoShippingConfig->getActiveCarriers()[$carrierCode]; // @todo somehow validate the carrier??
 

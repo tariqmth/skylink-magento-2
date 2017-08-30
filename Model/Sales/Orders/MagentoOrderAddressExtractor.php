@@ -7,7 +7,7 @@ use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderAddressRepositoryInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\MagentoOrderAddressExtractorInterface;
-use RetailExpress\SkyLink\Exceptions\Sales\Orders\NoMagentoShippingAddressException;
+use RetailExpress\SkyLink\Exceptions\Sales\Orders\TooManyMagentoShippingAddressesException;
 
 class MagentoOrderAddressExtractor implements MagentoOrderAddressExtractorInterface
 {
@@ -46,9 +46,14 @@ class MagentoOrderAddressExtractor implements MagentoOrderAddressExtractorInterf
         /* @var \\Magento\Sales\Api\Data\OrderAddressSearchResultInterface $searchResults */
         $searchResults = $this->magentoOrderAddressRepository->getList($searchCriteria);
 
-        // There should always be only one shipping address
-        if (1 !== $searchResults->getTotalCount()) {
-            throw NoMagentoShippingAddressException::withMagentoOrder($magentoOrder);
+        // There should never be more than one shipping address
+        if ($searchResults->getTotalCount() > 1) {
+            throw TooManyMagentoShippingAddressesException::withMagentoOrder($magentoOrder);
+        }
+
+        // If there's no addresses, all order items were virtual, so we'll use the billing address
+        if (0 === $searchResults->getTotalCount()) {
+            return $this->extractBillingAddress($magentoOrder);
         }
 
         return current($searchResults->getItems());

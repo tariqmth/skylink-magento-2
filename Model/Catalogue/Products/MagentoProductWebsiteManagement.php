@@ -71,7 +71,8 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
                     $scopedMagentoProduct = $this->magentoProductRepository->getById(
                         $magentoProduct->getId(),
                         false,
-                        $magentoStore->getId()
+                        $magentoStore->getId(),
+                        true
                     );
 
                     // Map and save the product
@@ -84,7 +85,6 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
                     $this->magentoProductRepository->save($scopedMagentoProduct);
                 }
             );
-
         }, $magentoWebsites);
     }
 

@@ -112,9 +112,10 @@ class SyncSkyLinkProductToMagentoProductHandler
 
         // If we care about composite product reruns (i.e. on a bulk sync)
         if ($this->caresAboutCompositeProductReruns($command, $skyLinkProduct)) {
+            $additional = $command->changeSetId ? ['change_set_id' => $command->changeSetId] : [];
 
             // If we can't proceed because it's already been done recently
-            if (false === $this->compositeProductRerunManager->canProceedWithSync($skyLinkProduct)) {
+            if (false === $this->compositeProductRerunManager->canProceedWithSync($skyLinkProduct, $additional)) {
                 $this->logger->info('Skipping syncing SkyLink Product to Magento Product because it is part of a SkyLink Composite Product that was recently synced and does not need to be re-synced yet.', [
                     'SkyLink Product ID' => $skyLinkProductId,
                 ]);
@@ -123,7 +124,7 @@ class SyncSkyLinkProductToMagentoProductHandler
             }
 
             // If we can sync, let's tell the re-run manager that we're starting right now
-            $this->compositeProductRerunManager->isSyncing($skyLinkProduct);
+            $this->compositeProductRerunManager->isSyncing($skyLinkProduct, $additional);
         }
 
         foreach ($this->syncers as $syncer) {

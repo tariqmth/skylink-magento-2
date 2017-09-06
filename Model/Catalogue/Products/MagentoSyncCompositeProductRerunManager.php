@@ -25,9 +25,9 @@ class MagentoSyncCompositeProductRerunManager implements MagentoSyncCompositePro
     /**
      * {@inheritdoc}
      */
-    public function canProceedWithSync(CompositeSkyLinkProduct $skyLinkCompositeProduct)
+    public function canProceedWithSync(CompositeSkyLinkProduct $skyLinkCompositeProduct, array $additional = [])
     {
-        $cacheKey = $this->getCacheKey($skyLinkCompositeProduct);
+        $cacheKey = $this->getCacheKey($skyLinkCompositeProduct, $additional);
 
         return !(bool) $this->cache->load($cacheKey);
     }
@@ -35,23 +35,27 @@ class MagentoSyncCompositeProductRerunManager implements MagentoSyncCompositePro
     /**
      * {@inheritdoc}
      */
-    public function isSyncing(CompositeSkyLinkProduct $skyLinkCompositeProduct)
+    public function isSyncing(CompositeSkyLinkProduct $skyLinkCompositeProduct, array $additional = [])
     {
-        $cacheKey = $this->getCacheKey($skyLinkCompositeProduct);
+        $cacheKey = $this->getCacheKey($skyLinkCompositeProduct, $additional);
 
         $this->cache->save(true, $cacheKey, [], $this->config->getCompositeProductSyncRerunThreshold()->toNative());
     }
 
-    private function getCacheKey(CompositeSkyLinkProduct $skyLinkCompositeProduct)
+    private function getCacheKey(CompositeSkyLinkProduct $skyLinkCompositeProduct, array $additional = [])
     {
         $simpleProductIds = array_map(function (SkyLinkProduct $skyLinkProduct) {
             return (string) $skyLinkProduct->getId();
         }, $skyLinkCompositeProduct->getProducts());
 
-        return sprintf(
-            '%s_%s',
+        sort($simpleProductIds);
+
+        return md5(sprintf(
+            '%s_%s_%s_%s',
             self::CACHE_KEY,
-            md5(implode('', $simpleProductIds))
-        );
+            $skyLinkCompositeProduct->getSku(),
+            implode('_', $simpleProductIds),
+            implode('_', $additional)
+        ));
     }
 }

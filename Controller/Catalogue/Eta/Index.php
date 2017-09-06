@@ -28,8 +28,6 @@ class Index extends Action
 
     private $jsonResultFactory;
 
-    private $dateTime;
-
     private $timezone;
 
     public function __construct(
@@ -39,7 +37,6 @@ class Index extends Action
         SkyLinkEtaRepositoryFactory $skyLinkEtaRepositoryFactory,
         StoreManagerInterface $storeManager,
         JsonResultFactory $jsonResultFactory,
-        DateTime $dateTime,
         TimezoneInterface $timezone
     ) {
         parent::__construct($context);
@@ -49,7 +46,6 @@ class Index extends Action
         $this->skyLinkEtaRepositoryFactory = $skyLinkEtaRepositoryFactory;
         $this->storeManager = $storeManager;
         $this->jsonResultFactory = $jsonResultFactory;
-        $this->dateTime = $dateTime;
         $this->timezone = $timezone;
     }
 
@@ -118,6 +114,6 @@ class Index extends Action
         $timezone = new DateTimeZone($this->timezone->getConfigTimezone());
         $date = $date->setTimezone($timezone);
 
-        return $this->dateTime->formatDate($date->getTimestamp(), false);
+        return $date->format(DateTime::DATE_PHP_FORMAT);
     }
 }

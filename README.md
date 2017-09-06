@@ -164,14 +164,14 @@ Alternatively (or for more granular versioning control), you may merge the follo
 // Recommended...
 {
 	"require": {
-		"retail-express/skylink-magento-2": "^1.0"
+		"retail-express/skylink-magento-2": "^1.2"
 	}
 }
 
 // For beta releases (not recommended in production)...
 {
 	"require": {
-		"retail-express/skylink-magento-2": "^1.0"
+		"retail-express/skylink-magento-2": "^1.2"
 	},
 	"minimum-stabiliy": "beta"
 }
@@ -179,15 +179,13 @@ Alternatively (or for more granular versioning control), you may merge the follo
 // For bleeding edge of all code (not recommended)...
 {
 	"require": {
-		"retail-express/command-bus-magento-2": "dev-master",
-		"retail-express/skylink-eds": "dev-master",
-		"retail-express/skylink-magento-2": "dev-master",
-		"retail-express/skylink-sdk": "dev-master"
-	}
+		"retail-express/skylink-magento-2": "^1.3"
+	},
+	"minimum-stabiliy": "dev"
 }
 ```
 
-#### 2.3.3.Temporary Logging Workaround
+#### 2.3.3. Temporary Logging Workaround
 
 Due to the way Magento [sets up it's logging](https://github.com/magento/magento2/issues/2529) and that it [explicitly requires an old version of Monolog (the logging tool)](https://github.com/magento/magento2/blob/2.1/composer.json#L40), an extra step is required to make SkyLink logging (or any third party logging) work properly. This is a [known issue](https://github.com/magento/magento2/issues/2529) that Magento have not resolved.
 
@@ -199,6 +197,13 @@ To do this, merge the following into your `composer.json` file:
         "monolog/monolog": "1.18.0 as 1.16.0"
     }
 }
+```
+
+Then run:
+
+```bash
+# Logged in as the Magento filesystem owner...
+composer update monolog/monolog
 ```
 
 ### 2.4. Enable Extension
@@ -348,6 +353,8 @@ There are a number of options available for this Magento CLI command, which make
 Usage:
  retail-express:command-bus:consume-queue [--max-runtime[="..."]] \
                                           [--max-messages[="..."]] \
+                                          [--max-memory[="..."]] \
+                                          [--priority] \
                                           [--stop-when-empty] \
                                           [--stop-on-error] \
                                           queue1 ... [queueN]
@@ -358,6 +365,9 @@ Arguments:
 Options:
  --max-runtime         # Maximum time in seconds the consumer will run.
  --max-messages        # Maximum number of messages that should be consumed.
+ --max-memory          # Maximum memory in megabytes the consumer will consume before cleanly exiting.
+ --pause-when-empty    # Seconds to pause when the queue is empty. (Default 3)
+ --priority            # Flag to use priority queues rather than round robin queues when consuming multiple queues.
  --stop-when-empty     # Stop consumer when queue is empty.
  --stop-on-error       # Stop consumer when an error occurs.
  --help (-h)           # Display this help message
@@ -375,28 +385,27 @@ Options:
 Once Supervisor has been installed in your system, you may [configure it](http://supervisord.org/configuration.html) to sustain Queue Worker proceses. A typical Supervisor program would look like:
 
 ```ini
-[program:magento2_customers]
+[program:magento2]
 
 ; Set the user to the Magento filesystem owner
 user=magento_filesystem_owner
 
-; The Queue Worker should consume the Customers Queued Commands and exit after 5 hours (to not be a memory hog)
-command=/path/to/magentobin/magento retail-express:command-bus:consume --max-runtime=18000 customers
+; The Queue Worker should consume all queues (prioritised) and exit after 15 minutes
+command=/path/to/magentobin/magento retail-express:command-bus:consume --max-runtime=900 --max-memory=512 --priority customers payments fulfillments attributes price-groups products
 
 ; Make sure the Queue Worker is always running
-autostart=true
 autorestart=true
 
 ; Log any output or errors
-stdout_logfile=customers.log
-stderr_logfile=customers.err.log
+stdout_logfile=magento2.log
+stderr_logfile=magento2.err.log
 ```
 
-By defualt, a Queue Worker will log errors (but not crash). You might choose to crash the queue worker intentionally to log any exceptions to your Supervisor log file. In that case, a modification of the command executed would be required:
+By default, a Queue Worker will log errors (but not crash). You might choose to crash the queue worker intentionally to log any exceptions to your Supervisor log file. In that case, a modification of the command executed would be required:
 
 ```ini
 ; Stop the command when an error occurs and increase the verbosity for debugging purposes
-command=/path/to/magentobin/magento retail-express:command-bus:consume --max-runtime=18000 --stop-on-error -vvv customers
+command=/path/to/magentobin/magento retail-express:command-bus:consume --max-runtime=900 --stop-on-error -vvv --priority customers payments fulfillments attributes price-groups products
 ```
 
 If you have installed Magento according to the [user guide](http://devdocs.magento.com/guides/v2.0/install-gde/bk-install-guide.html) and installed Supervisor on Ubuntu 16.04, the following Supervisor config file should work with your installation *(if you changed paths or users, you may need to tweak this configuration file accordingly)*.
@@ -406,51 +415,21 @@ Copy the following into a new file, `/etc/supervisor/conf.d/magento2.conf` *(and
 ```ini
 [program:magento2_customers]
 user=magento_user
-command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=18000 customers
-autostart=true
+command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-memory=512 --priority customers payments fulfillments
 autorestart=true
+numprocs=2
+process_name=%(program_name)s_%(process_num)s
 stdout_logfile=/var/log/supervisor/magento2/customers.log
 stderr_logfile=/var/log/supervisor/magento2/customers.err.log
 
-[program:magento2_attributes]
-user=magento_user
-command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=18000 attributes
-autostart=true
-autorestart=true
-stdout_logfile=/var/log/supervisor/magento2/attributes.log
-stderr_logfile=/var/log/supervisor/magento2/attributes.err.log
-
-[program:magento2_price_groups]
-user=magento_user
-command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=18000 price-groups
-autostart=true
-autorestart=true
-stdout_logfile=/var/log/supervisor/magento2/price_groups.log
-stderr_logfile=/var/log/supervisor/magento2/price_groups.err.log
-
 [program:magento2_products]
 user=magento_user
-command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=18000 products
-autostart=true
+command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-memory=512 --priority attributes price-groups products
 autorestart=true
+numprocs=5
+process_name=%(program_name)s_%(process_num)s
 stdout_logfile=/var/log/supervisor/magento2/products.log
 stderr_logfile=/var/log/supervisor/magento2/products.err.log
-
-[program:magento2_payments]
-user=magento_user
-command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=18000 payments
-autostart=true
-autorestart=true
-stdout_logfile=/var/log/supervisor/magento2/payments.log
-stderr_logfile=/var/log/supervisor/magento2/payments.err.log
-
-[program:magento2_fulfillments]
-user=magento_user
-command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=18000 fulfillments
-autostart=true
-autorestart=true
-stdout_logfile=/var/log/supervisor/magento2/fulfillments.log
-stderr_logfile=/var/log/supervisor/magento2/fulfillments.err.log
 ```
 
 > Because Queue Workers are long-running processes, they will not see any changes in the Magento codebase until they are restarted.
@@ -467,12 +446,8 @@ If you have installed Magento according to the [user guide](http://devdocs.magen
 
 ```bash
 # 'crontab -e' as the Magento filesystem owner...
-*/10 * * * * /var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=540 customers
-*/10 * * * * /var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=540 attributes
-*/10 * * * * /var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=540 price-groups
-*/10 * * * * /var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=540 products
-*/10 * * * * /var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=540 payments
-*/10 * * * * /var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=540 fulfillments
+*/10 * * * * /var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=540 --stop-when-empty --max-memory=512 --priority customers payments fulfillments
+*/10 * * * * /var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=540 --stop-when-empty --max-memory=512 --priority attributes price-groups products
 ```
 
 #### 3.3.2. Manually
@@ -489,3 +464,12 @@ bin/magento retail-express:command-bus:consume --stop-on-error --stop-when-empty
 ```
 
 > Of course, there is the option to manually sync individual entities *(Section 3.2)* should you need to for debugging purposes.
+
+## 4. FAQs
+
+### I see an error in my logs regarding `too many open files`
+
+As the Queue Workers continually run, they invoke Magento which slowly consumes resources on the server. As a result, it's good practie to limit the time that a Queue Worker can run (so that your process manager may restart it) to free up resources. Magento was not designed originally to be continually run and as a result sometimes opens files on the system without closing them (they would normally be closed during a regular Magento page load).
+
+Try decreasing the `max-runtime` of your queue worker *(Section 3.3)* and increasing the [open files limit](https://stackoverflow.com/a/34645) in your hosting environment.
+

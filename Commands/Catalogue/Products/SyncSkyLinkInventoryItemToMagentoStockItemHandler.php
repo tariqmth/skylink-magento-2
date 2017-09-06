@@ -39,7 +39,12 @@ class SyncSkyLinkInventoryItemToMagentoStockItemHandler
     public function handle(SyncSkyLinkInventoryItemToMagentoStockItemCommand $command)
     {
         /* @var \Magento\Catalog\Api\Data\ProductInterface $magentoProduct */
-        $magentoProduct = $this->baseMagentoProductRepository->getById($command->magentoProductId);
+        $magentoProduct = $this->baseMagentoProductRepository->getById(
+            $command->magentoProductId,
+            false,
+            null,
+            true
+        );
 
         /* @var \Magento\Framework\Api\AttributeInterface|null $skyLinkProductIdAttribute */
         $skyLinkProductIdAttribute = $magentoProduct->getCustomAttribute('skylink_product_id');

@@ -86,6 +86,19 @@
                 <url_key_attribute_code_2>0</url_key_attribute_code_2>
                 <url_key_attribute_code_3>0</url_key_attribute_code_3>
                 <composite_product_sync_rerun_threshold>3600</composite_product_sync_rerun_threshold>
+
+                <!--
+                    When finding existing simple products to sync, we'll check the first product that
+                    matches the given product types. This is a convenient way to work around the
+                    fact that we only synchronise simple products from Retail Express to
+                    Magento, by creating a product of the following types in Magento,
+                    assigning a matching SkyLink Product ID to it and we can then
+                    pick it up and synchronise it. We don't expose this in the
+                    admin because it really shouldn't be something that end
+                    users have the ability to change. We don't trust them!
+                -->
+                <product_types_for_simple_product_sync>simple,downloadable,virtual</product_types_for_simple_product_sync>
+
             </products>
 
             <orders>

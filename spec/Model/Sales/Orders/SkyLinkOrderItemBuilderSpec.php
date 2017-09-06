@@ -43,7 +43,9 @@ class SkyLinkOrderItemBuilderSpec extends ObjectBehavior
     ) {
         $magentoOrderItem->getProductId()->willReturn($productId = 123);
 
-        $this->magentoProductRepository->getById($productId)->willReturn($magentoProduct);
+        $this
+            ->magentoProductRepository->getById($productId, false, null, true)
+            ->willReturn($magentoProduct);
 
         $magentoProduct->getCustomAttribute('skylink_product_id')->willReturn(null);
 
@@ -59,7 +61,9 @@ class SkyLinkOrderItemBuilderSpec extends ObjectBehavior
     ) {
         $magentoOrderItem->getProductId()->willReturn($productId = 123);
 
-        $this->magentoProductRepository->getById($productId)->willReturn($magentoProduct);
+        $this->magentoProductRepository
+            ->getById($productId, false, null, true)
+            ->willReturn($magentoProduct);
 
         $magentoProduct->getCustomAttribute('skylink_product_id')->willReturn($skyLinkProductIdAttribute);
 

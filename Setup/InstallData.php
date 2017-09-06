@@ -11,7 +11,7 @@ use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\App\Cache\Type\Config as ConfigCacheType;
 use Magento\Framework\App\Cache\TypeListInterface as CacheTypeListInterface;
 use Magento\Framework\App\Config\MutableScopeConfigInterface;
-use \Magento\Framework\Indexer\IndexerRegistry;
+use Magento\Framework\Indexer\IndexerRegistry;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;

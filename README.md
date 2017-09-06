@@ -179,7 +179,7 @@ Alternatively (or for more granular versioning control), you may merge the follo
 // For bleeding edge of all code (not recommended)...
 {
 	"require": {
-		"retail-express/skylink-magento-2": "^1.3"
+		"retail-express/skylink-magento-2": "^1.4"
 	},
 	"minimum-stabiliy": "dev"
 }

@@ -222,7 +222,7 @@ bin/magento module:enable RetailExpress_SkyLink
 
 ```bash
 # Logged in as the Magento filesystem owner...
-composer update retail-express/skylink-magento-2
+composer update retail-express/skylink-magento-2 --with-dependencies
 ```
 
 If you are running bleeding edge version of all code *(Section 2.3.2)*, you need a slighly modified command:

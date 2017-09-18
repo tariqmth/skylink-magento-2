@@ -3,6 +3,7 @@
 namespace RetailExpress\SkyLink\Model\Catalogue\Products;
 
 use Magento\Catalog\Api\Data\ProductInterface;
+use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Store\Api\Data\WebsiteInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductWebsiteManagementInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface;
@@ -10,6 +11,7 @@ use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductServiceInte
 use RetailExpress\SkyLink\Api\Catalogue\Products\SkyLinkProductToMagentoProductSyncerInterface;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
+use RetailExpress\SkyLink\Exceptions\Products\ProductAlreadyExistsAsTheWrongTypeException;
 use RetailExpress\SkyLink\Exceptions\Products\TooManyProductMatchesException;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\SimpleProduct;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
@@ -37,11 +39,13 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
         MagentoSimpleProductRepositoryInterface $magentoSimpleProductRepository,
         MagentoSimpleProductServiceInterface $magentoSimpleProductService,
         MagentoProductWebsiteManagementInterface $magentoProductWebsiteManagement,
+        ProductRepositoryInterface $baseMagentoProductRepository,
         SkyLinkLoggerInterface $logger
     ) {
         $this->magentoSimpleProductRepository = $magentoSimpleProductRepository;
         $this->magentoSimpleProductService = $magentoSimpleProductService;
         $this->magentoProductWebsiteManagement = $magentoProductWebsiteManagement;
+        $this->baseMagentoProductRepository = $baseMagentoProductRepository;
         $this->logger = $logger;
     }
 
@@ -67,7 +71,6 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
         }
 
         if (null !== $magentoProduct) {
-
             $this->logDebug(
                 'Found Magento Simple Product already mapped to the SkyLink Product, updating it.',
                 $skyLinkProduct,
@@ -81,6 +84,8 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
                 $skyLinkProduct,
                 $magentoProduct
             );
+        } elseif ($existingMagentoProduct = $this->getMagentoProduct((string) $skyLinkProduct->getSku())) {
+            throw ProductAlreadyExistsAsTheWrongTypeException::withSimpleProduct($skyLinkProduct, $existingMagentoProduct);
         } else {
             $this->logDebug(
                 'No Magento Simple Product exists for the SkyLink Product, creating one.',
@@ -139,7 +144,6 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
             [
                 'Sales Channel Groups' => array_map(
                     function (SkyLinkProductInSalesChannelGroupInterface $skyLinkProductInSalesChannelGroup) {
-
                         $salesChannelGroup = $skyLinkProductInSalesChannelGroup->getSalesChannelGroup();
 
                         return [

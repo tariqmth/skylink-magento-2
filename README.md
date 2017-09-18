@@ -114,7 +114,7 @@ ssh-keygen -t rsa -b 4096 -C "your_email@example.com" # Work through prompts to 
 
 You must then provide Retail Express with your ssh public key. In a typical installation, this is located at `~/.ssh/id_rsa.pub`. Retail Express will authorise your public key and you can continue with the installation of SkyLink for Magento 2.
 
-### 2.3. Installation of Code
+### 2.3. Installing
 
 #### 2.3.1. Add Composer Repository
 
@@ -130,22 +130,22 @@ Alternatively, you may merge the following into your existing `composer.json` fi
 ```json
 // If your "repositories" attribute is an array...
 {
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://repo.ecom.retailexpress.com.au"
-        }
-    ]
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://repo.ecom.retailexpress.com.au"
+    }
+  ]
 }
 
 // If your "repositories" attribute is already an object...
 {
-    "repositories": {
-        "retail-express": {
-            "type": "composer",
-            "url": "https://repo.ecom.retailexpress.com.au"
-        }
+  "repositories": {
+    "retail-express": {
+      "type": "composer",
+      "url": "https://repo.ecom.retailexpress.com.au"
     }
+  }
 }
 ```
 
@@ -206,7 +206,7 @@ Then run:
 composer update monolog/monolog
 ```
 
-### 2.4. Enable Extension
+#### 2.3.4. Enable Extension
 
 After the extension's code is installed, you need to prepare it for use in Magento by first enabling it:
 
@@ -216,7 +216,9 @@ bin/magento module:enable RetailExpress_CommandBus
 bin/magento module:enable RetailExpress_SkyLink
 ```
 
-### 2.5. Update Code
+You may skip over *Section 2.4* and **prepare the extension** *(Section 2.5)* for Magento.
+
+### 2.4. Updating
 
 **To update SkyLink for Magento 2's code, you must first stop any Queue Workers *(Section 3.3.1)*.** Then, you simply run:
 
@@ -225,19 +227,9 @@ bin/magento module:enable RetailExpress_SkyLink
 composer update retail-express/skylink-magento-2 --with-dependencies
 ```
 
-If you are running bleeding edge version of all code *(Section 2.3.2)*, you need a slighly modified command:
+Every time your code is updated, you need to **prepare the extension** *(Section 2.5)* for Magento.
 
-```bash
-# Logged in as the Magento filesystem owner...
-composer update retail-express/command-bus-magento-2 \
-                retail-express/skylink-eds \
-                retail-express/skylink-magento-2 \
-                retail-express/skylink-sdk
-```
-
-Every time your code is updated, you need to **prepare the extension** *(Section 2.6)* for Magento.
-
-### 2.6. Prepare Extension
+### 2.5. Prepare Extension
 
 To prepare the extension for Magento, you need to run the installation scripts and also reindex data and flush caches:
 
@@ -248,15 +240,23 @@ bin/magento indexer:reindex
 bin/magento cache:flush
 ```
 
-A recommended performance improvement is to put your store into production mode:
+A **strongly recommended** performance improvement is to enable caching and put Magento into production mode:
 
 ```bash
 # Logged in as the Magento filesystem owner...
+bin/magento cache:enable
 bin/magento deploy:mode:set production -s
 bin/magento setup:di:compile
-bin/magento setup:static-content:deploy
+bin/magento setup:static-content:deploy en_AU # Add any additional locales (e.g. en_AU en_NZ) separated by a comma
 bin/magento cache:clean
 ```
+
+### 2.6 Install / Upgrade Checklist
+
+1. I have checked the system requirements *(Section 2.1)*.
+2. I have authenticated my development, staging and production machines *(Section 2.2)*.
+3. I have installed/updated the code and the extnesion is enabled *(Sections 2.3 and 2.4)*.
+4. I have prepared the extension and enabled both caching and production mode *(Section 2.5)*.
 
 ## 3. Syncing Data
 
@@ -382,49 +382,57 @@ Options:
 
 #### 3.3.1. Supervisor
 
-Once Supervisor has been installed in your system, you may [configure it](http://supervisord.org/configuration.html) to sustain Queue Worker proceses. A typical Supervisor program would look like:
+Once Supervisor has been installed in your system, you may [configure it](http://supervisord.org/configuration.html) to sustain Queue Worker proceses. The following Supervisor config file serves as a template that should work with your installation:
 
 ```ini
-[program:magento2]
+[group:<magento file system owner>]
+programs=<magento file system owner>_customers,<magento file system owner>_products
+priority=1
 
-; Set the user to the Magento filesystem owner
-user=magento_filesystem_owner
-
-; The Queue Worker should consume all queues (prioritised) and exit after 15 minutes
-command=/path/to/magentobin/magento retail-express:command-bus:consume --max-runtime=900 --max-memory=512 --priority customers payments fulfillments attributes price-groups products
-
-; Make sure the Queue Worker is always running
+[program:<magento file system owner>_customers]
+user=<magento file system owner>
+command=<path to php binary> <magento install dir>/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=900 --priority customers payments fulfillments
 autorestart=true
+numprocs=<number of processes>
+process_name=%(program_name)s_%(process_num)s
+stdout_logfile=/home/<magento file system owner>/logs/supervisor/customers.log
+stderr_logfile=/home/<magento file system owner>/logs/supervisor/customers.err.log
 
-; Log any output or errors
-stdout_logfile=magento2.log
-stderr_logfile=magento2.err.log
+[program:<magento file system owner>_products]
+user=<magento file system owner>
+command=<path to php binary> <magento install dir>/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=900 --priority attributes price-groups products
+autorestart=true
+numprocs=<number of processes>
+process_name=%(program_name)s_%(process_num)s
+stdout_logfile=/home/<magento file system owner>/logs/supervisor/products.log
+stderr_logfile=/home/<magento file system owner>/logs/supervisor/products.err.log
 ```
 
-By default, a Queue Worker will log errors (but not crash). You might choose to crash the queue worker intentionally to log any exceptions to your Supervisor log file. In that case, a modification of the command executed would be required:
+There are three replacements that need to be made to this template:
+
+1. `<magento file system owner>` - this is the user that owns the Magento filesystem.
+2. `<path to php binary>` - this typically can be found by typing `which php` on your CLI.
+3. `<number of processes>` - this should be tweaked according to your database size and server specs and must be at least 1. Typically, a number between 1 and 6 is appropriate.
+
+If you have installed Magento according to the [user guide](http://devdocs.magento.com/guides/v2.0/install-gde/bk-install-guide.html) and installed Supervisor on Ubuntu 16.04, your Supervisor configuration file might look like:
 
 ```ini
-; Stop the command when an error occurs and increase the verbosity for debugging purposes
-command=/path/to/magentobin/magento retail-express:command-bus:consume --max-runtime=900 --stop-on-error -vvv --priority customers payments fulfillments attributes price-groups products
-```
+[group:magento_user]
+programs=magento_user_customers,magento_user_products
+priority=1
 
-If you have installed Magento according to the [user guide](http://devdocs.magento.com/guides/v2.0/install-gde/bk-install-guide.html) and installed Supervisor on Ubuntu 16.04, the following Supervisor config file should work with your installation *(if you changed paths or users, you may need to tweak this configuration file accordingly)*.
-
-Copy the following into a new file, `/etc/supervisor/conf.d/magento2.conf` *(and ensure that the `/var/log/supervisor/magento2` path exists)*:
-
-```ini
-[program:magento2_customers]
+[program:magento_user_customers]
 user=magento_user
-command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-memory=512 --priority customers payments fulfillments
+command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=900 --priority customers payments fulfillments
 autorestart=true
 numprocs=2
 process_name=%(program_name)s_%(process_num)s
 stdout_logfile=/var/log/supervisor/magento2/customers.log
 stderr_logfile=/var/log/supervisor/magento2/customers.err.log
 
-[program:magento2_products]
+[program:magento_user_products]
 user=magento_user
-command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-memory=512 --priority attributes price-groups products
+command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=900 --priority attributes price-groups products
 autorestart=true
 numprocs=5
 process_name=%(program_name)s_%(process_num)s
@@ -446,8 +454,8 @@ If you have installed Magento according to the [user guide](http://devdocs.magen
 
 ```bash
 # 'crontab -e' as the Magento filesystem owner...
-*/10 * * * * /var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=540 --stop-when-empty --max-memory=512 --priority customers payments fulfillments
-*/10 * * * * /var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-runtime=540 --stop-when-empty --max-memory=512 --priority attributes price-groups products
+*/10 * * * * <path to php binary> <magento install dir>/bin/magento retail-express:command-bus:consume --max-runtime=540 --stop-when-empty --max-memory=512 --priority customers payments fulfillments
+*/10 * * * * <path to php binary> <magento install dir>/bin/magento retail-express:command-bus:consume --max-runtime=540 --stop-when-empty --max-memory=512 --priority attributes price-groups products
 ```
 
 #### 3.3.2. Manually
@@ -465,11 +473,26 @@ bin/magento retail-express:command-bus:consume --stop-on-error --stop-when-empty
 
 > Of course, there is the option to manually sync individual entities *(Section 3.2)* should you need to for debugging purposes.
 
-## 4. FAQs
+## 4. Performance
+
+There are considerations to make with regards to performance of Magento when you are synchronising data, particularly with bulk synchronisations. These optimisations are recommended in any Magento installation, however their benefits are increasingly visible when running SkyLink. Recommendations for improving performance are:
+
+1. Enable caching and production mode *(Section 2.5)*.
+2. Enable [opcache](http://devdocs.magento.com/guides/v2.0/install-gde/prereq/php-settings.html#php-required-opcache).
+3. Configure [Magento's indexers](http://devdocs.magento.com/guides/v2.1/config-guide/cli/config-cli-subcommands-index.html#config-cli-subcommands-index-conf-set) to be on schedule and ensure [Magento cron jobs](http://devdocs.magento.com/guides/v2.0/config-guide/cli/config-cli-subcommands-cron.html) are running.
+4. Use Redis for both [cache](http://devdocs.magento.com/guides/v2.0/config-guide/redis/redis-pg-cache.html) and [session](http://devdocs.magento.com/guides/v2.0/config-guide/redis/redis-session.html) storage.
+5. Ensure your web server has enough resources available. Ensure that the total number of queue workers' memory limits plus the base [Magento memory requirement](http://devdocs.magento.com/guides/v2.1/install-gde/system-requirements-tech.html) does not exeed the server's memory capabilities.
+6. Ensure your MySQL setup [is optimised](http://devdocs.magento.com/guides/v2.0/install-gde/prereq/mysql.html) and consider separating your web server and database server.
+7. Monitor your server load and identify areas that are underperforming. Magento typically is CPU-intensive and can also be disk I/O intensive (however our queue workers are designed to minimise disk I/O0.
+
+## 5. FAQs
+
+### There are no logs appearing in `System > SkyLink > Logging`
+
+Ensure you have performed the temporary logging workaround *(Section 2.3.3)*.
 
 ### I see an error in my logs regarding `too many open files`
 
 As the Queue Workers continually run, they invoke Magento which slowly consumes resources on the server. As a result, it's good practie to limit the time that a Queue Worker can run (so that your process manager may restart it) to free up resources. Magento was not designed originally to be continually run and as a result sometimes opens files on the system without closing them (they would normally be closed during a regular Magento page load).
 
 Try decreasing the `max-runtime` of your queue worker *(Section 3.3)* and increasing the [open files limit](https://stackoverflow.com/a/34645) in your hosting environment.
-

@@ -48,11 +48,6 @@ class SalesChannelGroupRepository implements SalesChannelGroupRepositoryInterfac
      */
     public function getList()
     {
-        // Let's save some time if there's only a single store in Magento
-        if ($this->storeManager->hasSingleStore()) {
-            return [];
-        }
-
         $groups = $this->getGroupsOfStoresWithWebsite();
         $valuesToGroups = [];
 
@@ -60,10 +55,6 @@ class SalesChannelGroupRepository implements SalesChannelGroupRepositoryInterfac
             $value = $this->config->getSalesChannelIdForWebsite($group['website']->getCode())->toNative();
             $valuesToGroups[$value][] = $group;
         });
-
-        // We'll make sure we remove any values to websites that match the global config value
-        $globalConfigValue = $this->config->getSalesChannelId()->toNative();
-        $valuesToGroups = array_diff_key($valuesToGroups, array_flip([$globalConfigValue]));
 
         // Now we'll convert our payload to the requested group
         $salesChannelGroups = [];

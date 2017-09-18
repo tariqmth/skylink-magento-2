@@ -45,7 +45,7 @@ class MagentoWebsiteRepository implements MagentoWebsiteRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function getListFilteredByGlobalSalesChannelIdAndSalesChannelGroups(array $salesChannelGroups)
+    public function getListFilteredBySalesChannelGroups(array $salesChannelGroups)
     {
         $websites = [];
 
@@ -57,6 +57,16 @@ class MagentoWebsiteRepository implements MagentoWebsiteRepositoryInterface
                 }, $salesChannelGroup->getMagentoWebsites());
             }
         );
+
+        return $websites;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getListFilteredByGlobalSalesChannelIdAndSalesChannelGroups(array $salesChannelGroups)
+    {
+        $websites = $this->getListFilteredBySalesChannelGroups($salesChannelGroups);
 
         // Add on unique websites that are globally configured
         array_map(function (WebsiteInterface $website) use (&$websites) {

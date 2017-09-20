@@ -8,6 +8,7 @@ use RetailExpress\CommandBus\Api\CommandBusInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface;
 use RetailExpress\SkyLink\Commands\Catalogue\Products\SyncSkyLinkProductToMagentoProductCommand;
 use RetailExpress\SkyLink\Commands\Customers\SyncSkyLinkPriceGroupToMagentoCustomerGroupCommand;
+use RetailExpress\SkyLink\Eds\ChangeSet;
 use RetailExpress\SkyLink\Eds\Entity;
 use RetailExpress\SkyLink\Eds\EntityType;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
@@ -37,7 +38,7 @@ class WhenEdsChangeSetWasRegisteredForCustomerGroups implements ObserverInterfac
         $changeSet = $observer->getData('change_set');
 
         // Build commands
-        $nestedCommands = array_filter(array_map(function (Entity $entity) {
+        $nestedCommands = array_filter(array_map(function (Entity $entity) use ($changeSet) {
             if ($entity->getType()->sameValueAs(EntityType::get('price_group'))) {
 
                 // Firstly, we'll create a command to sync each of the price groups
@@ -49,11 +50,6 @@ class WhenEdsChangeSetWasRegisteredForCustomerGroups implements ObserverInterfac
                     $this->createSyncSkyLinkProductToMagentoProductCommands()
                 );
 
-                // We'll add the price group ID
-                // @see \RetailExpress\SkyLink\Observer\Catalogue\Attributes\WhenEdsChangeSetWasRegistered
-                $lastCommand = end($commands);
-                $lastCommand->skyLinkPriceGroupId = $entity->getId()->toNative();
-
                 return $commands;
             }
         }, $changeSet->getEntities()));
@@ -62,7 +58,7 @@ class WhenEdsChangeSetWasRegisteredForCustomerGroups implements ObserverInterfac
 
         // Loop through and execute our commands
         array_map(function ($command) use ($changeSet) {
-            $command->changeSetId = $changeSet->getId()->toNative();
+            $command->batchId = $changeSet->getId()->toNative();
             $this->commandBus->handle($command);
         }, $commands);
     }

@@ -10,44 +10,10 @@
         <observer name="fulfillments" instance="RetailExpress\SkyLink\Observer\Sales\Shipments\WhenEdsChangeSetWasRegistered"/>
     </event>
 
-    <!-- When a SkyLink Price Group was synced by syncing a Customer Group -->
-    <event name="retail_express_skylink_skylink_price_group_was_synced_to_magento_customer_group">
-        <observer name="eds" instance="RetailExpress\SkyLink\Observer\Customers\WhenSkyLinkPriceGroupWasSyncedToMagentoCustomerGroupOrProduct"/>
-    </event>
-
-    <!-- When a SkyLink Customer was synced to a Magento Customer -->
-    <event name="retail_express_skylink_skylink_customer_was_synced_to_magento_customer">
-        <observer name="eds" instance="RetailExpress\SkyLink\Observer\Customers\WhenSkyLinkCustomerWasSyncedToMagentoCustomer"/>
-    </event>
-
-    <!-- WHen a SkyLink Attribute was synced to a Magento Attribute -->
-    <event name="retail_express_skylink_skylink_attribute_was_synced_to_magento_attribute">
-        <observer name="eds" instance="RetailExpress\SkyLink\Observer\Catalogue\Attributes\WhenSkyLinkAttributeWasSyncedToMagentoAttribute"/>
-    </event>
-
-    <!-- <event name="retail_express_skylink_skylink_product_was_synced_to_magento_product"> -->
-
-        <!-- When a SkyLink Product was synced to a Magento Product -->
-        <!-- <observer name="eds_product" instance="RetailExpress\SkyLink\Observer\Catalogue\Products\WhenSkyLinkProductWasSyncedToMagentoProduct"/> -->
-
-        <!-- When a SkyLink Price Group was synced by syncing a Product -->
-        <!-- <observer name="eds_price_group" instance="RetailExpress\SkyLink\Observer\Customers\WhenSkyLinkPriceGroupWasSyncedToMagentoCustomerGroupOrProduct"/> -->
-    <!-- </event> -->
-
-    <!-- When SkyLink Fulfillments were synced to Magento Shipments -->
-    <event name="retail_express_skylink_skylink_fulfillment_batches_were_synced_to_magento_shipments">
-        <observer name="eds" instance="RetailExpress\SkyLink\Observer\Sales\Shipments\WhenSkyLinkFulfillmentBatchesWereSyncedToMagentoShipments"/>
-    </event>
-
     <!-- When a SkyLink Payment was created from a Magento Invoice -->
     <event name="retail_express_skylink_skylink_payment_was_created_from_magento_invoice">
         <observer name="skylink_extension_attributes" instance="RetailExpress\SkyLink\Observer\Sales\Invoices\WhenSkyLinkPaymentWasCreatedFromMagentoInvoice"/>
     </event>
-
-    <!-- When an EDS entity was processed -->
-    <!-- <event name="retail_express_skylink_eds_entity_was_processed">
-        <observer name="eds" instance="RetailExpress\SkyLink\Observer\Eds\WhenEdsEntityWasProcessed"/>
-    </event> -->
 
     <!-- When a queued command fails -->
     <event name="bernard_reject">

@@ -32,13 +32,7 @@ class WhenEdsChangeSetWasRegistered implements ObserverInterface
         // Build commands
         $nestedCommands = array_filter(array_map(function (Entity $entity) {
             if ($entity->getType()->sameValueAs(EntityType::get('attribute_option'))) {
-                $commands = $this->createSyncSkyLinkAttributeToMagentoAttributeCommands($entity);
-
-                // @see \RetailExpress\SkyLink\Commands\Catalogue\Attributes\EdsAttributeOptionIdWorkaround
-                $lastCommand = end($commands);
-                $lastCommand->skyLinkAttributeOptionId = $entity->getId()->toNative();
-
-                return $commands;
+                return $this->createSyncSkyLinkAttributeToMagentoAttributeCommands($entity);
             }
         }, $changeSet->getEntities()));
 
@@ -46,7 +40,7 @@ class WhenEdsChangeSetWasRegistered implements ObserverInterface
 
         // Loop through and execute our commands
         array_map(function ($command) use ($changeSet) {
-            $command->changeSetId = $changeSet->getId()->toNative();
+            $command->batchId = $changeSet->getId()->toNative();
             $this->commandBus->handle($command);
         }, $commands);
     }

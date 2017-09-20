@@ -4,14 +4,11 @@ namespace RetailExpress\SkyLink\Commands\Catalogue\Products;
 
 use RetailExpress\CommandBus\Api\Queues\NormallyQueuedCommand;
 use RetailExpress\CommandBus\Api\Queues\QueueableCommand;
-use RetailExpress\SkyLink\Commands\Customers\EdsPriceGroupIdWorkaround;
-use RetailExpress\SkyLink\Commands\Eds\ChangeSetCommand;
+use RetailExpress\SkyLink\Commands\BatchCommand;
 
 class SyncSkyLinkProductToMagentoProductCommand extends NormallyQueuedCommand implements QueueableCommand
 {
-    use ChangeSetCommand;
-
-    use EdsPriceGroupIdWorkaround;
+    use BatchCommand;
 
     /**
      * The SkyLink Product ID.

@@ -31,7 +31,7 @@ class WhenEdsChangeSetWasRegisteredForCustomers implements ObserverInterface
 
         // Loop through and execute our commands
         array_map(function ($command) use ($changeSet) {
-            $command->changeSetId = $changeSet->getId()->toNative();
+            $command->batchId = $changeSet->getId()->toNative();
             $this->commandBus->handle($command);
         }, $commands);
     }

@@ -4,10 +4,11 @@ namespace RetailExpress\SkyLink\Commands\Customers;
 
 use RetailExpress\CommandBus\Api\Queues\NormallyQueuedCommand;
 use RetailExpress\CommandBus\Api\Queues\QueueableCommand;
+use RetailExpress\SkyLink\Commands\BatchCommand;
 
 class SyncSkyLinkPriceGroupToMagentoCustomerGroupCommand extends NormallyQueuedCommand implements QueueableCommand
 {
-    use EdsPriceGroupIdWorkaround;
+    use BatchCommand;
 
     /**
      * The SkyLink Price Group Key.
@@ -15,13 +16,6 @@ class SyncSkyLinkPriceGroupToMagentoCustomerGroupCommand extends NormallyQueuedC
      * @var string
      */
     public $skyLinkPriceGroupKey;
-
-    /**
-     * An optional EDS Change Set ID that this command is associated with.
-     *
-     * @var string
-     */
-    public $changeSetId;
 
     /**
      * Get the queue this command belongs to.

@@ -58,6 +58,13 @@ class UpgradeData implements UpgradeDataInterface
             $this->addSkyLinkProductIdToApplicableProductTypes($eavSetup);
         }
 
+        // Upgarding to 1.4.0
+        if (version_compare($context->getVersion(), '1.4.0') < 0) {
+            // We clear existing messages because of the transformation of commands to
+            // use "batch IDs" rather than specifically using EDS change set Ids.
+            $this->clearCommandBusMessages($setup);
+        }
+
         $setup->endSetup();
     }
 
@@ -135,5 +142,13 @@ class UpgradeData implements UpgradeDataInterface
             'apply_to',
             'simple,virtual,downloadable'
         );
+    }
+
+    /**
+     * Clears all Command Bus Messages.
+     */
+    private function clearCommandBusMessages(ModuleDataSetupInterface $setup)
+    {
+        $setup->getConnection()->delete($setup->getTable('retail_express_command_bus_messages'));
     }
 }

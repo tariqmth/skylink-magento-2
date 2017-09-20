@@ -97,16 +97,19 @@ class BulkProductsCommand extends Command
         $progressBar = new ProgressBar($output, count($skyLinkProductIds));
         $progressBar->start();
 
+        $batchId = str_random();
+
         // Loop over our IDs and add dispatch a command to sync each
         array_walk(
             $skyLinkProductIds,
-            function (SkyLinkProductId $skyLinkProductId) use ($shouldBeQueued, $progressBar) {
+            function (SkyLinkProductId $skyLinkProductId) use ($shouldBeQueued, $progressBar, $batchId) {
 
                 // Create a new command to sync the product
                 $command = new SyncSkyLinkProductToMagentoProductCommand();
                 $command->skyLinkProductId = (string) $skyLinkProductId;
                 $command->potentialCompositeProductRerun = true;
                 $command->shouldBeQueued = $shouldBeQueued;
+                $command->batchId = $batchId;
 
                 if (true === $shouldBeQueued) {
                     $this->commandBus->handle($command);

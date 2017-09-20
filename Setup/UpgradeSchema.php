@@ -25,6 +25,11 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->installMatrixPolicyMappings($setup, $context);
         }
 
+        // Upgrading to 1.4.0
+        if (version_compare($context->getVersion(), '1.4.0') < 0) {
+            $this->removeEds($setup, $context);
+        }
+
         $installer->endSetup();
     }
 
@@ -52,5 +57,13 @@ class UpgradeSchema implements UpgradeSchemaInterface
             );
 
         $installer->getConnection()->createTable($table);
+    }
+
+    private function removeEds(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    {
+        $installer = $setup;
+
+        $installer->getConnection()->dropTable($installer->getTable('retail_express_skylink_eds_change_set_entities'));
+        $installer->getConnection()->dropTable($installer->getTable('retail_express_skylink_eds_change_sets'));
     }
 }

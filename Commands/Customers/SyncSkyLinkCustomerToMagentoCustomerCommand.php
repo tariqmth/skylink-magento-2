@@ -4,22 +4,18 @@ namespace RetailExpress\SkyLink\Commands\Customers;
 
 use RetailExpress\CommandBus\Api\Queues\NormallyQueuedCommand;
 use RetailExpress\CommandBus\Api\Queues\QueueableCommand;
+use RetailExpress\SkyLink\Commands\BatchCommand;
 
 class SyncSkyLinkCustomerToMagentoCustomerCommand extends NormallyQueuedCommand implements QueueableCommand
 {
+    use BatchCommand;
+
     /**
      * The SkyLink Customer ID.
      *
      * @var int
      */
     public $skyLinkCustomerId;
-
-    /**
-     * An optional EDS Change Set ID that this command is associated with.
-     *
-     * @var string
-     */
-    public $changeSetId;
 
     /**
      * Get the queue this command belongs to.

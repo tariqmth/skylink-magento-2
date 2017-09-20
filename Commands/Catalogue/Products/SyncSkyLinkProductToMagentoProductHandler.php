@@ -123,7 +123,7 @@ class SyncSkyLinkProductToMagentoProductHandler
 
         // If we care about composite product reruns (i.e. on a bulk sync)
         if ($this->caresAboutCompositeProductReruns($command, $skyLinkProduct)) {
-            $additional = $command->changeSetId ? ['change_set_id' => $command->changeSetId] : [];
+            $additional = ['batch_id' => $command->batchId];
 
             // If we can't proceed because it's already been done recently
             if (false === $this->compositeProductRerunManager->canProceedWithSync($skyLinkProduct, $additional)) {

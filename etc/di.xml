@@ -7,10 +7,6 @@
     <!-- Config implementations -->
     <preference for="RetailExpress\SkyLink\Api\ConfigInterface" type="RetailExpress\SkyLink\Model\Config"/>
 
-    <!-- EDS implementations -->
-    <preference for="RetailExpress\SkyLink\Api\Eds\ChangeSetRepositoryInterface" type="RetailExpress\SkyLink\Model\Eds\ChangeSetRepository"/>
-    <preference for="RetailExpress\SkyLink\Api\Eds\ChangeSetServiceInterface" type="RetailExpress\SkyLink\Model\Eds\ChangeSetService"/>
-
     <!-- Customer implementations -->
     <preference for="RetailExpress\SkyLink\Api\Customers\ConfigInterface" type="RetailExpress\SkyLink\Model\Customers\Config"/>
     <preference for="RetailExpress\SkyLink\Api\Customers\SkyLinkContactBuilderInterface" type="RetailExpress\SkyLink\Model\Customers\SkyLinkContactBuilder"/>

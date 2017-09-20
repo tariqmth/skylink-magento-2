@@ -6,7 +6,6 @@ use InvalidArgumentException;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\Controller\Result\JsonFactory as JsonResultFactory;
-use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use RetailExpress\SkyLink\Eds\ChangeSet;
 use RetailExpress\SkyLink\Eds\ChangeSetDeserialiserFactory;
@@ -15,20 +14,16 @@ class Notify extends Action
 {
     private $changeSetDeserialiserFactory;
 
-    private $eventManger;
-
     private $jsonResultFactory;
 
     public function __construct(
         Context $context,
         ChangeSetDeserialiserFactory $changeSetDeserialiserFactory,
-        EventManagerInterface $eventManger,
         JsonResultFactory $jsonResultFactory
     ) {
         parent::__construct($context);
 
         $this->changeSetDeserialiserFactory = $changeSetDeserialiserFactory;
-        $this->eventManger = $eventManger;
         $this->jsonResultFactory = $jsonResultFactory;
     }
 
@@ -61,7 +56,7 @@ class Notify extends Action
 
         $responses = [];
         array_walk($changeSets, function (ChangeSet $changeSet) use (&$responses) {
-            $this->eventManger->dispatch(
+            $this->_eventManager->dispatch(
                 'retail_express_skylink_eds_change_set_registered',
                 [
                     'change_set' => $changeSet,

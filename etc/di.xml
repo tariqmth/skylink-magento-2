@@ -31,7 +31,6 @@
     </type>
 
     <type name="Magento\Customer\Api\CustomerRepositoryInterface">
-
         <!-- @todo Determine why this breaks the frontend registration -->
         <!-- <plugin name="skylink_customer_repository_data_faker" type="RetailExpress\SkyLink\Plugin\Magento\Customers\CustomerRepositoryDataFakerPlugin" sortOrder="10" disabled="false"/> -->
 
@@ -52,6 +51,8 @@
     <!-- Create a plugin to attach Price Group Keys to Magento Customer Groups -->
     <type name="Magento\Customer\Api\GroupRepositoryInterface">
         <plugin name="skylink_group_repository" type="RetailExpress\SkyLink\Plugin\Magento\Customers\GroupRepositoryPlugin" sortOrder="10" disabled="false"/>
+
+        <plugin name="skylink_cache_buster" type="RetailExpress\SkyLink\Plugin\Magento\Customers\GroupRepositoryCacheBusterPlugin" sortOrder="20" disabled="false"/>
     </type>
 
     <!-- Catalogue attribute implementations -->

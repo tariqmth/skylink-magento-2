@@ -277,8 +277,10 @@ class MagentoProductMapper implements MagentoProductMapperInterface
      */
     private function mapQuantities(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
     {
+        $magentoProduct->unsetData('qty_available');
         $magentoProduct->setCustomAttribute('qty_available', $skyLinkProduct->getInventoryItem()->getQtyAvailable()->toNative());
 
+        $magentoProduct->unsetData('qty_on_order');
         if ($skyLinkProduct->getInventoryItem()->hasQtyOnOrder()) {
             $magentoProduct->setCustomAttribute('qty_on_order', $skyLinkProduct->getInventoryItem()->getQtyOnOrder()->toNative());
         } else {
@@ -299,6 +301,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
 
             // If there's no value for the SkyLink Attribute Option, we'll wipe the custom attribute value
             if (null === $skyLinkAttributeOption) {
+                $magentoProduct->unsetData($magentoAttribute->getAttributeCode());
                 $magentoProduct->setCustomAttribute($magentoAttribute->getAttributeCode(), null);
                 continue;
             }
@@ -317,6 +320,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
             }
 
             // Now we'll set the custom attribute value
+            $magentoProduct->unsetData($magentoAttribute->getAttributeCode());
             $magentoProduct->setCustomAttribute(
                 $magentoAttribute->getAttributeCode(),
                 $magentoAttributeValue

@@ -111,6 +111,10 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
         ProductInterface &$magentoConfigurableProduct,
         StockItemInterface $magentoStockItem
     ) {
+        if ($originalConfigurableProduct =
+            $this->baseMagentoProductRepository->get($magentoConfigurableProduct->getSku())) {
+            $magentoConfigurableProduct->setMediaGalleryEntries($originalConfigurableProduct->getMediaGalleryEntries());
+        }
         $this->magentoStockItemUpdater->updateStockItem($magentoStockItem);
         $magentoConfigurableProduct = $this->baseMagentoProductRepository->save($magentoConfigurableProduct);
         $this->magentoStockRegistry->updateStockItemBySku($magentoConfigurableProduct->getSku(), $magentoStockItem);

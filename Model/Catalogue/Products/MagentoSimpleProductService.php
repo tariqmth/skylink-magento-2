@@ -121,6 +121,9 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         StockItemInterface $magentoStockItem,
         SkyLinkProduct $skyLinkProduct
     ) {
+        if ($originalMagentoProduct = $this->baseMagentoProductRepository->get($magentoProduct->getSku())) {
+            $magentoProduct->setMediaGalleryEntries($originalMagentoProduct->getMediaGalleryEntries());
+        }
         $this->magentoStockItemMapper->mapStockItem($magentoStockItem, $skyLinkProduct->getInventoryItem());
         $magentoProduct = $this->baseMagentoProductRepository->save($magentoProduct);
         $this->magentoStockRegistry->updateStockItemBySku($magentoProduct->getSku(), $magentoStockItem);

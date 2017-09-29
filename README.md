@@ -164,14 +164,14 @@ Alternatively (or for more granular versioning control), you may merge the follo
 // Recommended...
 {
 	"require": {
-		"retail-express/skylink-magento-2": "^1.3"
+		"retail-express/skylink-magento-2": "^1.4"
 	}
 }
 
 // For beta releases (not recommended in production)...
 {
 	"require": {
-		"retail-express/skylink-magento-2": "^1.3"
+		"retail-express/skylink-magento-2": "^1.4"
 	},
 	"minimum-stabiliy": "beta"
 }

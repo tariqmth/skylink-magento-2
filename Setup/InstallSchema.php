@@ -91,14 +91,18 @@ class InstallSchema implements InstallSchemaInterface
                 'Processed At'
             )
             ->addIndex(
-                $installer->getIdxName($changeSetEntitiesTable, ['change_set_id', 'entity_type', 'entity_id']),
+                $installer->getIdxName($installer->getTable($changeSetEntitiesTable),
+                    ['change_set_id', 'entity_type', 'entity_id']),
                 ['change_set_id', 'entity_type', 'entity_id'],
                 ['type' => DbAdapterInterface::INDEX_TYPE_UNIQUE]
             )
             ->addForeignKey(
-                $installer->getFkName($changeSetEntitiesTable, 'change_set_id', $changeSetsTable, 'change_set_id'),
+                $installer->getFkName($installer->getTable($changeSetEntitiesTable),
+                    'change_set_id',
+                    $installer->getTable($changeSetsTable),
+                    'change_set_id'),
                 'change_set_id',
-                $changeSetsTable,
+                $installer->getTable($changeSetsTable),
                 'change_set_id',
                 DdlTable::ACTION_CASCADE
             );
@@ -160,7 +164,7 @@ class InstallSchema implements InstallSchemaInterface
             )
             ->addIndex(
                 $installer->getIdxName(
-                    $attributeOptionsTable,
+                    $installer->getTable($attributeOptionsTable),
                     ['skylink_attribute_code', 'skylink_attribute_option_id'],
                     DbAdapterInterface::INDEX_TYPE_PRIMARY
                 ),
@@ -169,25 +173,25 @@ class InstallSchema implements InstallSchemaInterface
             )
             ->addForeignKey(
                 $installer->getFkName(
-                    $attributeOptionsTable,
+                    $installer->getTable($attributeOptionsTable),
                     'skylink_attribute_code',
-                    $attributesTable,
+                    $installer->getTable($attributesTable),
                     'skylink_attribute_code'
                 ),
                 'skylink_attribute_code',
-                $attributesTable,
+                $installer->getTable($attributesTable),
                 'skylink_attribute_code',
                 DdlTable::ACTION_CASCADE
             )
             ->addForeignKey(
                 $installer->getFkName(
-                    $attributeOptionsTable,
+                    $installer->getTable($attributeOptionsTable),
                     'magento_attribute_option_id',
-                    'eav_attribute_option',
+                    $installer->getTable('eav_attribute_option'),
                     'option_id'
                 ),
                 'magento_attribute_option_id',
-                'eav_attribute_option',
+                $installer->getTable('eav_attribute_option'),
                 'option_id',
                 DdlTable::ACTION_CASCADE
             );
@@ -214,9 +218,12 @@ class InstallSchema implements InstallSchemaInterface
                 'Magento Attribute Set ID'
             )
             ->addForeignKey(
-                $installer->getFkName($attributesTable, 'magento_attribute_set_id', 'eav_attribute_set', 'attribute_set_id'),
+                $installer->getFkName($installer->getTable($attributesTable),
+                    'magento_attribute_set_id',
+                    $installer->getTable('eav_attribute_set'),
+                    'attribute_set_id'),
                 'magento_attribute_set_id',
-                'eav_attribute_set',
+                $installer->getTable('eav_attribute_set'),
                 'attribute_set_id',
                 DdlTable::ACTION_CASCADE
             );
@@ -247,7 +254,7 @@ class InstallSchema implements InstallSchemaInterface
             )
             ->addIndex(
                 $installer->getIdxName(
-                    $paymentMethodsTable,
+                    $installer->getTable($paymentMethodsTable),
                     ['magento_payment_method_code', 'skylink_payment_method_id'],
                     DbAdapterInterface::INDEX_TYPE_PRIMARY
                 ),
@@ -294,9 +301,12 @@ class InstallSchema implements InstallSchemaInterface
                 DbAdapterInterface::INDEX_TYPE_PRIMARY
             )
             ->addForeignKey(
-                $installer->getFkName($ordersTable, 'magento_order_id', 'sales_order', 'entity_id'),
+                $installer->getFkName($installer->getTable($ordersTable),
+                    'magento_order_id',
+                    $installer->getTable('sales_order'),
+                    'entity_id'),
                 'magento_order_id',
-                'sales_order',
+                $installer->getTable('sales_order'),
                 'entity_id',
                 DdlTable::ACTION_CASCADE
             );
@@ -326,7 +336,7 @@ class InstallSchema implements InstallSchemaInterface
             )
             ->addIndex(
                 $installer->getIdxName(
-                    $invoicesPaymentsTable,
+                    $installer->getTable($invoicesPaymentsTable),
                     ['magento_invoice_id', 'skylink_payment_id'],
                     DbAdapterInterface::INDEX_TYPE_PRIMARY
                 ),
@@ -334,9 +344,12 @@ class InstallSchema implements InstallSchemaInterface
                 DbAdapterInterface::INDEX_TYPE_PRIMARY
             )
             ->addForeignKey(
-                $installer->getFkName($invoicesPaymentsTable, 'magento_invoice_id', 'sales_invoice', 'entity_id'),
+                $installer->getFkName($installer->getTable($invoicesPaymentsTable),
+                    'magento_invoice_id',
+                    $installer->getTable('sales_invoice'),
+                    'entity_id'),
                 'magento_invoice_id',
-                'sales_invoice',
+                $installer->getTable('sales_invoice'),
                 'entity_id',
                 DdlTable::ACTION_CASCADE
             );
@@ -366,7 +379,7 @@ class InstallSchema implements InstallSchemaInterface
             )
             ->addIndex(
                 $installer->getIdxName(
-                    $shipmentsFulfillmentBatchesTable,
+                    $installer->getTable($shipmentsFulfillmentBatchesTable),
                     ['magento_shipment_id', 'skylink_fulfillment_batch_id'],
                     DbAdapterInterface::INDEX_TYPE_PRIMARY
                 ),
@@ -374,9 +387,12 @@ class InstallSchema implements InstallSchemaInterface
                 DbAdapterInterface::INDEX_TYPE_PRIMARY
             )
             ->addForeignKey(
-                $installer->getFkName($shipmentsFulfillmentBatchesTable, 'magento_shipment_id', 'sales_shipment', 'entity_id'),
+                $installer->getFkName($shipmentsFulfillmentBatchesTable,
+                    'magento_shipment_id',
+                    $installer->getTable('sales_shipment'),
+                    'entity_id'),
                 'magento_shipment_id',
-                'sales_shipment',
+                $installer->getTable('sales_shipment'),
                 'entity_id',
                 DdlTable::ACTION_CASCADE
             );
@@ -412,7 +428,7 @@ class InstallSchema implements InstallSchemaInterface
             )
             ->addIndex(
                 $installer->getIdxName(
-                    $customerGroupsPriceGroupsTable,
+                    $installer->getTable($customerGroupsPriceGroupsTable),
                     ['magento_customer_group_id', 'skylink_price_group_type', 'skylink_price_group_id'],
                     DbAdapterInterface::INDEX_TYPE_PRIMARY
                 ),
@@ -421,7 +437,7 @@ class InstallSchema implements InstallSchemaInterface
             )
             ->addIndex(
                 $installer->getIdxName(
-                    $customerGroupsPriceGroupsTable,
+                    $installer->getTable($customerGroupsPriceGroupsTable),
                     ['magento_customer_group_id', 'skylink_price_group_type'],
                     DbAdapterInterface::INDEX_TYPE_UNIQUE
                 ),
@@ -430,13 +446,13 @@ class InstallSchema implements InstallSchemaInterface
             )
             ->addForeignKey(
                 $installer->getFkName(
-                    $customerGroupsPriceGroupsTable,
+                    $installer->getTable($customerGroupsPriceGroupsTable),
                     'magento_customer_group_id',
-                    'customer_group',
+                    $installer->getTable('customer_group'),
                     'customer_group_id'
                 ),
                 'magento_customer_group_id',
-                'customer_group',
+                $installer->getTable('customer_group'),
                 'customer_group_id',
                 DdlTable::ACTION_CASCADE
             );

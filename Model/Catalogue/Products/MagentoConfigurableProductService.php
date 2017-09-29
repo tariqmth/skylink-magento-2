@@ -15,6 +15,8 @@ use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Matrix as SkyLinkMatrix;
 use RetailExpress\SkyLink\Api\Catalogue\Products\UrlKeyGeneratorInterface;
 use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableProductType;
+use Magento\Framework\Exception\NoSuchEntityException;
+use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 
 class MagentoConfigurableProductService implements MagentoConfigurableProductServiceInterface
 {
@@ -39,6 +41,13 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
 
     private $magentoStockRegistry;
 
+    /**
+     * Logger instance.
+     *
+     * @var SkyLinkLoggerInterface
+     */
+    private $logger;
+
     public function __construct(
         MagentoProductMapperInterface $magentoProductMapper,
         MagentoConfigurableProductStockItemUpdaterInterface $magentoStockItemUpdater,
@@ -47,7 +56,8 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
         UrlKeyGeneratorInterface $urlKeyGenerator,
         MagentoConfigurableProductLinkManagementInterface $magentoConfigurableProductLinkManagement,
         StockItemInterfaceFactory $magentoStockItemFactory,
-        StockRegistryInterface $magentoStockRegistry
+        StockRegistryInterface $magentoStockRegistry,
+        SkyLinkLoggerInterface $logger
     ) {
         $this->magentoProductMapper = $magentoProductMapper;
         $this->magentoStockItemUpdater = $magentoStockItemUpdater;
@@ -57,6 +67,7 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
         $this->magentoConfigurableProductLinkManagement = $magentoConfigurableProductLinkManagement;
         $this->magentoStockItemFactory = $magentoStockItemFactory;
         $this->magentoStockRegistry = $magentoStockRegistry;
+        $this->logger = $logger;
     }
 
     /**
@@ -91,6 +102,7 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
         $magentoStockItem = $this->magentoStockRegistry->getStockItemBySku($magentoConfigurableProduct->getSku());
 
         $this->mapProduct($magentoConfigurableProduct, $skyLinkMatrix);
+        $this->mapMagentoAttributes($magentoConfigurableProduct);
         $this->linkSimpleProducts($skyLinkMatrix, $magentoConfigurableProduct, $magentoSimpleProducts);
         $this->updateStockAndSave($magentoConfigurableProduct, $magentoStockItem);
     }
@@ -107,14 +119,30 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
         $magentoConfigurableProduct->setCustomAttribute('url_key', $urlKey);
     }
 
+    /**
+     * Map across the previous attributes of the Magento product to the newly created Magento product.
+     * Applies to product images.
+     *
+     * @param ProductInterface &$newProduct
+     * @todo Add other attributes unrelated to Skylink
+     */
+    private function mapMagentoAttributes(ProductInterface &$newProduct)
+    {
+        try {
+            $originalProduct = $this->baseMagentoProductRepository->get($newProduct->getSku());
+            $newProduct->setMediaGalleryEntries($originalProduct->getMediaGalleryEntries());
+        } catch (NoSuchEntityException $e) {
+            $this->logger->debug('We tried to copy attribute data from the existing product in Magento,
+                but the product could not be found.',
+                ['Product SKU' => $newProduct->getSku()]
+            );
+        }
+    }
+
     private function updateStockAndSave(
         ProductInterface &$magentoConfigurableProduct,
         StockItemInterface $magentoStockItem
     ) {
-        if ($originalConfigurableProduct =
-            $this->baseMagentoProductRepository->get($magentoConfigurableProduct->getSku())) {
-            $magentoConfigurableProduct->setMediaGalleryEntries($originalConfigurableProduct->getMediaGalleryEntries());
-        }
         $this->magentoStockItemUpdater->updateStockItem($magentoStockItem);
         $magentoConfigurableProduct = $this->baseMagentoProductRepository->save($magentoConfigurableProduct);
         $this->magentoStockRegistry->updateStockItemBySku($magentoConfigurableProduct->getSku(), $magentoStockItem);

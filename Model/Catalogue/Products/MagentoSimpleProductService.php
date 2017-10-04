@@ -135,7 +135,7 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
      * @param ProductInterface &$newProduct
      * @todo Add other attributes unrelated to Skylink
      */
-    private function mapMagentoAttributes(ProductInterface &$newProduct)
+    private function mapMagentoAttributes(ProductInterface $newProduct)
     {
         try {
             $originalProduct = $this->baseMagentoProductRepository->get($newProduct->getSku());

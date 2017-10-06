@@ -68,7 +68,7 @@ class SkyLinkOrderItemBuilder implements SkyLinkOrderItemBuilderInterface
         /* @var \Magento\Catalog\Api\Data\ProductInterface $magentoProduct */
         $magentoProduct = $this->magentoProductRepository->getById(
             $magentoProductId,
-            false,
+            true,
             null,
             true
         );

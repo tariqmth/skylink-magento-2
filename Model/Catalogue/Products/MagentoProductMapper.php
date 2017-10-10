@@ -79,8 +79,6 @@ class MagentoProductMapper implements MagentoProductMapperInterface
             $this->overrideVisibilityForExistingProduct($magentoProduct);
         }
 
-        $magentoProduct->setSku((string) $skyLinkProduct->getSku());
-
         $magentoProduct->unsetData('manufacturer_sku');
         $magentoProduct->setData('manufacturer_sku', (string) $skyLinkProduct->getManufacturerSku());
 

@@ -78,6 +78,7 @@
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoConfigurableProductRepository"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductServiceInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoConfigurableProductService"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductStockItemUpdaterInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoConfigurableProductStockItemUpdater"/>
+    <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoTierPriceMapperInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoTierPriceMapper"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoProductMapper"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductWebsiteManagementInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoProductWebsiteManagement"/>
     <preference for="RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface" type="RetailExpress\SkyLink\Model\Catalogue\Products\MagentoSimpleProductRepository"/>

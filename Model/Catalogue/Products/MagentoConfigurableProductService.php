@@ -79,6 +79,8 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
         $magentoConfigurableProduct = $this->magentoProductFactory->create();
         $magentoConfigurableProduct->setTypeId(ConfigurableProductType::TYPE_CODE);
 
+        $magentoConfigurableProduct->setSku((string) $skyLinkMatrix->getSku());
+
         /* @var StockItemInterface $magentoStockItem */
         $magentoStockItem = $this->magentoStockItemFactory->create();
 
@@ -101,10 +103,38 @@ class MagentoConfigurableProductService implements MagentoConfigurableProductSer
         /* @var StockItemInterface $magentoStockItem */
         $magentoStockItem = $this->magentoStockRegistry->getStockItemBySku($magentoConfigurableProduct->getSku());
 
+        $this->updateSkuIfNeeded($magentoConfigurableProduct, $skyLinkMatrix);
         $this->mapProduct($magentoConfigurableProduct, $skyLinkMatrix);
         $this->mapMagentoAttributes($magentoConfigurableProduct);
         $this->linkSimpleProducts($skyLinkMatrix, $magentoConfigurableProduct, $magentoSimpleProducts);
         $this->updateStockAndSave($magentoConfigurableProduct, $magentoStockItem);
+
+        return $magentoConfigurableProduct;
+    }
+
+    /**
+     * Updates the SKU on the given product and refreshes it (if needed).
+     */
+    private function updateSkuIfNeeded(ProductInterface &$magentoProduct, SkyLinkMatrix $skyLinkProduct)
+    {
+        $existingSku = $magentoProduct->getSku();
+
+        // If the SKU changes, we'll quickly save the product and continue
+        if ($existingSku === (string) $skyLinkProduct->getSku()) {
+            return;
+        }
+
+        $this->logger->debug(
+            'The SKU appears to have changed, updating Magento and starting mapping.',
+            [
+                'Existing SKU in Magento' => $existingSku,
+                'New SKU in SkyLink' => $skyLinkProduct->getSku(),
+            ]
+        );
+
+        $magentoProduct->setSku((string) $skyLinkProduct->getSku());
+        $magentoProduct->save(); // You can't save through the repository because tiered prices crap out
+        $magentoProduct = $this->baseMagentoProductRepository->getById($magentoProduct->getId(), true, null, true);
     }
 
     private function mapProduct(ProductInterface $magentoConfigurableProduct, SkyLinkMatrix $skyLinkMatrix)

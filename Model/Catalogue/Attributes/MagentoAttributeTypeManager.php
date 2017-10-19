@@ -78,8 +78,6 @@ class MagentoAttributeTypeManager implements MagentoAttributeTypeManagerInterfac
     {
         $filters = [
             ['frontend_label', '', 'neq'],
-            ['backend_model', new Zend_Db_Expr('null'), 'is'],
-            ['frontend_model', new Zend_Db_Expr('null'), 'is'],
             ['is_unique', 0],
         ];
 

@@ -10,6 +10,7 @@ use Magento\Framework\App\ResourceConnection;
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionServiceInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
 use Magento\Swatches\Helper\Data as SwatchHelper;
+use Magento\Swatches\Model\Swatch;
 
 class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInterface
 {
@@ -73,40 +74,12 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         ProductAttributeInterface $magentoAttribute,
         SkyLinkAttributeOption $skyLinkAttributeOption
     ) {
-
-
-        if ($this->swatchHelper->isVisualSwatch($magentoAttribute)) {
-//            $existingOptions = $magentoAttribute->getSource()->getAllOptions();
-//            foreach ($existingOptions as $existingOption) {
-//                if (!$existingOption["value"]) {
-//                    continue;
-//                }
-//                $optionVisual["value"][$existingOption["value"]] = [
-//                    0 => $existingOption["label"],
-//                    1 => ""
-//                ];
-//            }
-//            $optionVisual["value"]["option_" . count($optionVisual["value"])] = [
-//                0 => $skyLinkAttributeOption->getLabel()->__toString(),
-//                1 => ""
-//            ];
-//            $swatchVisual = [
-//                "value" => [
-//                    "new_option" => ""
-//                ]
-//            ];
-            //$magentoAttribute->setData('optionvisual', $optionVisual);
-            //$magentoAttribute->setData('swatchvisual', $swatchVisual);
-
-            $this->addSwatch($magentoAttribute, $skyLinkAttributeOption->getLabel(), 'visual');
+        if ($this->swatchHelper->isSwatchAttribute($magentoAttribute)) {
+            $this->addSwatch($magentoAttribute, $skyLinkAttributeOption->getLabel());
             $magentoAttributeOption = $this->magentoAttributeOptionManagement->getItems(
                 $magentoAttribute->getEntityTypeId(), $skyLinkAttributeOption->getAttribute())->first();
 
         } elseif ($this->swatchHelper->isTextSwatch($attribute)) {
-//            $defaultValue = $magentoAttribute->getData('default');
-//            $optionsArray = $magentoAttribute->getData('option');
-//            $magentoAttribute->setData('defaulttext', $defaultValue);
-//            $magentoAttribute->setData('optiontext', $optionsArray);
             $this->addSwatch($magentoAttribute, $skyLinkAttributeOption->getLabel(), 'text');
             $magentoAttributeOption = $this->magentoAttributeOptionManagement->getItems(
                 $magentoAttribute->getEntityTypeId(), $skyLinkAttributeOption->getAttribute())->first();
@@ -123,7 +96,6 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         }
 
         return $magentoAttributeOption;
-
     }
 
     public function updateMagentoAttributeOptionForSkyLinkAttributeOption(
@@ -179,16 +151,16 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         );
     }
 
-    private function addSwatch($magentoAttribute, $swatchLabel, $swatchType = 'dropdown')
+    private function addSwatch($magentoAttribute, $swatchLabel)
     {
         $values = [$swatchLabel];
-        $data = $this->generateOptions($values, $swatchType);
+        $data = $this->generateSwatchOptions($values, $magentoAttribute->getData(Swatch::SWATCH_INPUT_TYPE_KEY));
         $magentoAttribute->addData($data)->save();
 
         return $magentoAttribute;
     }
 
-    private function generateOptions(array $values, $swatchType)
+    private function generateSwatchOptions(array $values, $swatchType)
     {
         if (empty($values)) {
             return;
@@ -216,7 +188,7 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
 
         switch($swatchType)
         {
-            case 'text':
+            case Swatch::SWATCH_INPUT_TYPE_TEXT:
                 return [
                     'optiontext' => [
                         'order'     => $order,
@@ -228,7 +200,7 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
                     ],
                 ];
                 break;
-            case 'visual':
+            case Swatch::SWATCH_INPUT_TYPE_VISUAL:
                 return [
                     'optionvisual' => [
                         'order'     => $order,

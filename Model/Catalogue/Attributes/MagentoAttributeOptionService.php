@@ -11,12 +11,15 @@ use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionService
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
 use Magento\Swatches\Helper\Data as SwatchHelper;
 use Magento\Swatches\Model\Swatch;
+use Magento\Eav\Api\AttributeRepositoryInterface;
 
 class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInterface
 {
     use MagentoAttributeOption;
 
     private $magentoAttributeOptionFactory;
+
+    private $magentoAttributeRepository;
 
     /**
      * Create a new Magento Attribute Option Service.
@@ -28,12 +31,14 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         ResourceConnection $resourceConnection,
         AttributeOptionManagementInterface $magentoAttributeOptionManagement,
         AttributeOptionInterfaceFactory $magentoAttributeOptionFactory,
-        SwatchHelper $swatchHelper
+        SwatchHelper $swatchHelper,
+        AttributeRepositoryInterface $magentoAttributeRepository
     ) {
         $this->connection = $resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
         $this->magentoAttributeOptionManagement = $magentoAttributeOptionManagement;
         $this->magentoAttributeOptionFactory = $magentoAttributeOptionFactory;
         $this->swatchHelper = $swatchHelper;
+        $this->magentoAttributeRepository = $magentoAttributeRepository;
     }
 
     /**
@@ -74,12 +79,16 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         ProductAttributeInterface $magentoAttribute,
         SkyLinkAttributeOption $skyLinkAttributeOption
     ) {
+        $typeId = $magentoAttribute->getEntityTypeId();
+        $attributeCode = $magentoAttribute->getAttributeCode();
         if ($this->swatchHelper->isSwatchAttribute($magentoAttribute)) {
+            $magentoAttribute = $this->magentoAttributeRepository->get($typeId, $attributeCode);
             $this->addSwatch($magentoAttribute, $skyLinkAttributeOption->getLabel());
-            $magentoAttributeOption = $this->magentoAttributeOptionManagement->getItems(
-                $magentoAttribute->getEntityTypeId(), $skyLinkAttributeOption->getAttribute())->first();
-
-        } elseif ($this->swatchHelper->isTextSwatch($attribute)) {
+            $magentoAttributeOptionId = $magentoAttribute->getSource()
+                ->getOptionId($skyLinkAttributeOption->getLabel());
+            $magentoAttributeOption = $this->magentoAttributeOptionManagement
+                ->getItems($typeId, $attributeCode);
+        } elseif ($this->swatchHelper->isTextSwatch($magentoAttribute)) {
             $this->addSwatch($magentoAttribute, $skyLinkAttributeOption->getLabel(), 'text');
             $magentoAttributeOption = $this->magentoAttributeOptionManagement->getItems(
                 $magentoAttribute->getEntityTypeId(), $skyLinkAttributeOption->getAttribute())->first();
@@ -153,9 +162,10 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
 
     private function addSwatch($magentoAttribute, $swatchLabel)
     {
-        $values = [$swatchLabel];
+        $values = [(string) $swatchLabel];
         $data = $this->generateSwatchOptions($values, $magentoAttribute->getData(Swatch::SWATCH_INPUT_TYPE_KEY));
-        $magentoAttribute->addData($data)->save();
+        $magentoAttribute->addData($data);
+        $magentoAttribute->save();
 
         return $magentoAttribute;
     }

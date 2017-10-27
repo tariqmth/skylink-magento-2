@@ -99,7 +99,7 @@ class MagentoAttributeOptionRepository implements MagentoAttributeOptionReposito
      * Returns the first matching attribute option that pass a given test.
      *
      * @param SkyLinkAttributeCode $skyLinkAttributeCode
-     * @param callableÂ            $callback
+     * @param callable             $callback
      * @param bool                 $findFirst            If set to "false", it will find the last match, not the first
      *
      * @return AttributeOptionInterface|null

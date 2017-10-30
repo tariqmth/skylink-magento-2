@@ -81,28 +81,28 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
     ) {
         $typeId = $magentoAttribute->getEntityTypeId();
         $attributeCode = $magentoAttribute->getAttributeCode();
+        $magentoAttributeOption = $this->magentoAttributeOptionFactory->create();
+        $magentoAttributeOption->setLabel($skyLinkAttributeOption->getLabel());
         if ($this->swatchHelper->isSwatchAttribute($magentoAttribute)) {
             $magentoAttribute = $this->magentoAttributeRepository->get($typeId, $attributeCode);
-            $this->addSwatch($magentoAttribute, $skyLinkAttributeOption->getLabel());
+            $this->addSwatch($magentoAttribute, $skyLinkAttributeOption->getLabel(), 'visual');
             $magentoAttributeOptionId = $magentoAttribute->getSource()
                 ->getOptionId($skyLinkAttributeOption->getLabel());
-            $magentoAttributeOption = $this->magentoAttributeOptionManagement
-                ->getItems($typeId, $attributeCode);
         } elseif ($this->swatchHelper->isTextSwatch($magentoAttribute)) {
             $this->addSwatch($magentoAttribute, $skyLinkAttributeOption->getLabel(), 'text');
-            $magentoAttributeOption = $this->magentoAttributeOptionManagement->getItems(
-                $magentoAttribute->getEntityTypeId(), $skyLinkAttributeOption->getAttribute())->first();
+//            $magentoAttributeOption = $this->magentoAttributeOptionManagement->getItems(
+//                $magentoAttribute->getEntityTypeId(), $skyLinkAttributeOption->getAttribute())->first();
+            $magentoAttributeOptionId = $magentoAttribute->getSource()
+                ->getOptionId($skyLinkAttributeOption->getLabel());
         } else {
-            $magentoAttributeOption = $this->magentoAttributeOptionFactory->create();
-            $magentoAttributeOption->setLabel($skyLinkAttributeOption->getLabel());
             $this->saveMagentoAttributeOption($magentoAttribute, $magentoAttributeOption);
             // Unfortuantely, the Magento Attribute Option Management implementation does
             // not update the given attribute option's properties, so we'll query the
             // database ourselves to find out what the last added id was.
-            $magentoAttributeOption->setValue(
-                $this->getLastAddedOptionIdForMagentoAttribute($magentoAttribute)
-            );
+            $magentoAttributeOptionId = $this->getLastAddedOptionIdForMagentoAttribute($magentoAttribute);
         }
+
+        $magentoAttributeOption->setValue($magentoAttributeOptionId);
 
         return $magentoAttributeOption;
     }
@@ -160,13 +160,12 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         );
     }
 
-    private function addSwatch($magentoAttribute, $swatchLabel)
+    private function addSwatch($magentoAttribute, $swatchLabel, $swatchType)
     {
         $values = [(string) $swatchLabel];
-        $data = $this->generateSwatchOptions($values, $magentoAttribute->getData(Swatch::SWATCH_INPUT_TYPE_KEY));
+        $data = $this->generateSwatchOptions($values, $swatchType);
         $magentoAttribute->addData($data);
         $magentoAttribute->save();
-
         return $magentoAttribute;
     }
 
@@ -198,7 +197,7 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
 
         switch($swatchType)
         {
-            case Swatch::SWATCH_INPUT_TYPE_TEXT:
+            case 'text':
                 return [
                     'optiontext' => [
                         'order'     => $order,
@@ -210,7 +209,7 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
                     ],
                 ];
                 break;
-            case Swatch::SWATCH_INPUT_TYPE_VISUAL:
+            case 'visual':
                 return [
                     'optionvisual' => [
                         'order'     => $order,

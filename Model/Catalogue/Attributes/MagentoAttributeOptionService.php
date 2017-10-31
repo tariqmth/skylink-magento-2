@@ -14,6 +14,7 @@ use Magento\Swatches\Model\Swatch;
 use Magento\Eav\Api\AttributeRepositoryInterface;
 use RetailExpress\SkyLink\Exceptions\Products\TextSwatchZeroException;
 use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
+use Magento\Eav\Model\Entity\Attribute\Source\TableFactory;
 
 class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInterface
 {
@@ -30,6 +31,8 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
      */
     private $logger;
 
+    private $tableFactory;
+
     /**
      * Create a new Magento Attribute Option Service.
      *
@@ -42,7 +45,8 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         AttributeOptionInterfaceFactory $magentoAttributeOptionFactory,
         SwatchHelper $swatchHelper,
         AttributeRepositoryInterface $magentoAttributeRepository,
-        SkyLinkLoggerInterface $logger
+        SkyLinkLoggerInterface $logger,
+        TableFactory $tableFactory
     ) {
         $this->connection = $resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
         $this->magentoAttributeOptionManagement = $magentoAttributeOptionManagement;
@@ -50,6 +54,7 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         $this->swatchHelper = $swatchHelper;
         $this->magentoAttributeRepository = $magentoAttributeRepository;
         $this->logger = $logger;
+        $this->tableFactory = $tableFactory;
     }
 
     /**
@@ -92,42 +97,33 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
     ) {
         $typeId = $magentoAttribute->getEntityTypeId();
         $attributeCode = $magentoAttribute->getAttributeCode();
-        $attributeLabel = $skyLinkAttributeOption->getLabel();
+        $attributeLabel = (string) $skyLinkAttributeOption->getLabel();
         $magentoAttributeOption = $this->magentoAttributeOptionFactory->create();
         $magentoAttributeOption->setLabel($attributeLabel);
+
         if ($this->swatchHelper->isVisualSwatch($magentoAttribute)) {
+            // Get the attribute as an EAV model rather than catalog
             $magentoAttribute = $this->magentoAttributeRepository->get($typeId, $attributeCode);
-            $this->addSwatch($magentoAttribute, $skyLinkAttributeOption->getLabel(), 'visual');
-            //$magentoAttributeOptionId = $magentoAttribute->getSource()->getOptionId($attributeLabel);
+            $this->addSwatch($magentoAttribute, $attributeLabel, 'visual');
         } elseif ($this->swatchHelper->isTextSwatch($magentoAttribute)) {
-            if ($skyLinkAttributeOption->getLabel() == "0") {
-                $e = TextSwatchZeroException::withSkylinkAttributeOption($skyLinkAttributeOption);;
-                $this->logger->error('A Retail Express attribute has an option of numerical zero (0). Magento prevents 
-                        this from being used on text swatches. Please change this value to the word Zero or use 
-                        a drop down attribute instead.', [
-                    'Error' => $e->getMessage(),
-                    'Skylink Attribute Code' => $skyLinkAttributeOption->getAttribute()->getCode(),
-                    'SkyLink Attribute Option ID' => $skyLinkAttributeOption->getId(),
-                    'SkyLink Attribute Option Label' => $skyLinkAttributeOption->getLabel()
-                ]);
+            // Bug which causes "0" values to be invalid
+            if (empty($attributeLabel)) {
+                $e = TextSwatchZeroException::withSkylinkAttributeOption($skyLinkAttributeOption);
+                $this->logger->error($e->getMessage());
                 throw $e;
             }
             $magentoAttribute = $this->magentoAttributeRepository->get($typeId, $attributeCode);
-            $this->addSwatch($magentoAttribute, $skyLinkAttributeOption->getLabel(), 'text');
-//            $magentoAttributeOption = $this->magentoAttributeOptionManagement->getItems(
-//                $magentoAttribute->getEntityTypeId(), $skyLinkAttributeOption->getAttribute())->first();
-            //$magentoAttributeOptionId = $magentoAttribute->getSource()->getOptionId($attributeLabel);
+            $this->addSwatch($magentoAttribute, $attributeLabel, 'text');
         } else {
             $this->saveMagentoAttributeOption($magentoAttribute, $magentoAttributeOption);
-            // Unfortuantely, the Magento Attribute Option Management implementation does
-            // not update the given attribute option's properties, so we'll query the
-            // database ourselves to find out what the last added id was.
-            // $magentoAttributeOptionId = $this->getLastAddedOptionIdForMagentoAttribute($magentoAttribute);
         }
 
-        $magentoAttributeOptionId = $magentoAttribute->getSource()->getOptionId($attributeLabel);
-        $magentoAttributeOption->setValue($magentoAttributeOptionId);
+        // Use new source model to prevent using cached _options values under getAllOptions()
+        $sourceModel = $this->tableFactory->create();
+        $sourceModel->setAttribute($magentoAttribute);
+        $magentoAttributeOptionId = $sourceModel->getOptionId($attributeLabel);
 
+        $magentoAttributeOption->setValue($magentoAttributeOptionId);
         return $magentoAttributeOption;
     }
 
@@ -137,11 +133,15 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         SkyLinkAttributeOption $skyLinkAttributeOption
     ) {
         // If the labels match, we will skip on the overhead of actually saving
-        if ($magentoAttributeOption->getLabel() == $skyLinkAttributeOption->getLabel()) {
+        if ($magentoAttributeOption->getValue() == $skyLinkAttributeOption->getLabel()) {
             return;
         }
 
-        $magentoAttributeOption->setLabel($skyLinkAttributeOption->getLabel());
+        // For some reason, the retrieved attribute has the value property set to the frontend text, e.g. "Large",
+        // and the label property is undefined. In order to save correctly, we need the value to be the option ID,
+        // and the label property to be set to the text.
+        $magentoAttributeOption->setValue($magentoAttributeOption->getId());
+        $magentoAttributeOption->setLabel((string) $skyLinkAttributeOption->getLabel());
         $this->saveMagentoAttributeOption($magentoAttribute, $magentoAttributeOption);
     }
 
@@ -207,10 +207,6 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
                 0 => $value, // admin
                 1 => '' // default store view
             );
-
-//            $textSwatch["option_{$i}"] = array(
-//                1 => $value,
-//            );
 
             $visualSwatch["option_{$i}"] = '';
 

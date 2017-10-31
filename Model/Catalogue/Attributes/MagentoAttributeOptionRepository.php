@@ -139,10 +139,6 @@ class MagentoAttributeOptionRepository implements MagentoAttributeOptionReposito
             // @todo should we throw an exception here?
         }
 
-//        $sourceModel = $this->tableFactory->create();
-//        $sourceModel->setAttribute($magentoAttribute);
-//        return $sourceModel->getAllOptions(false);
-
         if (!$storeId = $magentoAttribute->getStoreId()) {
             $storeId = 0;
         }
@@ -156,14 +152,5 @@ class MagentoAttributeOptionRepository implements MagentoAttributeOptionReposito
             )->load();
 
         return $collection;
-
-
-//        $options = $this->magentoAttributeOptionManagement->getItems(
-//            ProductAttributeInterface::ENTITY_TYPE_CODE,
-//            $magentoAttribute->getAttributeCode()
-//        );
-//        return $options;
-
-
     }
 }

@@ -247,7 +247,7 @@ A **strongly recommended** performance improvement is to enable caching and put 
 bin/magento cache:enable
 bin/magento deploy:mode:set production -s
 bin/magento setup:di:compile
-bin/magento setup:static-content:deploy en_AU # Add any additional locales (e.g. en_AU en_NZ) separated by a comma
+bin/magento setup:static-content:deploy en_AU en_US # Add any additional locales (e.g. en_AU en_NZ) separated by a comma
 bin/magento cache:clean
 ```
 

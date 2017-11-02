@@ -11,6 +11,7 @@ use RetailExpress\SkyLink\Api\Customers\MagentoCustomerGroupRepositoryInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\PriceGroupPrice as SkyLinkPriceGroupPrice;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 use RetailExpress\SkyLink\Sdk\Customers\PriceGroups\PriceGroupKey as SkyLinkPriceGroupKey;
+use RetailExpress\SkyLink\Exceptions\Customers\CustomerGroupNotSyncedException;
 
 class MagentoTierPriceMapper implements MagentoTierPriceMapperInterface
 {
@@ -117,7 +118,7 @@ class MagentoTierPriceMapper implements MagentoTierPriceMapperInterface
                 ->findBySkyLinkPriceGroupKey($skyLinkPriceGroupKey);
 
             if (null === $this->magentoCustomerGroups[$index]) {
-                throw CustomerGroupNotSyncedException::withSkyLinkPriceGroupKey($skyLinkPriceGroupPrice->getKey());
+                throw CustomerGroupNotSyncedException::withSkyLinkPriceGroupKey($skyLinkPriceGroupKey);
             }
         }
 

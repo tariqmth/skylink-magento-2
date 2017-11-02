@@ -473,6 +473,51 @@ bin/magento retail-express:command-bus:consume --stop-on-error --stop-when-empty
 
 > Of course, there is the option to manually sync individual entities *(Section 3.2)* should you need to for debugging purposes.
 
+### 3.4 Refreshing Queues
+
+Occasionally, queued commands may fail. This may be due to issues with individual syncing or server environment.
+
+In this case, there will be "stuck" queued commands in the `retail_express_command_bus_messages` table that appear to be reserved by a queue worker but never complete. This is because if a queue worker crashes, it does not get a chance to update the database accordingly. Most queue providers (such as [Amazon SQS](https://aws.amazon.com/sqs/)) will automatically add queued commands back into the queue after inactivity.
+
+Fortunately, SkyLink supports a similar function, through the use of a CLI tool:
+
+```bash
+
+# Logged in as the Magento filesystem owner...
+bin/magento retail-express:command-bus:refresh
+```
+
+There are two primary options available to customise this tool, both `--reserved` and `--attempts`:
+
+```bash
+Usage:
+ retail-express:command-bus:refresh-queue [--reserved="..."] \
+                                          [--attempts="..."]
+
+Options:
+ --reserved            Refresh jobs that have been reserved outside the given time in seconds (minimum 10 seconds) (default: 3600)
+ --attempts            Flag to sync inline rather than queue a command (minimum 1 attempt) (default: 3)
+ --help (-h)           Display this help message
+ --quiet (-q)          Do not output any message
+ --verbose (-v|vv|vvv) Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+ --version (-V)        Display this application version
+ --ansi                Force ANSI output
+ --no-ansi             Disable ANSI output
+ --no-interaction (-n) Do not ask any interactive question
+```
+
+By default, this tool will:
+
+1. Refresh any jobs that were reserved anytime outside the last hour; and,
+2. Delete any jobs that have been attempted more than 3 times.
+
+While it is absolutely fine to run this command manually, it is recommended to setup another [Magento cron job](http://devdocs.magento.com/guides/v2.1/config-guide/cli/config-cli-subcommands-cron.html) to automate this regularly:
+
+```bash
+# 'crontab -e' as the Magento filesystem owner...
+*/5 * * * * <path to php binary> <magento install dir>/bin/magento retail-express:command-bus:refresh-queue
+```
+
 ## 4. Performance
 
 There are considerations to make with regards to performance of Magento when you are synchronising data, particularly with bulk synchronisations. These optimisations are recommended in any Magento installation, however their benefits are increasingly visible when running SkyLink. Recommendations for improving performance are:

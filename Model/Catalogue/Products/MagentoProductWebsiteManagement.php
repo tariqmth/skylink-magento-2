@@ -70,7 +70,7 @@ class MagentoProductWebsiteManagement implements MagentoProductWebsiteManagement
                     // Load the product in the context of the website's store
                     $scopedMagentoProduct = $this->magentoProductRepository->getById(
                         $magentoProduct->getId(),
-                        false,
+                        true,
                         $magentoStore->getId(),
                         true
                     );

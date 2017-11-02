@@ -16,6 +16,7 @@ use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeSetRepository
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeTypeManagerInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\ConfigInterface;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoProductMapperInterface;
+use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoTierPriceMapperInterface;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerGroupRepositoryInterface;
 use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterface;
 use RetailExpress\SkyLink\Exceptions\Customers\CustomerGroupNotSyncedException;
@@ -24,7 +25,6 @@ use RetailExpress\SkyLink\Exceptions\Products\AttributeOptionNotMappedException;
 use RetailExpress\SkyLink\Model\Catalogue\SyncStrategy;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
-use RetailExpress\SkyLink\Sdk\Catalogue\Products\PriceGroupPrice as SkyLinkPriceGroupPrice;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 
 class MagentoProductMapper implements MagentoProductMapperInterface
@@ -41,7 +41,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
 
     private $attributeOptionRepository;
 
-    private $magentoCustomerGroupRepository;
+    private $magentoTierPriceMapper;
 
     private $dateTime;
 
@@ -53,7 +53,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         MagentoAttributeRepositoryInterface $attributeRepository,
         MagentoAttributeTypeManagerInterface $attributeTypeManager,
         MagentoAttributeOptionRepositoryInterface $attributeOptionRepository,
-        MagentoCustomerGroupRepositoryInterface $magentoCustomerGroupRepository,
+        MagentoTierPriceMapperInterface $magentoTierPriceMapper,
         DateTime $dateTime,
         TimezoneInterface $timezone
     ) {
@@ -62,7 +62,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         $this->attributeRepository = $attributeRepository;
         $this->attributeTypeManager = $attributeTypeManager;
         $this->attributeOptionRepository = $attributeOptionRepository;
-        $this->magentoCustomerGroupRepository = $magentoCustomerGroupRepository;
+        $this->magentoTierPriceMapper = $magentoTierPriceMapper;
         $this->dateTime = $dateTime;
         $this->timezone = $timezone;
     }
@@ -79,14 +79,12 @@ class MagentoProductMapper implements MagentoProductMapperInterface
             $this->overrideVisibilityForExistingProduct($magentoProduct);
         }
 
-        $magentoProduct->setSku((string) $skyLinkProduct->getSku());
-
         $magentoProduct->unsetData('manufacturer_sku');
         $magentoProduct->setData('manufacturer_sku', (string) $skyLinkProduct->getManufacturerSku());
 
         $this->mapName($magentoProduct, $skyLinkProduct);
         $this->mapPrices($magentoProduct, $skyLinkProduct);
-        $this->mapCustomerGroupPrices($magentoProduct, $skyLinkProduct);
+        $this->mapTierPrices($magentoProduct, $skyLinkProduct);
         $this->mapQuantities($magentoProduct, $skyLinkProduct);
 
         // Use the cubic weight for the given product
@@ -104,7 +102,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
     ) {
         $this->mapName($magentoProduct, $skyLinkProduct);
         $this->mapPrices($magentoProduct, $skyLinkProduct);
-        $this->mapCustomerGroupPrices($magentoProduct, $skyLinkProduct, $magentoWebsite);
+        $this->mapTierPrices($magentoProduct, $skyLinkProduct, $magentoWebsite);
     }
 
     /**
@@ -218,58 +216,12 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         $magentoProduct->setCustomAttribute('special_to_date', null);
     }
 
-    private function mapCustomerGroupPrices(
+    private function mapTierPrices(
         ProductInterface $magentoProduct,
         SkyLinkProduct $skyLinkProduct,
         WebsiteInterface $magentoWebsite = null
     ) {
-        $magentoWebsiteId = isset($magentoWebsite) ? $magentoWebsite->getId() : 0;
-
-        // We'll loop through all of the price group prices
-        // @todo what about orphaned prices? Deleted stores? IDK
-        array_map(function (SkyLinkPriceGroupPrice $skyLinkPriceGroupPrice) use ($magentoProduct, $magentoWebsiteId) {
-
-            /* @var \Magento\Customer\Api\Data\GroupInterface|null $magentoCustomerGroup */
-            $magentoCustomerGroup = $this
-                ->magentoCustomerGroupRepository
-                ->findBySkyLinkPriceGroupKey($skyLinkPriceGroupPrice->getKey());
-
-            if (null === $magentoCustomerGroup) {
-                throw CustomerGroupNotSyncedException::withSkyLinkPriceGroupKey($skyLinkPriceGroupPrice->getKey());
-            }
-
-            // Grab our tier prices
-            $tierPrices = $magentoProduct->getData('tier_price') ?: [];
-
-            // Let's filter down our tier prices by the given criteria, which allows us to preserve the key
-            // so we can later merge existing tier prices back in
-            $matching = array_filter(
-                $tierPrices,
-                function (array $tierPrice) use ($magentoWebsiteId, $magentoCustomerGroup) {
-                    return $magentoWebsiteId == $tierPrice['website_id'] &&
-                        $magentoCustomerGroup->getId() == $tierPrice['cust_group'] &&
-                        1 == $tierPrice['price_qty'];
-                }
-            );
-
-            // Grab a matching tier price or create one
-            $tierPrice = count($matching) > 0 ? current($matching) : [
-                'website_id' => $magentoWebsiteId,
-                'cust_group' => $magentoCustomerGroup->getId(),
-                'price_qty' => 1,
-            ];
-
-            // Update the price for the tier price
-            $tierPrice['price'] = $tierPrice['website_price']  = $skyLinkPriceGroupPrice->getPrice()->toNative();
-
-            if (count($matching) > 0) {
-                $tierPrices[key($matching)] = $tierPrice;
-            } else {
-                $tierPrices[] = $tierPrice;
-            }
-
-            $magentoProduct->setData('tier_price', $tierPrices);
-        }, $skyLinkProduct->getPricingStructure()->getPriceGroupPrices());
+        $this->magentoTierPriceMapper->map($magentoProduct, $skyLinkProduct, $magentoWebsite);
     }
 
     /**

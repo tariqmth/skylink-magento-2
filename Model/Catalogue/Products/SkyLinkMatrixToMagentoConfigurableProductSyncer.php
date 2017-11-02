@@ -98,7 +98,7 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
                 'Magento Configurable Product SKU' => $magentoConfigurableProduct->getSku(),
             ]);
 
-            $this
+            $magentoConfigurableProduct = $this
                 ->magentoConfigurableProductService
                 ->updateMagentoProduct($skyLinkMatrix, $magentoConfigurableProduct, $magentoSimpleProducts);
         } elseif ($existingMagentoProduct = $this->getMagentoProduct((string) $skyLinkMatrix->getSku())) {

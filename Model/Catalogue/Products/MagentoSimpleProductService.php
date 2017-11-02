@@ -93,6 +93,8 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         $magentoProduct = $this->magentoProductFactory->create();
         $magentoProduct->setTypeId(ProductType::TYPE_SIMPLE);
 
+        $magentoProduct->setSku((string) $skyLinkProduct->getSku());
+
         /* @var StockItemInterface $magentoStockItem */
         $magentoStockItem = $this->magentoStockItemFactory->create();
 
@@ -111,9 +113,37 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
         /* @var StockItemInterface $magentoStockItem */
         $magentoStockItem = $this->magentoStockRegistry->getStockItemBySku($magentoProduct->getSku());
 
+        $this->updateSkuIfNeeded($magentoProduct, $skyLinkProduct);
         $this->mapProduct($magentoProduct, $skyLinkProduct);
         $this->mapMagentoAttributes($magentoProduct);
         $this->mapStockAndSave($magentoProduct, $magentoStockItem, $skyLinkProduct);
+
+        return $magentoProduct;
+    }
+
+    /**
+     * Updates the SKU on the given product and refreshes it (if needed).
+     */
+    private function updateSkuIfNeeded(ProductInterface &$magentoProduct, SkyLinkProduct $skyLinkProduct)
+    {
+        $existingSku = $magentoProduct->getSku();
+
+        // If the SKU changes, we'll quickly save the product and continue
+        if ($existingSku === (string) $skyLinkProduct->getSku()) {
+            return;
+        }
+
+        $this->logger->debug(
+            'The SKU appears to have changed, updating Magento and starting mapping.',
+            [
+                'Existing SKU in Magento' => $existingSku,
+                'New SKU in SkyLink' => $skyLinkProduct->getSku(),
+            ]
+        );
+
+        $magentoProduct->setSku((string) $skyLinkProduct->getSku());
+        $magentoProduct->save(); // You can't save through the repository becuase tiered prices crap out
+        $magentoProduct = $this->baseMagentoProductRepository->getById($magentoProduct->getId(), true, null, true);
     }
 
     private function mapProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
@@ -135,7 +165,7 @@ class MagentoSimpleProductService implements MagentoSimpleProductServiceInterfac
      * @param ProductInterface &$newProduct
      * @todo Add other attributes unrelated to Skylink
      */
-    private function mapMagentoAttributes(ProductInterface &$newProduct)
+    private function mapMagentoAttributes(ProductInterface $newProduct)
     {
         try {
             $originalProduct = $this->baseMagentoProductRepository->get($newProduct->getSku());

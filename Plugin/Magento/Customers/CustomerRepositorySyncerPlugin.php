@@ -38,12 +38,10 @@ class CustomerRepositorySyncerPlugin
         CustomerRepositoryInterface $subject,
         CustomerInterface $magentoCustomer
     ) {
-        // If the registry is locked by syncing a SkyLink Customer to a Magento Customer, we're
-        // not going to trigger a reverse sync as a result of a customer or address being saved
+        // Force handling the sync command now rather than queue it, because orders happen in real time
         if ($this->registry->registry(MagentoCustomerServiceInterface::REGISTRY_LOCK_KEY)) {
             return;
         }
-
         $command = new SyncMagentoCustomerToSkyLinkCustomerCommand();
         $command->magentoCustomerId = $magentoCustomer->getId();
         $this->customerSyncHandler->handle($command);

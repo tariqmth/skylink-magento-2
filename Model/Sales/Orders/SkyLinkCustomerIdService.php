@@ -11,6 +11,7 @@ use RetailExpress\SkyLink\Commands\Customers\SyncMagentoCustomerToSkyLinkCustome
 use RetailExpress\SkyLink\Commands\Customers\SyncMagentoCustomerToSkyLinkCustomerHandler;
 use RetailExpress\SkyLink\Exceptions\Customers\CustomerRegistryLockException;
 use Magento\Framework\Registry;
+use RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface;
 
 class SkyLinkCustomerIdService implements SkyLinkCustomerIdServiceInterface
 {

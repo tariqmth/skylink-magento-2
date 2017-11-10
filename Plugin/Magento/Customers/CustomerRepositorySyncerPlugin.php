@@ -9,6 +9,7 @@ use RetailExpress\CommandBus\Api\CommandBusInterface;
 use RetailExpress\SkyLink\Api\Customers\MagentoCustomerServiceInterface;
 use RetailExpress\SkyLink\Commands\Customers\SyncMagentoCustomerToSkyLinkCustomerCommand;
 use RetailExpress\SkyLink\Commands\Customers\SyncMagentoCustomerToSkyLinkCustomerHandler;
+use RetailExpress\SkyLink\Exceptions\Customers\CustomerRegistryLockException;
 
 class CustomerRepositorySyncerPlugin
 {
@@ -40,7 +41,7 @@ class CustomerRepositorySyncerPlugin
     ) {
         // Force handling the sync command now rather than queue it, because orders happen in real time
         if ($this->registry->registry(MagentoCustomerServiceInterface::REGISTRY_LOCK_KEY)) {
-            return;
+            throw CustomerRegistryLockException::withMagentoCustomerId($magentoCustomer->getId());
         }
         $command = new SyncMagentoCustomerToSkyLinkCustomerCommand();
         $command->magentoCustomerId = $magentoCustomer->getId();

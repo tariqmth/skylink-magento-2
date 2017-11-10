@@ -10,6 +10,7 @@ use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
 use RetailExpress\SkyLink\Commands\Customers\SyncMagentoCustomerToSkyLinkCustomerCommand;
 use RetailExpress\SkyLink\Commands\Customers\SyncMagentoCustomerToSkyLinkCustomerHandler;
 use RetailExpress\SkyLink\Exceptions\Customers\CustomerRegistryLockException;
+use Magento\Framework\Registry;
 
 class SkyLinkCustomerIdService implements SkyLinkCustomerIdServiceInterface
 {
@@ -19,14 +20,18 @@ class SkyLinkCustomerIdService implements SkyLinkCustomerIdServiceInterface
 
     private $customerSyncHandler;
 
+    private $registry;
+
     public function __construct(
         CustomerRepositoryInterface $baseMagentoCustomerRepository,
         ConfigInterface $orderConfig,
-        SyncMagentoCustomerToSkyLinkCustomerHandler $customerSyncHandler
+        SyncMagentoCustomerToSkyLinkCustomerHandler $customerSyncHandler,
+        Registry $registry
     ) {
         $this->baseMagentoCustomerRepository = $baseMagentoCustomerRepository;
         $this->orderConfig = $orderConfig;
         $this->customerSyncHandler = $customerSyncHandler;
+        $this->registry = $registry;
     }
 
     public function determineSkyLinkCustomerId(OrderInterface $magentoOrder)

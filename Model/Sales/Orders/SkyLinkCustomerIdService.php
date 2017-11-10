@@ -7,6 +7,8 @@ use Magento\Sales\Api\Data\OrderInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\ConfigInterface;
 use RetailExpress\SkyLink\Api\Sales\Orders\SkyLinkCustomerIdServiceInterface;
 use RetailExpress\SkyLink\Sdk\Customers\CustomerId as SkyLinkCustomerId;
+use RetailExpress\SkyLink\Commands\Customers\SyncMagentoCustomerToSkyLinkCustomerCommand;
+use RetailExpress\SkyLink\Commands\Customers\SyncMagentoCustomerToSkyLinkCustomerHandler;
 use RetailExpress\SkyLink\Exceptions\Customers\CustomerRegistryLockException;
 
 class SkyLinkCustomerIdService implements SkyLinkCustomerIdServiceInterface

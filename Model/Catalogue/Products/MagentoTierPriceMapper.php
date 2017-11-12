@@ -129,29 +129,16 @@ class MagentoTierPriceMapper implements MagentoTierPriceMapperInterface
      * Magento's \Magento\Catalog\Model\Product\Attribute\Backend\GroupPrice\AbstractGroupPrice::validate() treats
      * prices for websites that have the same currency as the global configuration as duplicates. We'll compare
      * the given website's currency against the global currency and remove any "duplicate" prices.
+     * Update: The issue lies in the way a separate iteration is used for global and then each website. We should
+     * only save the values for the current website ID, and filter out all others. Adding global values (ID 0) when
+     * iterating over a specific website (ID 1...) will cause the values to be deleted.
      */
     private function reduceTierPricesIfDuplicates(array $tierPrices, $magentoWebsiteId)
     {
-        if ($this->websiteDoesntUseBaseCurrency($magentoWebsiteId)) {
-            return;
-        }
-
         return array_filter(
             $tierPrices,
             function (array $websiteTierPrice) use ($magentoWebsiteId, $tierPrices) {
-
-                // Don't interfere with tier prices not for this website
-                if ($magentoWebsiteId != $websiteTierPrice['website_id']) {
-                    return true;
-                }
-
-                // If the same price exists in the global website, let's remove it
-                null === array_first($tierPrices, function ($key, array $globalTierPrice) use ($websiteTierPrice) {
-                    return 0 == $globalTierPrice['website_id'] &&
-                        $globalTierPrice['cust_group'] == $websiteTierPrice['cust_group'] &&
-                        $globalTierPrice['price_qty'] == $websiteTierPrice['price_qty'] &&
-                        $globalTierPrice['price'] == $websiteTierPrice['price'];
-                });
+                return $magentoWebsiteId === $websiteTierPrice['website_id'];
             }
         );
     }

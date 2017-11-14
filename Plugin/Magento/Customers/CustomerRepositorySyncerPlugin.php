@@ -41,7 +41,7 @@ class CustomerRepositorySyncerPlugin
     ) {
         // Force handling the sync command now rather than queue it, because orders happen in real time
         if ($this->registry->registry(MagentoCustomerServiceInterface::REGISTRY_LOCK_KEY)) {
-            throw CustomerRegistryLockException::withMagentoCustomerId($magentoCustomer->getId());
+            return $magentoCustomer;
         }
         $command = new SyncMagentoCustomerToSkyLinkCustomerCommand();
         $command->magentoCustomerId = $magentoCustomer->getId();

@@ -12,6 +12,8 @@ use RetailExpress\SkyLink\Exceptions\Sales\Payments\SkyLinkOrderIdRequiredForMag
 use RetailExpress\SkyLink\Model\Sales\Invoices\InvoiceExtensionAttributes;
 use RetailExpress\SkyLink\Sdk\Sales\Payments\PaymentRepositoryFactory;
 use RuntimeException;
+use RetailExpress\SkyLink\Commands\Sales\Orders\CreateSkyLinkOrderFromMagentoOrderCommand;
+use RetailExpress\SkyLink\Commands\Sales\Orders\CreateSkyLinkOrderFromMagentoOrderHandler;
 
 class CreateSkyLinkPaymentFromMagentoInvoiceHandler
 {
@@ -28,6 +30,8 @@ class CreateSkyLinkPaymentFromMagentoInvoiceHandler
 
     private $logger;
 
+    private $orderHandler;
+
     /**
      * Event Manager instance.
      *
@@ -41,7 +45,8 @@ class CreateSkyLinkPaymentFromMagentoInvoiceHandler
         SkyLinkPaymentBuilderInterface $skyLinkPaymentBuilder,
         PaymentRepositoryFactory $skyLinkPaymentRepositoryFactory,
         EventManagerInterface $eventManager,
-        SkyLinkLoggerInterface $logger
+        SkyLinkLoggerInterface $logger,
+        CreateSkyLinkOrderFromMagentoOrderHandler $orderHandler
     ) {
         $this->magentoInvoiceRepository = $magentoInvoiceRepository;
         $this->invoiceExtensionFactory = $invoiceExtensionFactory;
@@ -49,6 +54,7 @@ class CreateSkyLinkPaymentFromMagentoInvoiceHandler
         $this->skyLinkPaymentRepositoryFactory = $skyLinkPaymentRepositoryFactory;
         $this->logger = $logger;
         $this->eventManager = $eventManager;
+        $this->orderHandler = $orderHandler;
     }
 
     public function handle(CreateSkyLinkPaymentFromMagentoInvoiceCommand $command)
@@ -63,10 +69,15 @@ class CreateSkyLinkPaymentFromMagentoInvoiceHandler
             }
         } while ($attempts++ < self::MAX_ATTEMPTS);
 
-        throw new RuntimeException(sprintf(
-            'Tried to sync Magento Invoice to SkyLink Payment more than %d time(s) and failed. Please re-run command manually.',
-            self::MAX_ATTEMPTS
-        ));
+        // Try forcing an order sync if it hasn't happened already
+        $magentoOrderId = $this->magentoInvoiceRepository->get($command->magentoInvoiceId)->getOrderId();
+        $this->logger->info('Order did not have Skylink ID, syncing order and trying again.', [
+            'Magento Order ID' => $magentoOrderId
+        ]);
+        $orderSyncCommand = new CreateSkyLinkOrderFromMagentoOrderCommand();
+        $orderSyncCommand->magentoOrderId = $magentoOrderId;
+        $this->orderHandler->handle($orderSyncCommand);
+        return $this->doHandle($command);
     }
 
     private function doHandle(CreateSkyLinkPaymentFromMagentoInvoiceCommand $command)

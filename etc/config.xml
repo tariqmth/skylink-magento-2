@@ -116,7 +116,7 @@
         </skylink>
         <payment>
             <ebay>
-                <model>RetailExpress\Skylink\Model\Sales\Payments\EbayPaymentMethod</model>
+                <model>RetailExpress\SkyLink\Model\Sales\Payments\EbayPaymentMethod</model>
                 <title>Ebay (for Skylink compatibility)</title>
                 <payment_action>authorize</payment_action>
                 <active>0</active>

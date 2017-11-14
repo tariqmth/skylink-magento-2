@@ -114,5 +114,23 @@
             </debugging>
 
         </skylink>
+        <payment>
+            <ebay>
+                <model>RetailExpress\SkyLink\Model\Sales\Payments\EbayPaymentMethod</model>
+                <title>Ebay (for Skylink compatibility)</title>
+                <payment_action>authorize</payment_action>
+                <active>0</active>
+                <is_gateway>0</is_gateway>
+                <can_use_checkout>0</can_use_checkout>
+                <can_use_internal>0</can_use_internal>
+                <can_authorize>0</can_authorize>
+                <can_capture>0</can_capture>
+                <can_refund>0</can_refund>
+                <can_void>1</can_void>
+                <can_cancel>1</can_cancel>
+                <order_status>processing</order_status>
+                <sort_order>500</sort_order>
+            </ebay>
+        </payment>
     </default>
 </config>

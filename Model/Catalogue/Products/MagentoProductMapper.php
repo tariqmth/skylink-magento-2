@@ -263,9 +263,9 @@ class MagentoProductMapper implements MagentoProductMapperInterface
 
             // If we use options, we'll grab the mapped option
             if ($magentoAttributeType->usesOptions()) {
-                $magentoAttributeValue = $this
-                    ->getMagentoAttributeOptionFromSkyLinkAttributeOption($skyLinkAttributeOption)
-                    ->getValue();
+                $magentoAttributeOption = $this
+                    ->getMagentoAttributeOptionFromSkyLinkAttributeOption($skyLinkAttributeOption);
+                $magentoAttributeValue = $magentoAttributeOption->getOptionId();
                 // Otherweise, we'll use the label for the SkyLink Attribute Option
             } else {
                 $magentoAttributeValue = $skyLinkAttributeOption->getLabel()->toNative();

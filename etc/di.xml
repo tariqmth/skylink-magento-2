@@ -162,6 +162,11 @@
         <plugin name="skylink_order_repository" type="RetailExpress\SkyLink\Plugin\Magento\Sales\Orders\OrderRepositoryPlugin" sortOrder="10" disabled="false"/>
     </type>
 
+    <!-- Create a plugin for creating SkyLink Order when saved directly -->
+    <type name="Magento\Sales\Api\OrderInterface">
+        <plugin name="skylink_order" type="RetailExpress\SkyLink\Plugin\Magento\Sales\Orders\OrderPlugin" sortOrder="10" disabled="false"/>
+    </type>
+
     <!-- Create a plugin for managing SkyLink Payment IDs within Magento Invoices (extension attributes) -->
     <type name="Magento\Sales\Api\InvoiceRepositoryInterface">
         <plugin name="skylink_invoice_repository" type="RetailExpress\SkyLink\Plugin\Magento\Sales\Invoices\InvoiceRepositoryPlugin" sortOrder="10" disabled="false"/>

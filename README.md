@@ -247,7 +247,7 @@ A **strongly recommended** performance improvement is to enable caching and put 
 bin/magento cache:enable
 bin/magento deploy:mode:set production -s
 bin/magento setup:di:compile
-bin/magento setup:static-content:deploy en_AU # Add any additional locales (e.g. en_AU en_NZ) separated by a comma
+bin/magento setup:static-content:deploy en_AU en_US # Add any additional locales (e.g. en_AU en_NZ) separated by a comma
 bin/magento cache:clean
 ```
 
@@ -391,7 +391,7 @@ priority=1
 
 [program:<magento file system owner>_customers]
 user=<magento file system owner>
-command=<path to php binary> <magento install dir>/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=900 --priority customers payments fulfillments
+command=<path to php binary> <magento install dir>/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=300 --priority customers payments fulfillments
 autorestart=true
 numprocs=<number of processes>
 process_name=%(program_name)s_%(process_num)s
@@ -400,7 +400,7 @@ stderr_logfile=/home/<magento file system owner>/logs/supervisor/customers.err.l
 
 [program:<magento file system owner>_products]
 user=<magento file system owner>
-command=<path to php binary> <magento install dir>/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=900 --priority attributes price-groups products
+command=<path to php binary> <magento install dir>/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=300 --priority attributes price-groups products
 autorestart=true
 numprocs=<number of processes>
 process_name=%(program_name)s_%(process_num)s
@@ -412,7 +412,7 @@ There are three replacements that need to be made to this template:
 
 1. `<magento file system owner>` - this is the user that owns the Magento filesystem.
 2. `<path to php binary>` - this typically can be found by typing `which php` on your CLI.
-3. `<number of processes>` - this should be tweaked according to your database size and server specs and must be at least 1. Typically, a number between 1 and 6 is appropriate.
+3. `<number of processes>` - must be at least 1 - a value of 2 is recommended. It can be set higher however this will likely lead to requests being rejected due to Retail Express API throttle limits.
 
 If you have installed Magento according to the [user guide](http://devdocs.magento.com/guides/v2.0/install-gde/bk-install-guide.html) and installed Supervisor on Ubuntu 16.04, your Supervisor configuration file might look like:
 
@@ -423,18 +423,18 @@ priority=1
 
 [program:magento_user_customers]
 user=magento_user
-command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=900 --priority customers payments fulfillments
+command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=300 --priority customers payments fulfillments
 autorestart=true
-numprocs=2
+numprocs=1
 process_name=%(program_name)s_%(process_num)s
 stdout_logfile=/var/log/supervisor/magento2/customers.log
 stderr_logfile=/var/log/supervisor/magento2/customers.err.log
 
 [program:magento_user_products]
 user=magento_user
-command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=900 --priority attributes price-groups products
+command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=300 --priority attributes price-groups products
 autorestart=true
-numprocs=5
+numprocs=2
 process_name=%(program_name)s_%(process_num)s
 stdout_logfile=/var/log/supervisor/magento2/products.log
 stderr_logfile=/var/log/supervisor/magento2/products.err.log

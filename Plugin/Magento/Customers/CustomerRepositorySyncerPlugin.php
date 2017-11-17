@@ -13,8 +13,6 @@ use RetailExpress\SkyLink\Exceptions\Customers\CustomerRegistryLockException;
 
 class CustomerRepositorySyncerPlugin
 {
-    use CustomerSyncer;
-
     private $commandBus;
     private $registry;
     private $customerSyncHandler;

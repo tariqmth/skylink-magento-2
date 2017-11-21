@@ -530,7 +530,18 @@ There are considerations to make with regards to performance of Magento when you
 6. Ensure your MySQL setup [is optimised](http://devdocs.magento.com/guides/v2.0/install-gde/prereq/mysql.html) and consider separating your web server and database server.
 7. Monitor your server load and identify areas that are underperforming. Magento typically is CPU-intensive and can also be disk I/O intensive (however our queue workers are designed to minimise disk I/O0.
 
-## 5. FAQs
+## 5. API Throttling
+
+To ensure consistency of service for all Retail Express clients, throttles are imposed on the number of requests that can be sent through the API when communicating with Retail Express. Environments configured per the recommendations above should not hit these limits in typical usage however the number of queue workers configured and any other customisation to your integration must take these limits into consideration.
+
+The limits imposed are outlined below - they are cumulative (e.g. if sending 25 reqs/sec for a full minute the total would be 1500 reqs in a 1 minute period which would exceed the limits) and are for all requests sent through the API in a given period, not a separate limit per method:
+
+1. Max 25 calls per second
+2. Max 1200 calls per minute
+3. Max 30,000 calls per hour
+4. Max 150,000 calls per day
+
+## 6. FAQs
 
 ### There are no logs appearing in `System > SkyLink > Logging`
 

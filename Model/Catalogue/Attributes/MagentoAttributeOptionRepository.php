@@ -96,7 +96,8 @@ class MagentoAttributeOptionRepository implements MagentoAttributeOptionReposito
         return $this->findMatchingMagentoAttributeOption(
             $skyLinkAttributeCode,
             function (AttributeOptionInterface $magentoAttributeOption) use ($skyLinkAttributeOption) {
-                return $skyLinkAttributeOption->getLabel() == $magentoAttributeOption->getLabel();
+                return $skyLinkAttributeOption->getLabel() == $magentoAttributeOption->getLabel()
+                    || $skyLinkAttributeOption->getLabel() == $magentoAttributeOption->getValue();
             }
         );
     }

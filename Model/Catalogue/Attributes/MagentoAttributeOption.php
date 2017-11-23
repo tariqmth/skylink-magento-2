@@ -36,6 +36,10 @@ trait MagentoAttributeOption
      */
     private function getIdFromMagentoAttributeOption(AttributeOptionInterface $magentoAttributeOption)
     {
-        return $magentoAttributeOption->getValue();
+        if ($magentoAttributeOption->getId()) {
+            return $magentoAttributeOption->getId();
+        } else {
+            return $magentoAttributeOption->getValue();
+        }
     }
 }

@@ -103,7 +103,9 @@ class SyncSkyLinkProductToMagentoProductHandler
         // syncer to work on any specifics for the product in that Sales Channel Group.
 
         /* @var SkyLinkProductInSalesChannelGroupInterface[] $skyLinkProductInSalesChannelGroups */
-        $skyLinkProductInSalesChannelGroups = $this->getSkyLinkProductInSalesChannelGroups($skyLinkProductId);
+        //$skyLinkProductInSalesChannelGroups = $this->getSkyLinkProductInSalesChannelGroups($skyLinkProductId);
+        $skyLinkProductInSalesChannelGroups = $this->salesChannelGroupRepository
+            ->getSkyLinkProductInSalesChannelGroups($skyLinkProductId);
 
         // If not enabled for the global sales channel, try other sales channels
         if (null === $skyLinkProduct) {

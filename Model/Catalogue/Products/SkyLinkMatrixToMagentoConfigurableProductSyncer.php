@@ -14,6 +14,7 @@ use RetailExpress\SkyLink\Sdk\Catalogue\Products\Matrix;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\SimpleProduct;
+use RetailExpress\SkyLink\Api\Segregation\SalesChannelGroupRepositoryInterface;
 
 class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductToMagentoProductSyncerInterface
 {
@@ -45,7 +46,8 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
         ProductRepositoryInterface $baseMagentoProductRepository,
         SkyLinkSimpleProductToMagentoSimpleProductSyncer $simpleProductSyncer,
         MagentoProductWebsiteManagementInterface $magentoProductWebsiteManagement,
-        SkyLinkLoggerInterface $logger
+        SkyLinkLoggerInterface $logger,
+        SalesChannelGroupRepositoryInterface $salesChannelGroupRepository
     ) {
         $this->magentoConfigurableProductRepository = $magentoConfigurableProductRepository;
         $this->magentoConfigurableProductService = $magentoConfigurableProductService;
@@ -54,6 +56,7 @@ class SkyLinkMatrixToMagentoConfigurableProductSyncer implements SkyLinkProductT
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
         $this->simpleProductSyncer = $simpleProductSyncer;
         $this->logger = $logger;
+        $this->salesChannelGroupRepository = $salesChannelGroupRepository;
     }
 
     /**

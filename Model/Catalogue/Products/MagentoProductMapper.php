@@ -76,7 +76,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         if (!$magentoProduct->getId()) {
             $this->mapNewMagentoProduct($magentoProduct, $skyLinkProduct);
         } else {
-            $this->overrideVisibilityForExistingProduct($magentoProduct);
+            $this->overrideVisibilityForExistingProduct($magentoProduct, $skyLinkProduct);
         }
 
         $magentoProduct->unsetData('manufacturer_sku');
@@ -138,11 +138,11 @@ class MagentoProductMapper implements MagentoProductMapperInterface
      *
      * @param ProductInterface $magentoProduct
      */
-    private function overrideVisibilityForExistingProduct(ProductInterface $magentoProduct)
+    private function overrideVisibilityForExistingProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
     {
         $currentVisibility = $magentoProduct->getVisibility();
 
-        if (Visibility::VISIBILITY_NOT_VISIBLE === $currentVisibility) {
+        if (Visibility::VISIBILITY_NOT_VISIBLE == $currentVisibility && !$skyLinkProduct->getMatrixProduct()) {
             $magentoProduct->setVisibility(Visibility::VISIBILITY_BOTH);
         }
     }

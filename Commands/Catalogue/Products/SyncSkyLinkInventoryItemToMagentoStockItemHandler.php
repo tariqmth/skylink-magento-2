@@ -41,7 +41,7 @@ class SyncSkyLinkInventoryItemToMagentoStockItemHandler
         /* @var \Magento\Catalog\Api\Data\ProductInterface $magentoProduct */
         $magentoProduct = $this->baseMagentoProductRepository->getById(
             $command->magentoProductId,
-            false,
+            true,
             null,
             true
         );

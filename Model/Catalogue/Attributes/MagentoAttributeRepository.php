@@ -12,6 +12,8 @@ use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeTypeManagerIn
 use RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeType;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 use Zend_Db_Expr;
+use Magento\Eav\Model\Entity\Attribute\Backend\DefaultBackend;
+use Magento\Eav\Model\Entity\Attribute\Frontend\DefaultFrontend;
 
 class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
 {
@@ -113,11 +115,20 @@ class MagentoAttributeRepository implements MagentoAttributeRepositoryInterface
             $nameSortOrder = $this->sortOrderBuilder->setField('frontend_label')->setAscendingDirection()->create();
             $searchCriteriaBuilder->addSortOrder($nameSortOrder);
 
-            /* @var \Magento\Framework\Api\SearchCriteria $saerchCriteria */
+            /* @var \Magento\Framework\Api\SearchCriteria $searchCriteria */
             $searchCriteria = $searchCriteriaBuilder->create();
             $searchResults = $this->magentoProductAttributeRepository->getList($searchCriteria);
 
             $attributes = $searchResults->getItems();
+
+            $frontendModels = [null, DefaultFrontend::class];
+            $backendModels = [null, DefaultBackend::class];
+            foreach ($attributes as $key => $attribute) {
+                if (!in_array($attribute->getFrontendModel(), $frontendModels) ||
+                    !in_array($attribute->getBackendModel(), $backendModels)) {
+                    unset($attributes[$key]);
+                }
+            }
 
             return compact('type', 'attributes');
         }, MagentoAttributeType::getConstants()));

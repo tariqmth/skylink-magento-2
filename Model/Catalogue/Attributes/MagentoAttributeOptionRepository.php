@@ -11,6 +11,8 @@ use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeOptionReposit
 use RetailExpress\SkyLink\Api\Catalogue\Attributes\MagentoAttributeRepositoryInterface;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
+use Magento\Eav\Model\Entity\Attribute\Source\TableFactory;
+use Magento\Eav\Model\ResourceModel\Entity\Attribute\Option\CollectionFactory as OptionCollectionFactory;
 
 class MagentoAttributeOptionRepository implements MagentoAttributeOptionRepositoryInterface
 {
@@ -33,11 +35,15 @@ class MagentoAttributeOptionRepository implements MagentoAttributeOptionReposito
     public function __construct(
         ResourceConnection $resourceConnection,
         AttributeOptionManagementInterface $magentoAttributeOptionManagement,
-        MagentoAttributeRepositoryInterface $magentoAttributeRepository
+        MagentoAttributeRepositoryInterface $magentoAttributeRepository,
+        TableFactory $tableFactory,
+        OptionCollectionFactory $attrOptionCollectionFactory
     ) {
         $this->connection = $resourceConnection->getConnection(ResourceConnection::DEFAULT_CONNECTION);
         $this->magentoAttributeOptionManagement = $magentoAttributeOptionManagement;
         $this->magentoAttributeRepository = $magentoAttributeRepository;
+        $this->tableFactory = $tableFactory;
+        $this->attrOptionCollectionFactory = $attrOptionCollectionFactory;
     }
 
     /**
@@ -63,7 +69,7 @@ class MagentoAttributeOptionRepository implements MagentoAttributeOptionReposito
         $magentoAttributeOption = $this->findMatchingMagentoAttributeOption(
             $skyLinkAttributeCode,
             function (AttributeOptionInterface $magentoAttributeOption) use ($magentoAttributeOptionId) {
-                return $magentoAttributeOptionId == $this->getIdFromMagentoAttributeOption($magentoAttributeOption);
+                return $magentoAttributeOptionId == $magentoAttributeOption->getId();
             }
         );
 
@@ -90,7 +96,8 @@ class MagentoAttributeOptionRepository implements MagentoAttributeOptionReposito
         return $this->findMatchingMagentoAttributeOption(
             $skyLinkAttributeCode,
             function (AttributeOptionInterface $magentoAttributeOption) use ($skyLinkAttributeOption) {
-                return $skyLinkAttributeOption->getLabel() == $magentoAttributeOption->getLabel();
+                return $skyLinkAttributeOption->getLabel() == $magentoAttributeOption->getLabel()
+                    || $skyLinkAttributeOption->getLabel() == $magentoAttributeOption->getValue();
             }
         );
     }
@@ -99,7 +106,7 @@ class MagentoAttributeOptionRepository implements MagentoAttributeOptionReposito
      * Returns the first matching attribute option that pass a given test.
      *
      * @param SkyLinkAttributeCode $skyLinkAttributeCode
-     * @param callableÂ            $callback
+     * @param callable             $callback
      * @param bool                 $findFirst            If set to "false", it will find the last match, not the first
      *
      * @return AttributeOptionInterface|null
@@ -133,9 +140,18 @@ class MagentoAttributeOptionRepository implements MagentoAttributeOptionReposito
             // @todo should we throw an exception here?
         }
 
-        return $this->magentoAttributeOptionManagement->getItems(
-            ProductAttributeInterface::ENTITY_TYPE_CODE,
-            $magentoAttribute->getAttributeCode()
-        );
+        if (!$storeId = $magentoAttribute->getStoreId()) {
+            $storeId = 0;
+        }
+
+        $collection = $this->attrOptionCollectionFactory->create()->setPositionOrder(
+                'asc'
+            )->setAttributeFilter(
+                $magentoAttribute->getId()
+            )->setStoreFilter(
+                $storeId
+            )->load();
+
+        return $collection;
     }
 }

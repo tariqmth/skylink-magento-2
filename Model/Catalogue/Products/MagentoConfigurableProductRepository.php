@@ -41,7 +41,7 @@ class MagentoConfigurableProductRepository implements MagentoConfigurableProduct
         if ($existingProductMatches === 1) {
             return $this->baseMagentoProductRepository->getById(
                 current($existingProducts->getItems())->getId(),
-                false,
+                true,
                 null,
                 true
             );

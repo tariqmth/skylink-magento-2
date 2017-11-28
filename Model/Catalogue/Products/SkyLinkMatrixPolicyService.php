@@ -10,6 +10,7 @@ use RetailExpress\SkyLink\Model\Catalogue\Attributes\MagentoAttributeType;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeOption as SkyLinkAttributeOption;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\MatrixPolicy as SkyLinkMatrixPolicy;
+use RetailExpress\SkyLink\Exceptions\Products\UnsupportedAttributeTypeException;
 
 class SkyLinkMatrixPolicyService implements SkyLinkMatrixPolicyServiceInterface
 {
@@ -84,10 +85,14 @@ class SkyLinkMatrixPolicyService implements SkyLinkMatrixPolicyServiceInterface
                 }
 
                 // Filter by configurable Magento Attributes
-                return $this
-                    ->magentoAttributeTypeManager
-                    ->getType($magentoAttribute)
-                    ->sameValueAs(MagentoAttributeType::get('configurable'));
+                try {
+                    return $this
+                        ->magentoAttributeTypeManager
+                        ->getType($magentoAttribute)
+                        ->sameValueAs(MagentoAttributeType::get('configurable'));
+                } catch (UnsupportedAttributeTypeException $e) {
+                    return false;
+                }
             }
         );
 

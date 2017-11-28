@@ -15,6 +15,8 @@ use RetailExpress\SkyLink\Exceptions\Products\ProductAlreadyExistsAsTheWrongType
 use RetailExpress\SkyLink\Exceptions\Products\TooManyProductMatchesException;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\SimpleProduct;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\Product as SkyLinkProduct;
+use RetailExpress\SkyLink\Sdk\Catalogue\Products\Matrix as SkyLinkMatrix;
+use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterfaceFactory;
 
 class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProductToMagentoProductSyncerInterface
 {
@@ -40,13 +42,15 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
         MagentoSimpleProductServiceInterface $magentoSimpleProductService,
         MagentoProductWebsiteManagementInterface $magentoProductWebsiteManagement,
         ProductRepositoryInterface $baseMagentoProductRepository,
-        SkyLinkLoggerInterface $logger
+        SkyLinkLoggerInterface $logger,
+        SkyLinkProductInSalesChannelGroupInterfaceFactory $skyLinkProductInSalesChannelGroupFactory
     ) {
         $this->magentoSimpleProductRepository = $magentoSimpleProductRepository;
         $this->magentoSimpleProductService = $magentoSimpleProductService;
         $this->magentoProductWebsiteManagement = $magentoProductWebsiteManagement;
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
         $this->logger = $logger;
+        $this->skyLinkProductInSalesChannelGroupFactory = $skyLinkProductInSalesChannelGroupFactory;
     }
 
     /**
@@ -70,6 +74,20 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
             throw $e;
         }
 
+        if ($skyLinkProductInSalesChannelGroups[0]->getSkyLinkProduct() instanceof SkyLinkMatrix) {
+            $simpleProductInSalesChannelGroups = [];
+            foreach ($skyLinkProductInSalesChannelGroups as $skyLinkProductInSalesChannelGroup) {
+                $salesChannelGroup = $skyLinkProductInSalesChannelGroup->getSalesChannelGroup();
+                $matrixProduct = $skyLinkProductInSalesChannelGroup->getSkyLinkProduct();
+                $simpleProduct = $matrixProduct->getProduct($skyLinkProduct->getId());
+                $simpleProductInSalesChannelGroup = $this->skyLinkProductInSalesChannelGroupFactory->create();
+                $simpleProductInSalesChannelGroup->setSkyLinkProduct($simpleProduct);
+                $simpleProductInSalesChannelGroup->setSalesChannelGroup($salesChannelGroup);
+                $simpleProductInSalesChannelGroups[] = $simpleProductInSalesChannelGroup;
+            }
+            $skyLinkProductInSalesChannelGroups = $simpleProductInSalesChannelGroups;
+        }
+
         if (null !== $magentoProduct) {
             $this->logDebug(
                 'Found Magento Simple Product already mapped to the SkyLink Product, updating it.',
@@ -77,7 +95,7 @@ class SkyLinkSimpleProductToMagentoSimpleProductSyncer implements SkyLinkProduct
                 $magentoProduct
             );
 
-            $this->magentoSimpleProductService->updateMagentoProduct($magentoProduct, $skyLinkProduct);
+            $magentoProduct = $this->magentoSimpleProductService->updateMagentoProduct($magentoProduct, $skyLinkProduct);
 
             $this->logDebug(
                 'Updated Magento Simple Product for the SkyLink Product.',

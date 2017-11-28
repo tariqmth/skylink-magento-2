@@ -164,14 +164,14 @@ Alternatively (or for more granular versioning control), you may merge the follo
 // Recommended...
 {
 	"require": {
-		"retail-express/skylink-magento-2": "^1.3"
+		"retail-express/skylink-magento-2": "^1.4"
 	}
 }
 
 // For beta releases (not recommended in production)...
 {
 	"require": {
-		"retail-express/skylink-magento-2": "^1.3"
+		"retail-express/skylink-magento-2": "^1.4"
 	},
 	"minimum-stabiliy": "beta"
 }
@@ -247,7 +247,7 @@ A **strongly recommended** performance improvement is to enable caching and put 
 bin/magento cache:enable
 bin/magento deploy:mode:set production -s
 bin/magento setup:di:compile
-bin/magento setup:static-content:deploy en_AU # Add any additional locales (e.g. en_AU en_NZ) separated by a comma
+bin/magento setup:static-content:deploy en_AU en_US # Add any additional locales (e.g. en_AU en_NZ) separated by a comma
 bin/magento cache:clean
 ```
 
@@ -391,7 +391,7 @@ priority=1
 
 [program:<magento file system owner>_customers]
 user=<magento file system owner>
-command=<path to php binary> <magento install dir>/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=900 --priority customers payments fulfillments
+command=<path to php binary> <magento install dir>/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=300 --priority customers payments fulfillments
 autorestart=true
 numprocs=<number of processes>
 process_name=%(program_name)s_%(process_num)s
@@ -400,7 +400,7 @@ stderr_logfile=/home/<magento file system owner>/logs/supervisor/customers.err.l
 
 [program:<magento file system owner>_products]
 user=<magento file system owner>
-command=<path to php binary> <magento install dir>/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=900 --priority attributes price-groups products
+command=<path to php binary> <magento install dir>/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=300 --priority attributes price-groups products
 autorestart=true
 numprocs=<number of processes>
 process_name=%(program_name)s_%(process_num)s
@@ -412,7 +412,7 @@ There are three replacements that need to be made to this template:
 
 1. `<magento file system owner>` - this is the user that owns the Magento filesystem.
 2. `<path to php binary>` - this typically can be found by typing `which php` on your CLI.
-3. `<number of processes>` - this should be tweaked according to your database size and server specs and must be at least 1. Typically, a number between 1 and 6 is appropriate.
+3. `<number of processes>` - must be at least 1 - a value of 2 is recommended. It can be set higher however this will likely lead to requests being rejected due to Retail Express API throttle limits.
 
 If you have installed Magento according to the [user guide](http://devdocs.magento.com/guides/v2.0/install-gde/bk-install-guide.html) and installed Supervisor on Ubuntu 16.04, your Supervisor configuration file might look like:
 
@@ -423,18 +423,18 @@ priority=1
 
 [program:magento_user_customers]
 user=magento_user
-command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=900 --priority customers payments fulfillments
+command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=300 --priority customers payments fulfillments
 autorestart=true
-numprocs=2
+numprocs=1
 process_name=%(program_name)s_%(process_num)s
 stdout_logfile=/var/log/supervisor/magento2/customers.log
 stderr_logfile=/var/log/supervisor/magento2/customers.err.log
 
 [program:magento_user_products]
 user=magento_user
-command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=900 --priority attributes price-groups products
+command=/var/www/html/magento2/bin/magento retail-express:command-bus:consume --max-memory=512 --max-runtime=300 --priority attributes price-groups products
 autorestart=true
-numprocs=5
+numprocs=2
 process_name=%(program_name)s_%(process_num)s
 stdout_logfile=/var/log/supervisor/magento2/products.log
 stderr_logfile=/var/log/supervisor/magento2/products.err.log
@@ -473,6 +473,51 @@ bin/magento retail-express:command-bus:consume --stop-on-error --stop-when-empty
 
 > Of course, there is the option to manually sync individual entities *(Section 3.2)* should you need to for debugging purposes.
 
+### 3.4 Refreshing Queues
+
+Occasionally, queued commands may fail. This may be due to issues with individual syncing or server environment.
+
+In this case, there will be "stuck" queued commands in the `retail_express_command_bus_messages` table that appear to be reserved by a queue worker but never complete. This is because if a queue worker crashes, it does not get a chance to update the database accordingly. Most queue providers (such as [Amazon SQS](https://aws.amazon.com/sqs/)) will automatically add queued commands back into the queue after inactivity.
+
+Fortunately, SkyLink supports a similar function, through the use of a CLI tool:
+
+```bash
+
+# Logged in as the Magento filesystem owner...
+bin/magento retail-express:command-bus:refresh
+```
+
+There are two primary options available to customise this tool, both `--reserved` and `--attempts`:
+
+```bash
+Usage:
+ retail-express:command-bus:refresh-queue [--reserved="..."] \
+                                          [--attempts="..."]
+
+Options:
+ --reserved            Refresh jobs that have been reserved outside the given time in seconds (minimum 10 seconds) (default: 3600)
+ --attempts            Flag to sync inline rather than queue a command (minimum 1 attempt) (default: 3)
+ --help (-h)           Display this help message
+ --quiet (-q)          Do not output any message
+ --verbose (-v|vv|vvv) Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+ --version (-V)        Display this application version
+ --ansi                Force ANSI output
+ --no-ansi             Disable ANSI output
+ --no-interaction (-n) Do not ask any interactive question
+```
+
+By default, this tool will:
+
+1. Refresh any jobs that were reserved anytime outside the last hour; and,
+2. Delete any jobs that have been attempted more than 3 times.
+
+While it is absolutely fine to run this command manually, it is recommended to setup another [Magento cron job](http://devdocs.magento.com/guides/v2.1/config-guide/cli/config-cli-subcommands-cron.html) to automate this regularly:
+
+```bash
+# 'crontab -e' as the Magento filesystem owner...
+*/5 * * * * <path to php binary> <magento install dir>/bin/magento retail-express:command-bus:refresh-queue
+```
+
 ## 4. Performance
 
 There are considerations to make with regards to performance of Magento when you are synchronising data, particularly with bulk synchronisations. These optimisations are recommended in any Magento installation, however their benefits are increasingly visible when running SkyLink. Recommendations for improving performance are:
@@ -485,7 +530,18 @@ There are considerations to make with regards to performance of Magento when you
 6. Ensure your MySQL setup [is optimised](http://devdocs.magento.com/guides/v2.0/install-gde/prereq/mysql.html) and consider separating your web server and database server.
 7. Monitor your server load and identify areas that are underperforming. Magento typically is CPU-intensive and can also be disk I/O intensive (however our queue workers are designed to minimise disk I/O0.
 
-## 5. FAQs
+## 5. API Throttling
+
+To ensure consistency of service for all Retail Express clients, throttles are imposed on the number of requests that can be sent through the API when communicating with Retail Express. Environments configured per the recommendations above should not hit these limits in typical usage however the number of queue workers configured and any other customisation to your integration must take these limits into consideration.
+
+The limits imposed are outlined below - they are cumulative (e.g. if sending 25 reqs/sec for a full minute the total would be 1500 reqs in a 1 minute period which would exceed the limits) and are for all requests sent through the API in a given period, not a separate limit per method:
+
+1. Max 25 calls per second
+2. Max 1200 calls per minute
+3. Max 30,000 calls per hour
+4. Max 150,000 calls per day
+
+## 6. FAQs
 
 ### There are no logs appearing in `System > SkyLink > Logging`
 

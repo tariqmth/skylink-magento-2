@@ -12,6 +12,10 @@ use RetailExpress\SkyLink\Api\ConfigInterface;
 use RetailExpress\SkyLink\Api\Data\Segregation\SalesChannelGroupInterfaceFactory;
 use RetailExpress\SkyLink\Api\Segregation\SalesChannelGroupRepositoryInterface;
 use RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId;
+use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductId as SkyLinkProductId;
+use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductRepositoryFactory as SkyLinkProductRepositoryFactory;
+use RetailExpress\SkyLink\Api\Data\Catalogue\Products\SkyLinkProductInSalesChannelGroupInterfaceFactory;
+use RetailExpress\SkyLink\Api\Data\Segregation\SalesChannelGroupInterface;
 
 class SalesChannelGroupRepository implements SalesChannelGroupRepositoryInterface
 {
@@ -32,13 +36,18 @@ class SalesChannelGroupRepository implements SalesChannelGroupRepositoryInterfac
         StoreManagerInterface $storeManager,
         StoreRepositoryInterface $storeRepository,
         WebsiteRepositoryInterface $websiteRepository,
-        SalesChannelGroupInterfaceFactory $salesChannelGroupFactory
+        SalesChannelGroupInterfaceFactory $salesChannelGroupFactory,
+        SkyLinkProductRepositoryFactory $skyLinkProductRepositoryFactory,
+        SkyLinkProductInSalesChannelGroupInterfaceFactory $skyLinkProductInSalesChannelGroupFactory
     ) {
         $this->config = $config;
         $this->storeManager = $storeManager;
         $this->storeRepository = $storeRepository;
         $this->websiteRepository = $websiteRepository;
         $this->salesChannelGroupFactory = $salesChannelGroupFactory;
+        $this->skyLinkProductRepositoryFactory = $skyLinkProductRepositoryFactory;
+        $this->skyLinkProductRepository = $this->skyLinkProductRepositoryFactory->create();
+        $this->skyLinkProductInSalesChannelGroupFactory = $skyLinkProductInSalesChannelGroupFactory;
     }
 
     /**
@@ -99,5 +108,36 @@ class SalesChannelGroupRepository implements SalesChannelGroupRepositoryInterfac
         });
 
         return $groups;
+    }
+
+    public function getSkyLinkProductInSalesChannelGroups(SkyLinkProductId $skyLinkProductId, $useSimple = true)
+    {
+        $salesChannelGroups = $this->getList();
+
+        // We'll loop through the Sales Channel Groups and grab the product in the context of each
+        $productInSalesChannelGroups = [];
+        array_walk(
+            $salesChannelGroups,
+            function (SalesChannelGroupInterface $salesChannelGroup) use ($skyLinkProductId, &$productInSalesChannelGroups) {
+                $skyLinkProduct = $this->skyLinkProductRepository->find(
+                    $skyLinkProductId,
+                    $salesChannelGroup->getSalesChannelId()
+                );
+
+                if (null === $skyLinkProduct) {
+                    return;
+                }
+
+                //if ($useSimple && )
+
+                $productInSalesChannelGroup = $this->skyLinkProductInSalesChannelGroupFactory->create();
+                $productInSalesChannelGroup->setSkyLinkProduct($skyLinkProduct);
+                $productInSalesChannelGroup->setSalesChannelGroup($salesChannelGroup);
+
+                $productInSalesChannelGroups[] = $productInSalesChannelGroup;
+            }
+        );
+
+        return $productInSalesChannelGroups;
     }
 }

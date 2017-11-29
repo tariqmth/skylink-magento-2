@@ -65,7 +65,7 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         SkyLinkAttributeOption $skyLinkAttributeOption
     ) {
         $skyLinkAttributeCode = $skyLinkAttributeOption->getAttribute()->getCode();
-        $magentoAttributeOptionId = $magentoAttributeOption->getId();
+        $magentoAttributeOptionId = $this->getIdFromMagentoAttributeOption($magentoAttributeOption);
 
         if ($this->mappingExists($skyLinkAttributeOption)) {
             $this->connection->update(

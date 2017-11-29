@@ -215,6 +215,9 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
 
         if (null === $id) {
             $id = "option_0";
+            $isNew = true;
+        } else {
+            $isNew = false;
         }
 
         $order[$id] = $id;
@@ -225,32 +228,35 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         $visualSwatch[$id] = '';
         $delete[$id] = '';
 
-        switch($swatchType)
-        {
+        switch($swatchType) {
             case 'text':
-                return [
+                $data = [
                     'optiontext' => [
                         'order'     => $order,
                         'value'     => $optionsStore,
                         'delete'    => $delete,
-                    ],
-                    'swatchtext' => [
-                        'value'     => $optionsStore,
-                    ],
+                    ]
                 ];
-                break;
+                if ($isNew) {
+                    $data['swatchtext'] = [
+                        'value'     => $optionsStore,
+                    ];
+                }
+                return $data;
             case 'visual':
-                return [
+                $data = [
                     'optionvisual' => [
                         'order'     => $order,
                         'value'     => $optionsStore,
                         'delete'    => $delete,
-                    ],
-                    'swatchvisual' => [
-                        'value'     => $visualSwatch,
-                    ],
+                    ]
                 ];
-                break;
+                if ($isNew) {
+                    $data['swatchvisual'] = [
+                        'value'     => $visualSwatch,
+                    ];
+                }
+                return $data;
             default:
                 return [
                     'option' => [

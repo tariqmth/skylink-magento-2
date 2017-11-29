@@ -95,33 +95,22 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         ProductAttributeInterface $magentoAttribute,
         SkyLinkAttributeOption $skyLinkAttributeOption
     ) {
-        $typeId = $magentoAttribute->getEntityTypeId();
-        $attributeCode = $magentoAttribute->getAttributeCode();
-        $attributeLabel = (string) $skyLinkAttributeOption->getLabel();
+//        $typeId = $magentoAttribute->getEntityTypeId();
+//        $attributeCode = $magentoAttribute->getAttributeCode();
+//        $attributeLabel = (string) $skyLinkAttributeOption->getLabel();
         $magentoAttributeOption = $this->magentoAttributeOptionFactory->create();
-        $magentoAttributeOption->setLabel($attributeLabel);
+        //$magentoAttributeOption->setLabel($attributeLabel);
 
-        if ($this->swatchHelper->isVisualSwatch($magentoAttribute)) {
-            // Get the attribute as an EAV model rather than catalog
-            $magentoAttribute = $this->magentoAttributeRepository->get($typeId, $attributeCode);
-            $this->addSwatch($magentoAttribute, $attributeLabel, 'visual');
-        } elseif ($this->swatchHelper->isTextSwatch($magentoAttribute)) {
-            // Bug which causes "0" values to be invalid
-            if (empty($attributeLabel)) {
-                $e = TextSwatchZeroException::withSkylinkAttributeOption($skyLinkAttributeOption);
-                $this->logger->error($e->getMessage());
-                throw $e;
-            }
-            $magentoAttribute = $this->magentoAttributeRepository->get($typeId, $attributeCode);
-            $this->addSwatch($magentoAttribute, $attributeLabel, 'text');
-        } else {
-            $this->saveMagentoAttributeOption($magentoAttribute, $magentoAttributeOption);
-        }
+        $this->saveMagentoAttributeOption(
+                $magentoAttribute,
+                $magentoAttributeOption,
+                $skyLinkAttributeOption
+        );
 
         // Use new source model to prevent using cached _options values under getAllOptions()
         $sourceModel = $this->tableFactory->create();
         $sourceModel->setAttribute($magentoAttribute);
-        $magentoAttributeOptionId = $sourceModel->getOptionId($attributeLabel);
+        $magentoAttributeOptionId = $sourceModel->getOptionId($skyLinkAttributeOption->getLabel());
 
         $magentoAttributeOption->setValue($magentoAttributeOptionId);
         return $magentoAttributeOption;
@@ -141,12 +130,38 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         // and the label property is undefined. In order to save correctly, we need the value to be the option ID,
         // and the label property to be set to the text.
 
+//        $typeId = $magentoAttribute->getEntityTypeId();
+//        $attributeCode = $magentoAttribute->getAttributeCode();
+//        $attributeLabel = (string) $skyLinkAttributeOption->getLabel();
+        //$optionId = $magentoAttributeOption->getId();
+        //$magentoAttributeOption->setValue($optionId);
+        //$magentoAttributeOption->setLabel($attributeLabel);
+
+        $this->saveMagentoAttributeOption(
+            $magentoAttribute,
+            $magentoAttributeOption,
+            $skyLinkAttributeOption,
+            true
+        );
+    }
+
+    private function saveMagentoAttributeOption(
+        ProductAttributeInterface $magentoAttribute,
+        AttributeOptionInterface $magentoAttributeOption,
+        SkyLinkAttributeOption $skyLinkAttributeOption,
+        $updateExisting = false
+    ) {
         $typeId = $magentoAttribute->getEntityTypeId();
         $attributeCode = $magentoAttribute->getAttributeCode();
         $attributeLabel = (string) $skyLinkAttributeOption->getLabel();
-        $optionId = $magentoAttributeOption->getId();
-        $magentoAttributeOption->setValue($optionId);
         $magentoAttributeOption->setLabel($attributeLabel);
+
+        if ($updateExisting) {
+            $optionId = $magentoAttributeOption->getId();
+            $magentoAttributeOption->setValue($optionId);
+        } else {
+            $optionId = null;
+        }
 
         if ($this->swatchHelper->isVisualSwatch($magentoAttribute)) {
             // Get the attribute as an EAV model rather than catalog
@@ -162,19 +177,12 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
             $magentoAttribute = $this->magentoAttributeRepository->get($typeId, $attributeCode);
             $this->addSwatch($magentoAttribute, $attributeLabel, 'text', $optionId);
         } else {
-            $this->saveMagentoAttributeOption($magentoAttribute, $magentoAttributeOption);
+            $this->magentoAttributeOptionManagement->add(
+                ProductAttributeInterface::ENTITY_TYPE_CODE,
+                $magentoAttribute->getAttributeCode(),
+                $magentoAttributeOption
+            );
         }
-    }
-
-    private function saveMagentoAttributeOption(
-        ProductAttributeInterface $magentoAttribute,
-        AttributeOptionInterface $magentoAttributeOption
-    ) {
-        $this->magentoAttributeOptionManagement->add(
-            ProductAttributeInterface::ENTITY_TYPE_CODE,
-            $magentoAttribute->getAttributeCode(),
-            $magentoAttributeOption
-        );
     }
 
     private function mappingExists(SkyLinkAttributeOption $skyLinkAttributeOption)
@@ -188,6 +196,9 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         );
     }
 
+    /*
+     * Add new swatch, or update existing swatch when optionId is specified
+     */
     private function addSwatch($magentoAttribute, $swatchLabel, $swatchType, $optionId = null)
     {
         $data = $this->generateSwatchOptions((string) $swatchLabel, $swatchType, $optionId);

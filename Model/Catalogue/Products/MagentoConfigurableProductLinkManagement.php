@@ -59,7 +59,6 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
         // Grab our new options and update the model accordingly
         $configurableProductOptions = $this->getConfigurableProductOptions($skyLinkMatrixPolicy, $childrenProducts);
         $this->updateExistingConfigurableProductOptions($extendedAttributes, $configurableProductOptions);
-        $this->makeChildrenInvisible($childrenProducts);
     }
 
     private function getProductExtensionAttributes(ProductInterface $parentProduct)
@@ -166,19 +165,5 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
         if (count($matching) === 1) {
             return current($matching); // @todo check if there's 2 matching? Not sure Magento could let that
         }
-    }
-
-    private function makeChildrenInvisible(array $childrenProducts)
-    {
-        array_walk($childrenProducts, function (ProductInterface $childProduct) {
-            $currentVisibility = $childProduct->getVisibility();
-
-            if (Visibility::VISIBILITY_NOT_VISIBLE == $currentVisibility) { // Non-strict comparison
-                return;
-            }
-
-            $childProduct->setVisibility(Visibility::VISIBILITY_NOT_VISIBLE);
-            $this->baseMagentoProductRepository->save($childProduct);
-        });
     }
 }

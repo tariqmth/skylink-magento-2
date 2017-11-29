@@ -86,6 +86,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         $this->mapPrices($magentoProduct, $skyLinkProduct);
         $this->mapTierPrices($magentoProduct, $skyLinkProduct);
         $this->mapQuantities($magentoProduct, $skyLinkProduct);
+        $this->overrideVisibilityForExistingProduct($magentoProduct, $skyLinkProduct);
 
         // Use the cubic weight for the given product
         // @todo this should be configuration-based
@@ -103,6 +104,13 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         $this->mapName($magentoProduct, $skyLinkProduct);
         $this->mapPrices($magentoProduct, $skyLinkProduct);
         $this->mapTierPrices($magentoProduct, $skyLinkProduct, $magentoWebsite);
+        $this->overrideVisibilityForExistingProduct($magentoProduct, $skyLinkProduct);
+
+        $existingWebsiteIds = $magentoProduct->getWebsiteIds();
+        if (!in_array($magentoWebsite->getId(), $existingWebsiteIds)) {
+            $existingWebsiteIds[] = $magentoWebsite->getId();
+        }
+        $magentoProduct->setWebsiteIds($existingWebsiteIds);
     }
 
     /**
@@ -142,7 +150,15 @@ class MagentoProductMapper implements MagentoProductMapperInterface
     {
         $currentVisibility = $magentoProduct->getVisibility();
 
-        if (Visibility::VISIBILITY_NOT_VISIBLE == $currentVisibility && !$skyLinkProduct->getMatrixProduct()) {
+        // Ignore if visibility is customised
+        if (Visibility::VISIBILITY_IN_CATALOG == $currentVisibility ||
+            Visibility::VISIBILITY_IN_SEARCH == $currentVisibility) {
+            return;
+        }
+
+        if ($skyLinkProduct->getMatrixProduct()) {
+            $magentoProduct->setVisibility(Visibility::VISIBILITY_NOT_VISIBLE);
+        } else {
             $magentoProduct->setVisibility(Visibility::VISIBILITY_BOTH);
         }
     }

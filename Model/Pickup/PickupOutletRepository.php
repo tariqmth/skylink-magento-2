@@ -54,8 +54,6 @@ class PickupOutletRepository implements PickupOutletRepositoryInterface
         /* @var \RetailExpress\SkyLink\Sdk\ValueObjects\SalesChannelId $salesChannelId */
         $salesChannelId = $this->salesChannelIdRepository->getSalesChannelIdForCurrentWebsite();
 
-        return array_map(function (SkyLinkOutletId $skyLinkOutletId) use ($skyLinkOutletRepository, $salesChannelId) {
-            return $skyLinkOutletRepository->find($skyLinkOutletId, $salesChannelId);
-        }, $configuredOutletIds);
+        return $skyLinkOutletRepository->findAllMatching($configuredOutletIds, $salesChannelId);
     }
 }

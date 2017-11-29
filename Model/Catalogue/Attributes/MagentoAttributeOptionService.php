@@ -95,11 +95,7 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         ProductAttributeInterface $magentoAttribute,
         SkyLinkAttributeOption $skyLinkAttributeOption
     ) {
-//        $typeId = $magentoAttribute->getEntityTypeId();
-//        $attributeCode = $magentoAttribute->getAttributeCode();
-//        $attributeLabel = (string) $skyLinkAttributeOption->getLabel();
         $magentoAttributeOption = $this->magentoAttributeOptionFactory->create();
-        //$magentoAttributeOption->setLabel($attributeLabel);
 
         $this->saveMagentoAttributeOption(
                 $magentoAttribute,
@@ -111,7 +107,6 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         $sourceModel = $this->tableFactory->create();
         $sourceModel->setAttribute($magentoAttribute);
         $magentoAttributeOptionId = $sourceModel->getOptionId($skyLinkAttributeOption->getLabel());
-
         $magentoAttributeOption->setValue($magentoAttributeOptionId);
         return $magentoAttributeOption;
     }
@@ -125,17 +120,6 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         if ($magentoAttributeOption->getValue() == $skyLinkAttributeOption->getLabel()) {
             return;
         }
-
-        // For some reason, the retrieved attribute has the value property set to the frontend text, e.g. "Large",
-        // and the label property is undefined. In order to save correctly, we need the value to be the option ID,
-        // and the label property to be set to the text.
-
-//        $typeId = $magentoAttribute->getEntityTypeId();
-//        $attributeCode = $magentoAttribute->getAttributeCode();
-//        $attributeLabel = (string) $skyLinkAttributeOption->getLabel();
-        //$optionId = $magentoAttributeOption->getId();
-        //$magentoAttributeOption->setValue($optionId);
-        //$magentoAttributeOption->setLabel($attributeLabel);
 
         $this->saveMagentoAttributeOption(
             $magentoAttribute,

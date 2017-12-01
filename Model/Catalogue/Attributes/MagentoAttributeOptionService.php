@@ -183,28 +183,48 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
     /*
      * Add new swatch, or update existing swatch when optionId is specified
      */
-    private function addSwatch($magentoAttribute, $swatchLabel, $swatchType, $optionId = null)
+    private function addSwatch(ProductAttributeInterface $magentoAttribute, $swatchLabel, $swatchType, $optionId = null)
     {
-        $data = $this->generateSwatchOptions((string) $swatchLabel, $swatchType, $optionId);
+        $data = $this->generateSwatchOptions($magentoAttribute, (string) $swatchLabel, $swatchType, $optionId);
         $magentoAttribute->addData($data);
         $magentoAttribute->save();
         return $magentoAttribute;
     }
 
-    private function generateSwatchOptions($value, $swatchType, $id)
+    private function generateSwatchOptions(ProductAttributeInterface $magentoAttribute, $value, $swatchType, $id)
     {
-        if (empty($value)) {
-            return;
+        // Use new source model to prevent using cached _options values under getAllOptions()
+        $attributeTable = $this->tableFactory->create();
+        $attributeTable->setAttribute($magentoAttribute);
+        $existingOptions = $attributeTable->getAllOptions();
+        foreach ($existingOptions as $existingOption) {
+            $existingIds[] = $existingOption['value'];
+        }
+
+        foreach ($existingOptions as $existingOption) {
+            $existingOptionId = $existingOption['value'];
+            if (!$existingOptionId) {
+                continue;
+            } elseif ($existingOptionId === $id) {
+                $replacedOptionLabel = $existingOption['label'];
+            }
+            $optionsStore[$existingOptionId] = array(
+                0 => $existingOption['label'], // admin
+                1 => '' // default store view
+            );
+            $delete[$existingOptionId] = '';
         }
 
         if (null === $id) {
-            $id = "option_0";
             $isNew = true;
+            $id = "option_" . (count($existingOptions) - 1);
         } else {
             $isNew = false;
+            $existingSwatches = $this->swatchHelper->getSwatchesByOptionsId($existingIds);
+            $swatchMatchesLabel = ($replacedOptionLabel == $existingSwatches[$id]['value']);
         }
 
-        $order[$id] = $id;
+        $order[$id] = (string) count($existingOptions);
         $optionsStore[$id] = array(
             0 => $value, // admin
             1 => '' // default store view
@@ -221,9 +241,14 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
                         'delete'    => $delete,
                     ]
                 ];
-                if ($isNew) {
+                if ($isNew || $swatchMatchesLabel) {
                     $data['swatchtext'] = [
-                        'value'     => $optionsStore,
+                        'value' => [
+                            $id => [
+                                0 => $value,
+                                1 => ''
+                            ]
+                        ],
                     ];
                 }
                 return $data;

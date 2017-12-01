@@ -224,17 +224,6 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
             $swatchMatchesLabel = ($replacedOptionLabel == $existingSwatches[$id]['value']);
         }
 
-//        foreach ($existingSwatches as $existingSwatch) {
-//            $existingOptionId = $existingSwatch['option_id'];
-//            $optionsStore[$existingOptionId] = array(
-//                0 => $existingSwatch['value'], // admin
-//                1 => '' // default store view
-//            );
-//            $delete[$existingOptionId] = '';
-//        }
-
-
-
         $order[$id] = (string) count($existingOptions);
         $optionsStore[$id] = array(
             0 => $value, // admin

@@ -95,34 +95,18 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         ProductAttributeInterface $magentoAttribute,
         SkyLinkAttributeOption $skyLinkAttributeOption
     ) {
-        $typeId = $magentoAttribute->getEntityTypeId();
-        $attributeCode = $magentoAttribute->getAttributeCode();
-        $attributeLabel = (string) $skyLinkAttributeOption->getLabel();
         $magentoAttributeOption = $this->magentoAttributeOptionFactory->create();
-        $magentoAttributeOption->setLabel($attributeLabel);
 
-        if ($this->swatchHelper->isVisualSwatch($magentoAttribute)) {
-            // Get the attribute as an EAV model rather than catalog
-            $magentoAttribute = $this->magentoAttributeRepository->get($typeId, $attributeCode);
-            $this->addSwatch($magentoAttribute, $attributeLabel, 'visual');
-        } elseif ($this->swatchHelper->isTextSwatch($magentoAttribute)) {
-            // Bug which causes "0" values to be invalid
-            if (empty($attributeLabel)) {
-                $e = TextSwatchZeroException::withSkylinkAttributeOption($skyLinkAttributeOption);
-                $this->logger->error($e->getMessage());
-                throw $e;
-            }
-            $magentoAttribute = $this->magentoAttributeRepository->get($typeId, $attributeCode);
-            $this->addSwatch($magentoAttribute, $attributeLabel, 'text');
-        } else {
-            $this->saveMagentoAttributeOption($magentoAttribute, $magentoAttributeOption);
-        }
+        $this->saveMagentoAttributeOption(
+                $magentoAttribute,
+                $magentoAttributeOption,
+                $skyLinkAttributeOption
+        );
 
         // Use new source model to prevent using cached _options values under getAllOptions()
         $sourceModel = $this->tableFactory->create();
         $sourceModel->setAttribute($magentoAttribute);
-        $magentoAttributeOptionId = $sourceModel->getOptionId($attributeLabel);
-
+        $magentoAttributeOptionId = $sourceModel->getOptionId($skyLinkAttributeOption->getLabel());
         $magentoAttributeOption->setValue($magentoAttributeOptionId);
         return $magentoAttributeOption;
     }
@@ -137,40 +121,52 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
             return;
         }
 
-        // For some reason, the retrieved attribute has the value property set to the frontend text, e.g. "Large",
-        // and the label property is undefined. In order to save correctly, we need the value to be the option ID,
-        // and the label property to be set to the text.
-        $magentoAttributeOption->setValue($magentoAttributeOption->getId());
-        $magentoAttributeOption->setLabel((string) $skyLinkAttributeOption->getLabel());
-        $this->saveMagentoAttributeOption($magentoAttribute, $magentoAttributeOption);
+        $this->saveMagentoAttributeOption(
+            $magentoAttribute,
+            $magentoAttributeOption,
+            $skyLinkAttributeOption,
+            true
+        );
     }
 
     private function saveMagentoAttributeOption(
         ProductAttributeInterface $magentoAttribute,
-        AttributeOptionInterface $magentoAttributeOption
+        AttributeOptionInterface $magentoAttributeOption,
+        SkyLinkAttributeOption $skyLinkAttributeOption,
+        $updateExisting = false
     ) {
-        $this->magentoAttributeOptionManagement->add(
-            ProductAttributeInterface::ENTITY_TYPE_CODE,
-            $magentoAttribute->getAttributeCode(),
-            $magentoAttributeOption
-        );
-    }
+        $typeId = $magentoAttribute->getEntityTypeId();
+        $attributeCode = $magentoAttribute->getAttributeCode();
+        $attributeLabel = (string) $skyLinkAttributeOption->getLabel();
+        $magentoAttributeOption->setLabel($attributeLabel);
 
-    /**
-     * @todo remove this once AttributeOptionInterfaceFactory updates the value / label of
-     * an attribute option after inserting in the database. We're currently coupling an
-     * assumption that whatever interface we have is actually using the same SQL-based
-     * database as us, which is naughty
-     */
-    private function getLastAddedOptionIdForMagentoAttribute(ProductAttributeInterface $magentoAttribute)
-    {
-        return $this->connection->fetchOne(
-            $this->connection
-                ->select()
-                ->from($this->connection->getTableName('eav_attribute_option'), 'option_id')
-                ->where('attribute_id = ?', $magentoAttribute->getAttributeId())
-                ->order('option_id desc')
-        );
+        if ($updateExisting) {
+            $optionId = $magentoAttributeOption->getId();
+            $magentoAttributeOption->setValue($optionId);
+        } else {
+            $optionId = null;
+        }
+
+        if ($this->swatchHelper->isVisualSwatch($magentoAttribute)) {
+            // Get the attribute as an EAV model rather than catalog
+            $magentoAttribute = $this->magentoAttributeRepository->get($typeId, $attributeCode);
+            $this->addSwatch($magentoAttribute, $attributeLabel, 'visual', $optionId);
+        } elseif ($this->swatchHelper->isTextSwatch($magentoAttribute)) {
+            // Bug which causes "0" values to be invalid
+            if (empty($attributeLabel)) {
+                $e = TextSwatchZeroException::withSkylinkAttributeOption($skyLinkAttributeOption);
+                $this->logger->error($e->getMessage());
+                throw $e;
+            }
+            $magentoAttribute = $this->magentoAttributeRepository->get($typeId, $attributeCode);
+            $this->addSwatch($magentoAttribute, $attributeLabel, 'text', $optionId);
+        } else {
+            $this->magentoAttributeOptionManagement->add(
+                ProductAttributeInterface::ENTITY_TYPE_CODE,
+                $magentoAttribute->getAttributeCode(),
+                $magentoAttributeOption
+            );
+        }
     }
 
     private function mappingExists(SkyLinkAttributeOption $skyLinkAttributeOption)
@@ -184,63 +180,92 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         );
     }
 
-    private function addSwatch($magentoAttribute, $swatchLabel, $swatchType)
+    /*
+     * Add new swatch, or update existing swatch when optionId is specified
+     */
+    private function addSwatch(ProductAttributeInterface $magentoAttribute, $swatchLabel, $swatchType, $optionId = null)
     {
-        $values = [(string) $swatchLabel];
-        $data = $this->generateSwatchOptions($values, $swatchType);
+        $data = $this->generateSwatchOptions($magentoAttribute, (string) $swatchLabel, $swatchType, $optionId);
         $magentoAttribute->addData($data);
         $magentoAttribute->save();
         return $magentoAttribute;
     }
 
-    private function generateSwatchOptions(array $values, $swatchType)
+    private function generateSwatchOptions(ProductAttributeInterface $magentoAttribute, $value, $swatchType, $id)
     {
-        if (empty($values)) {
-            return;
+        // Use new source model to prevent using cached _options values under getAllOptions()
+        $attributeTable = $this->tableFactory->create();
+        $attributeTable->setAttribute($magentoAttribute);
+        $existingOptions = $attributeTable->getAllOptions();
+        foreach ($existingOptions as $existingOption) {
+            $existingIds[] = $existingOption['value'];
         }
 
-        $i = 0;
-        foreach($values as $value) {
-            $order["option_{$i}"] = $i;
-
-            $optionsStore["option_{$i}"] = array(
-                0 => $value, // admin
+        foreach ($existingOptions as $existingOption) {
+            $existingOptionId = $existingOption['value'];
+            if (!$existingOptionId) {
+                continue;
+            } elseif ($existingOptionId === $id) {
+                $replacedOptionLabel = $existingOption['label'];
+            }
+            $optionsStore[$existingOptionId] = array(
+                0 => $existingOption['label'], // admin
                 1 => '' // default store view
             );
-
-            $visualSwatch["option_{$i}"] = '';
-
-            $delete["option_{$i}"] = '';
-
-            $i++;
+            $delete[$existingOptionId] = '';
         }
 
-        switch($swatchType)
-        {
+        if (null === $id) {
+            $isNew = true;
+            $id = "option_" . (count($existingOptions) - 1);
+        } else {
+            $isNew = false;
+            $existingSwatches = $this->swatchHelper->getSwatchesByOptionsId($existingIds);
+            $swatchMatchesLabel = ($replacedOptionLabel == $existingSwatches[$id]['value']);
+        }
+
+        $order[$id] = (string) count($existingOptions);
+        $optionsStore[$id] = array(
+            0 => $value, // admin
+            1 => '' // default store view
+        );
+        $visualSwatch[$id] = '';
+        $delete[$id] = '';
+
+        switch($swatchType) {
             case 'text':
-                return [
+                $data = [
                     'optiontext' => [
                         'order'     => $order,
                         'value'     => $optionsStore,
                         'delete'    => $delete,
-                    ],
-                    'swatchtext' => [
-                        'value'     => $optionsStore,
-                    ],
+                    ]
                 ];
-                break;
+                if ($isNew || $swatchMatchesLabel) {
+                    $data['swatchtext'] = [
+                        'value' => [
+                            $id => [
+                                0 => $value,
+                                1 => ''
+                            ]
+                        ],
+                    ];
+                }
+                return $data;
             case 'visual':
-                return [
+                $data = [
                     'optionvisual' => [
                         'order'     => $order,
                         'value'     => $optionsStore,
                         'delete'    => $delete,
-                    ],
-                    'swatchvisual' => [
-                        'value'     => $visualSwatch,
-                    ],
+                    ]
                 ];
-                break;
+                if ($isNew) {
+                    $data['swatchvisual'] = [
+                        'value'     => $visualSwatch,
+                    ];
+                }
+                return $data;
             default:
                 return [
                     'option' => [

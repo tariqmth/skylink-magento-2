@@ -221,7 +221,8 @@ class MagentoAttributeOptionService implements MagentoAttributeOptionServiceInte
         } else {
             $isNew = false;
             $existingSwatches = $this->swatchHelper->getSwatchesByOptionsId($existingIds);
-            $swatchMatchesLabel = ($replacedOptionLabel == $existingSwatches[$id]['value']);
+            $swatchMatchesLabel = (isset($existingSwatches[$id]) &&
+                $replacedOptionLabel == $existingSwatches[$id]['value']);
         }
 
         $order[$id] = (string) count($existingOptions);

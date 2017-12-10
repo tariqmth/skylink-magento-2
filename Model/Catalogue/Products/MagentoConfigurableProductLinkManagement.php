@@ -15,6 +15,8 @@ use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoConfigurableProductLinkM
 use RetailExpress\SkyLink\Exceptions\Products\TooManyParentProductsException;
 use RetailExpress\SkyLink\Sdk\Catalogue\Attributes\AttributeCode as SkyLinkAttributeCode;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\MatrixPolicy as SkyLinkMatrixPolicy;
+use RetailExpress\SkyLink\Exceptions\Products\MissingAttributeValueException;
+use RetailExpress\SkyLink\Api\Debugging\SkyLinkLoggerInterface;
 
 class MagentoConfigurableProductLinkManagement implements MagentoConfigurableProductLinkManagementInterface
 {
@@ -33,13 +35,15 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
         OptionInterfaceFactory $optionFactory,
         OptionValueInterfaceFactory $optionValueFactory,
         MagentoAttributeRepositoryInterface $magentoAttributeRepository,
-        ProductRepositoryInterface $baseMagentoProductRepository
+        ProductRepositoryInterface $baseMagentoProductRepository,
+        SkyLinkLoggerInterface $logger
     ) {
         $this->productExtensionFactory = $productExtensionFactory;
         $this->optionFactory = $optionFactory;
         $this->optionValueFactory = $optionValueFactory;
         $this->magentoAttributeRepository = $magentoAttributeRepository;
         $this->baseMagentoProductRepository = $baseMagentoProductRepository;
+        $this->logger = $logger;
     }
 
     /**
@@ -112,6 +116,14 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
                 $optionValue = $this->optionValueFactory->create();
 
                 $attributeValue = $childProduct->getCustomAttribute($magentoAttibute->getAttributeCode());
+
+                if (null === $attributeValue) {
+                    $e = MissingAttributeValueException::newInstance(
+                        $childProduct->getSkylinkProductId(),
+                        $magentoAttibute->getAttributeCode());
+                    $this->logger->error($e->getMessage());
+                    throw $e;
+                }
 
                 // Ready for a tongue-twister?
                 $optionValue->setValueIndex($attributeValue->getValue());

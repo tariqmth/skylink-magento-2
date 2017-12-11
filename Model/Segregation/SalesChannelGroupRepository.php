@@ -31,6 +31,12 @@ class SalesChannelGroupRepository implements SalesChannelGroupRepositoryInterfac
 
     private $salesChannelGroupFactory;
 
+    private $skyLinkProductRepositoryFactory;
+
+    private $skyLinkProductInSalesChannelGroupFactory;
+
+    private $skyLinkProductRepository;
+
     public function __construct(
         ConfigInterface $config,
         StoreManagerInterface $storeManager,
@@ -46,7 +52,6 @@ class SalesChannelGroupRepository implements SalesChannelGroupRepositoryInterfac
         $this->websiteRepository = $websiteRepository;
         $this->salesChannelGroupFactory = $salesChannelGroupFactory;
         $this->skyLinkProductRepositoryFactory = $skyLinkProductRepositoryFactory;
-        $this->skyLinkProductRepository = $this->skyLinkProductRepositoryFactory->create();
         $this->skyLinkProductInSalesChannelGroupFactory = $skyLinkProductInSalesChannelGroupFactory;
     }
 
@@ -112,6 +117,10 @@ class SalesChannelGroupRepository implements SalesChannelGroupRepositoryInterfac
 
     public function getSkyLinkProductInSalesChannelGroups(SkyLinkProductId $skyLinkProductId, $useSimple = true)
     {
+        if (null === $this->skyLinkProductRepository) {
+            $this->skyLinkProductRepository = $this->skyLinkProductRepositoryFactory->create();
+        }
+
         $salesChannelGroups = $this->getList();
 
         // We'll loop through the Sales Channel Groups and grab the product in the context of each

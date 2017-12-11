@@ -387,7 +387,7 @@ class InstallSchema implements InstallSchemaInterface
                 DbAdapterInterface::INDEX_TYPE_PRIMARY
             )
             ->addForeignKey(
-                $installer->getFkName($shipmentsFulfillmentBatchesTable,
+                $installer->getFkName($installer->getTable($shipmentsFulfillmentBatchesTable),
                     'magento_shipment_id',
                     $installer->getTable('sales_shipment'),
                     'entity_id'),

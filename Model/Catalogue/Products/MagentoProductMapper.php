@@ -76,7 +76,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         if (!$magentoProduct->getId()) {
             $this->mapNewMagentoProduct($magentoProduct, $skyLinkProduct);
         } else {
-            $this->overrideVisibilityForExistingProduct($magentoProduct);
+            $this->overrideVisibilityForExistingProduct($magentoProduct, $skyLinkProduct);
         }
 
         $magentoProduct->unsetData('manufacturer_sku');
@@ -86,6 +86,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         $this->mapPrices($magentoProduct, $skyLinkProduct);
         $this->mapTierPrices($magentoProduct, $skyLinkProduct);
         $this->mapQuantities($magentoProduct, $skyLinkProduct);
+        $this->overrideVisibilityForExistingProduct($magentoProduct, $skyLinkProduct);
 
         // Use the cubic weight for the given product
         // @todo this should be configuration-based
@@ -103,6 +104,13 @@ class MagentoProductMapper implements MagentoProductMapperInterface
         $this->mapName($magentoProduct, $skyLinkProduct);
         $this->mapPrices($magentoProduct, $skyLinkProduct);
         $this->mapTierPrices($magentoProduct, $skyLinkProduct, $magentoWebsite);
+        $this->overrideVisibilityForExistingProduct($magentoProduct, $skyLinkProduct);
+
+        $existingWebsiteIds = $magentoProduct->getWebsiteIds();
+        if (!in_array($magentoWebsite->getId(), $existingWebsiteIds)) {
+            $existingWebsiteIds[] = $magentoWebsite->getId();
+        }
+        $magentoProduct->setWebsiteIds($existingWebsiteIds);
     }
 
     /**
@@ -138,11 +146,19 @@ class MagentoProductMapper implements MagentoProductMapperInterface
      *
      * @param ProductInterface $magentoProduct
      */
-    private function overrideVisibilityForExistingProduct(ProductInterface $magentoProduct)
+    private function overrideVisibilityForExistingProduct(ProductInterface $magentoProduct, SkyLinkProduct $skyLinkProduct)
     {
         $currentVisibility = $magentoProduct->getVisibility();
 
-        if (Visibility::VISIBILITY_NOT_VISIBLE === $currentVisibility) {
+        // Ignore if visibility is customised
+        if (Visibility::VISIBILITY_IN_CATALOG == $currentVisibility ||
+            Visibility::VISIBILITY_IN_SEARCH == $currentVisibility) {
+            return;
+        }
+
+        if ($skyLinkProduct->getMatrixProduct()) {
+            $magentoProduct->setVisibility(Visibility::VISIBILITY_NOT_VISIBLE);
+        } else {
             $magentoProduct->setVisibility(Visibility::VISIBILITY_BOTH);
         }
     }
@@ -338,7 +354,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
     private function dateTimeToLocalisedAttributeValue(DateTimeImmutable $date)
     {
         $date = $date->setTimezone(new DateTimeZone($this->timezone->getConfigTimezone()));
-
-        return $this->dateTime->formatDate($date->getTimestamp());
+        $utcDate = new \DateTimeImmutable($date->format('Y-m-d H:i:s'));
+        return $this->dateTime->formatDate($utcDate->getTimestamp());
     }
 }

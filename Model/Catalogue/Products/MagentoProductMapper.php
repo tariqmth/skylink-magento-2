@@ -354,7 +354,7 @@ class MagentoProductMapper implements MagentoProductMapperInterface
     private function dateTimeToLocalisedAttributeValue(DateTimeImmutable $date)
     {
         $date = $date->setTimezone(new DateTimeZone($this->timezone->getConfigTimezone()));
-
-        return $this->dateTime->formatDate($date->getTimestamp());
+        $utcDate = new \DateTimeImmutable($date->format('Y-m-d H:i:s'));
+        return $this->dateTime->formatDate($utcDate->getTimestamp());
     }
 }

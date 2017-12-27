@@ -244,12 +244,12 @@
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\SyncStrategy</source_model>
                     <comment><![CDATA[Choose when the <kbd>Name</kbd> attribute syncs from Retail Express back to Magento.]]></comment>
                 </field>
-                <field id="regular_price_attribute" translate="label" type="select" sortOrder="300" showInWebsite="1" canRestore="1">
+                <field id="regular_price_attribute" translate="label" type="select" sortOrder="300" showInDefault="1" canRestore="1">
                     <label>Regular Price Attribute</label>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ProductPriceAttribute</source_model>
                     <comment><![CDATA[Choose the attribute in Retail Express to map to a product's regular price attribute <strong>(falling back to <kbd>Default Price</kbd> if your chosen attribute is not available for a given product)</strong>.]]></comment>
                 </field>
-                <field id="special_price_attribute" translate="label" type="select" sortOrder="400" showInWebsite="1" canRestore="1">
+                <field id="special_price_attribute" translate="label" type="select" sortOrder="400" showInDefault="1" canRestore="1">
                     <label>Special Price Attribute</label>
                     <source_model>RetailExpress\SkyLink\Model\System\Config\Source\ProductPriceAttribute</source_model>
                     <comment><![CDATA[Choose the attribute in Retail Express to map to a product's special price attribute <strong>(falling back to <kbd>Promotional Price</kbd> if your chosen attribute is not available for a given product)</strong>.]]></comment>

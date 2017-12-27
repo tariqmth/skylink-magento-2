@@ -43,7 +43,7 @@ class Config implements ConfigInterface
     public function getRegularPriceAttribute()
     {
         return SkyLinkProductPriceAttribute::get(
-            $this->scopeConfig->getValue('skylink/products/regular_price_attribute', ScopeInterface::SCOPE_STORE)
+            $this->scopeConfig->getValue('skylink/products/regular_price_attribute')
         );
     }
 
@@ -53,7 +53,7 @@ class Config implements ConfigInterface
     public function getSpecialPriceAttribute()
     {
         return SkyLinkProductPriceAttribute::get(
-            $this->scopeConfig->getValue('skylink/products/special_price_attribute', ScopeInterface::SCOPE_STORE)
+            $this->scopeConfig->getValue('skylink/products/special_price_attribute')
         );
     }
 

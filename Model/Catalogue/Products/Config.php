@@ -9,6 +9,7 @@ use RetailExpress\SkyLink\Model\Catalogue\SyncStrategy;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductNameAttribute as SkyLinkProductNameAttribute;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductPriceAttribute as SkyLinkProductPriceAttribute;
 use ValueObjects\Number\Integer;
+use Magento\Store\Model\ScopeInterface;
 
 class Config implements ConfigInterface
 {
@@ -42,7 +43,7 @@ class Config implements ConfigInterface
     public function getRegularPriceAttribute()
     {
         return SkyLinkProductPriceAttribute::get(
-            $this->scopeConfig->getValue('skylink/products/regular_price_attribute')
+            $this->scopeConfig->getValue('skylink/products/regular_price_attribute', ScopeInterface::SCOPE_STORE)
         );
     }
 
@@ -52,7 +53,7 @@ class Config implements ConfigInterface
     public function getSpecialPriceAttribute()
     {
         return SkyLinkProductPriceAttribute::get(
-            $this->scopeConfig->getValue('skylink/products/special_price_attribute')
+            $this->scopeConfig->getValue('skylink/products/special_price_attribute', ScopeInterface::SCOPE_STORE)
         );
     }
 

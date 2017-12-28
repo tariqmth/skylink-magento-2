@@ -9,6 +9,7 @@ use RetailExpress\SkyLink\Model\Catalogue\SyncStrategy;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductNameAttribute as SkyLinkProductNameAttribute;
 use RetailExpress\SkyLink\Sdk\Catalogue\Products\ProductPriceAttribute as SkyLinkProductPriceAttribute;
 use ValueObjects\Number\Integer;
+use Magento\Store\Model\ScopeInterface;
 
 class Config implements ConfigInterface
 {

@@ -221,7 +221,8 @@ class MagentoProductMapper implements MagentoProductMapperInterface
 
             // Otherwise, it's indefinite
         } else {
-            $magentoProduct->setCustomAttribute('special_to_date', null);
+            $distantFuture = new DateTimeImmutable('2099-01-01');
+            $magentoProduct->setCustomAttribute('special_to_date', $this->dateTimeToLocalisedAttributeValue($distantFuture));
         }
     }
 

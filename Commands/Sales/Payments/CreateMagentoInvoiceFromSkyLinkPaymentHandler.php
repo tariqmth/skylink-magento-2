@@ -10,7 +10,7 @@ use RetailExpress\SkyLink\Sdk\Sales\Orders\OrderId as SkyLinkOrderId;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\OrderRepositoryFactory as SkyLinkOrderRepositoryFactory;
 use Magento\Sales\Api\InvoiceOrderInterface;
 
-class SyncSkyLinkPaymentToMagentoPaymentHandler
+class CreateMagentoInvoiceFromSkyLinkPaymentHandler
 {
     private $magentoOrderRepository;
 

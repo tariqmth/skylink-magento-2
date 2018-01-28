@@ -6,7 +6,7 @@ use RetailExpress\CommandBus\Api\Queues\NormallyQueuedCommand;
 use RetailExpress\CommandBus\Api\Queues\QueueableCommand;
 use RetailExpress\SkyLink\Commands\BatchCommand;
 
-class SyncSkyLinkPaymentToMagentoPaymentCommand extends NormallyQueuedCommand implements QueueableCommand
+class CreateMagentoInvoiceFromSkyLinkPaymentCommand extends NormallyQueuedCommand implements QueueableCommand
 {
     use BatchCommand;
 

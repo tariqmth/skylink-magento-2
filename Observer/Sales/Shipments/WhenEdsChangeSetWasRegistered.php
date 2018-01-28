@@ -6,7 +6,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use RetailExpress\CommandBus\Api\CommandBusInterface;
 use RetailExpress\SkyLink\Commands\Sales\Shipments\SyncSkyLinkFulfillmentBatchesToMagentoShipmentsCommand;
-use RetailExpress\SkyLink\Commands\Sales\Payments\SyncSkyLinkPaymentToMagentoPaymentCommand;
+use RetailExpress\SkyLink\Commands\Sales\Payments\CreateMagentoInvoiceFromSkyLinkPaymentCommand;
 use RetailExpress\SkyLink\Eds\Entity;
 use RetailExpress\SkyLink\Eds\EntityType;
 
@@ -32,7 +32,7 @@ class WhenEdsChangeSetWasRegistered implements ObserverInterface
             $shipmentCommand = new SyncSkyLinkFulfillmentBatchesToMagentoShipmentsCommand();
             $shipmentCommand->skyLinkOrderId = (string) $entity->getId();
             $commands[] = $shipmentCommand;
-            $paymentCommand = new SyncSkyLinkPaymentToMagentoPaymentCommand();
+            $paymentCommand = new CreateMagentoInvoiceFromSkyLinkPaymentCommand();
             $paymentCommand->skyLinkOrderId = (string) $entity->getId();
             $commands[] = $paymentCommand;
         }

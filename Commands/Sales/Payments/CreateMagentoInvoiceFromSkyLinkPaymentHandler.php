@@ -46,7 +46,7 @@ class CreateMagentoInvoiceFromSkyLinkPaymentHandler
         $this->invoiceOrder = $invoiceOrder;
     }
 
-    public function handle(SyncSkyLinkPaymentToMagentoPaymentCommand $command)
+    public function handle(CreateMagentoInvoiceFromSkyLinkPaymentCommand $command)
     {
         /* @var \SkyLinkOrderId $skyLinkOrderId */
         $skyLinkOrderId = new SkyLinkOrderId($command->skyLinkOrderId);

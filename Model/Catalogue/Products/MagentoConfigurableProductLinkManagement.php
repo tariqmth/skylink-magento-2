@@ -103,24 +103,41 @@ class MagentoConfigurableProductLinkManagement implements MagentoConfigurablePro
                 ->getMagentoAttributeForSkyLinkAttributeCode($skyLinkAttributeCode);
         }, $skyLinkMatrixPolicy->getAttributeCodes());
 
+        $magentoAttributes = array_filter($magentoAttributes, function ($magentoAttribute) use ($childrenProducts) {
+            foreach ($childrenProducts as $childProduct) {
+                if (null !== $childProduct->getCustomAttribute($magentoAttribute->getAttributeCode())) {
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        if (count($magentoAttributes) < 1) {
+            $e = MissingAttributeValueException::newInstance(
+                reset($childrenProducts)->getManufacturerSku(),
+                'colour or size');
+            $this->logger->error($e->getMessage());
+            throw $e;
+        }
+
         // Transform each product attribute into a configurable product option
-        return array_map(function ($magentoAttibute) use (&$options, $childrenProducts) {
+        return array_map(function ($magentoAttribute) use (&$options, $childrenProducts) {
 
             /* @var OptionInterface $option */
             $option = $this->optionFactory->create();
-            $option->setAttributeId($magentoAttibute->getAttributeId());
-            $option->setLabel($magentoAttibute->getDefaultFrontendLabel()); // @todo, should this be scoped?
+            $option->setAttributeId($magentoAttribute->getAttributeId());
+            $option->setLabel($magentoAttribute->getDefaultFrontendLabel()); // @todo, should this be scoped?
             $option->setValues([]);
 
-            array_walk($childrenProducts, function (ProductInterface $childProduct) use ($magentoAttibute, $option) {
+            array_walk($childrenProducts, function (ProductInterface $childProduct) use ($magentoAttribute, $option) {
                 $optionValue = $this->optionValueFactory->create();
 
-                $attributeValue = $childProduct->getCustomAttribute($magentoAttibute->getAttributeCode());
+                $attributeValue = $childProduct->getCustomAttribute($magentoAttribute->getAttributeCode());
 
                 if (null === $attributeValue) {
                     $e = MissingAttributeValueException::newInstance(
                         $childProduct->getSkylinkProductId(),
-                        $magentoAttibute->getAttributeCode());
+                        $magentoAttribute->getAttributeCode());
                     $this->logger->error($e->getMessage());
                     throw $e;
                 }

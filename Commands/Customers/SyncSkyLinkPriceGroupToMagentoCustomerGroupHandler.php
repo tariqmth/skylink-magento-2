@@ -90,6 +90,9 @@ class SyncSkyLinkPriceGroupToMagentoCustomerGroupHandler
                 'Magento Customer Group ID' => $magentoCustomerGroup->getId(),
                 'Magento Customer Group Code' => $magentoCustomerGroup->getCode(),
             ]);
+
+            $magentoCustomerGroup = $this->magentoCustomerGroupService
+                ->updateMagentoCustomerGroup($magentoCustomerGroup, $skyLinkPriceGroup);
         }
 
         $this->eventManager->dispatch(

@@ -57,7 +57,8 @@ class MagentoCustomerGroupService implements MagentoCustomerGroupServiceInterfac
      */
     public function updateMagentoCustomerGroup(GroupInterface $magentoCustomerGroup, SkyLinkPriceGroup $skyLinkPriceGroup)
     {
-        $this->mapBasicInfo($$magentoCustomerGroup, $skyLinkPriceGroup);
+        $this->mapBasicInfo($magentoCustomerGroup, $skyLinkPriceGroup);
+        $this->baseMagentoCustomerGroupRepository->save($magentoCustomerGroup);
     }
 
     private function mapBasicInfo(GroupInterface $magentoCustomerGroup, SkyLinkPriceGroup $skyLinkPriceGroup)

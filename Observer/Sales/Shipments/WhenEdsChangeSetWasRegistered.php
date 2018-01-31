@@ -6,6 +6,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use RetailExpress\CommandBus\Api\CommandBusInterface;
 use RetailExpress\SkyLink\Commands\Sales\Shipments\SyncSkyLinkFulfillmentBatchesToMagentoShipmentsCommand;
+use RetailExpress\SkyLink\Commands\Sales\Payments\CreateMagentoInvoiceFromSkyLinkPaymentCommand;
 use RetailExpress\SkyLink\Eds\Entity;
 use RetailExpress\SkyLink\Eds\EntityType;
 
@@ -23,16 +24,18 @@ class WhenEdsChangeSetWasRegistered implements ObserverInterface
         $changeSet = $observer->getData('change_set');
 
         // Build commands
-        $commands = array_filter(array_map(function (Entity $entity) {
+        $commands = array();
+        foreach ($changeSet->getEntities() as $entity) {
             if (!$entity->getType()->sameValueAs(EntityType::get('order'))) {
-                return;
+                continue;
             }
-
-            $command = new SyncSkyLinkFulfillmentBatchesToMagentoShipmentsCommand();
-            $command->skyLinkOrderId = (string) $entity->getId();
-
-            return $command;
-        }, $changeSet->getEntities()));
+            $shipmentCommand = new SyncSkyLinkFulfillmentBatchesToMagentoShipmentsCommand();
+            $shipmentCommand->skyLinkOrderId = (string) $entity->getId();
+            $commands[] = $shipmentCommand;
+            $paymentCommand = new CreateMagentoInvoiceFromSkyLinkPaymentCommand();
+            $paymentCommand->skyLinkOrderId = (string) $entity->getId();
+            $commands[] = $paymentCommand;
+        }
 
         // Loop through and execute our commands
         array_map(function ($command) use ($changeSet) {

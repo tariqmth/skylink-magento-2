@@ -98,9 +98,7 @@ class MagentoTierPriceMapper implements MagentoTierPriceMapperInterface
             return $tierPrice;
         }, $tierPrices);
 
-        if ($magentoWebsiteId != 0) {
-            $tierPrices = $this->reduceTierPricesIfDuplicates($tierPrices, $magentoWebsiteId);
-        }
+        $tierPrices = $this->reduceTierPricesIfDuplicates($tierPrices, $magentoWebsiteId);
 
         $magentoProduct->setData('tier_price', $tierPrices);
     }
@@ -132,13 +130,14 @@ class MagentoTierPriceMapper implements MagentoTierPriceMapperInterface
      * Update: The issue lies in the way a separate iteration is used for global and then each website. We should
      * only save the values for the current website ID, and filter out all others. Adding global values (ID 0) when
      * iterating over a specific website (ID 1...) will cause the values to be deleted.
+     * Update #2: We need to include other website IDs but not global
      */
     private function reduceTierPricesIfDuplicates(array $tierPrices, $magentoWebsiteId)
     {
         return array_filter(
             $tierPrices,
             function (array $websiteTierPrice) use ($magentoWebsiteId, $tierPrices) {
-                return $magentoWebsiteId === $websiteTierPrice['website_id'];
+                return 0 != $websiteTierPrice['website_id'];
             }
         );
     }

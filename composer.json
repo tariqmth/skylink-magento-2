@@ -31,6 +31,7 @@
   },
   "require": {
     "php": ">=5.5.0",
+    "leanphp/phpspec-code-coverage": "^4.0",
     "illuminate/support": ">=5.1 <5.3",
     "league/tactician": "^1.0",
     "league/tactician-bernard": "^0.5.0",

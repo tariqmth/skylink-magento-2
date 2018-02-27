@@ -48,7 +48,7 @@ class Helper implements HelperInterface
      */
     private function hasNoneAvailable(ProductInterface $magentoProduct)
     {
-        return 0 == $magentoProduct->getCustomAttribute('qty_available')->getValue();
+        return 0 <= $magentoProduct->getCustomAttribute('qty_available')->getValue();
     }
 
     /**

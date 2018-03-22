@@ -47,11 +47,12 @@ class CustomerRepositoryDataFakerPlugin
     public function aroundSave(
         CustomerRepositoryInterface $subject,
         callable $proceed,
-        CustomerInterface $magentoCustomer
+        CustomerInterface $magentoCustomer,
+        $passwordHash
     ) {
         // If we don't need to fake any data, let's just leave it to the gods
         if (false === $this->customerConfig->shouldUseFakeData()) {
-            return $proceed($magentoCustomer);
+            return $proceed($magentoCustomer, $passwordHash);
         }
 
         // We'll run the same validation against the customer that Magento does and fake data for any missing validation
@@ -61,7 +62,7 @@ class CustomerRepositoryDataFakerPlugin
             $magentoCustomer = $this->magentoCustomerDataFaker->fakeCustomerFromValidationErrors($magentoCustomer, $e);
         }
 
-        return $proceed($magentoCustomer);
+        return $proceed($magentoCustomer, $passwordHash);
     }
 
     /**

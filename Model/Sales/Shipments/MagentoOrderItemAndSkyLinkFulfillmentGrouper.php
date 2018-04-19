@@ -5,6 +5,7 @@ namespace RetailExpress\SkyLink\Model\Sales\Shipments;
 use Magento\Sales\Model\Order\Item;
 use RetailExpress\SkyLink\Api\Catalogue\Products\MagentoSimpleProductRepositoryInterface;
 use RetailExpress\SkyLink\Api\Sales\Shipments\MagentoOrderItemAndSkyLinkFulfillmentGrouperInterface;
+use RetailExpress\SkyLink\Exceptions\Sales\Shipments\MagentoProductNoLongerExistsForSkyLinkProductIdException;
 use RetailExpress\SkyLink\Sdk\Sales\Fulfillments\Batch as SkyLinkFulfillmentBatch;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\ItemId as SkyLinkOrderItemId;
 use RetailExpress\SkyLink\Sdk\Sales\Orders\Order as SkyLinkOrder;
@@ -42,9 +43,15 @@ class MagentoOrderItemAndSkyLinkFulfillmentGrouper implements MagentoOrderItemAn
 
             // Now we have traversed our way through objects to find the SkyLink
             // Product ID, we are able to find it's matching Magento Product ID.
-            // @todo check the Magento Product exists?
             /* @var \Magento\Catalog\Api\Data\ProductInterfac|null $magentoProduct */
             $magentoProduct = $this->magentoSimpleProductRepository->findBySkyLinkProductId($skyLinkProductId);
+
+            if (null === $magentoProduct) {
+                throw MagentoProductNoLongerExistsForSkyLinkProductIdException::withSkyLinkFulfillmentAndProductId(
+                    $skyLinkFulfillment,
+                    $skyLinkProductId
+                );
+            }
 
             // Find the matching order item
             $magentoOrderItem = array_first(

@@ -6,7 +6,7 @@ use Magento\Sales\Model\Convert\Order as MagentoOrderConverter;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Shipment;
 use RetailExpress\SkyLink\Api\Sales\Shipments\MagentoShipmentBuilderInterface;
-use RetailExpress\SkyLink\Exceptions\Sales\Orders\FulfillmentShippingMoreThanAvailableException;
+use RetailExpress\SkyLink\Exceptions\Sales\Shipments\FulfillmentShippingMoreThanAvailableException;
 
 class MagentoShipmentBuilder implements MagentoShipmentBuilderInterface
 {

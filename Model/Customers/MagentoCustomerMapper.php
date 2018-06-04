@@ -3,6 +3,7 @@
 namespace RetailExpress\SkyLink\Model\Customers;
 
 use Magento\Customer\Api\Data\AddressInterface;
+use Magento\Customer\Api\Data\AddressInterfaceFactory;
 use Magento\Customer\Api\Data\CustomerExtensionFactory;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -14,6 +15,7 @@ use RetailExpress\SkyLink\Exceptions\Customers\CustomerGroupNotSyncedException;
 use RetailExpress\SkyLink\Sdk\Customers\BillingContact as SkyLinkBillingContact;
 use RetailExpress\SkyLink\Sdk\Customers\Customer as SkyLinkCustomer;
 use RetailExpress\SkyLink\Sdk\Customers\ShippingContact as SkyLinkShippingContact;
+use RetailExpress\SkyLink\Sdk\ValueObjects\Geography\Address;
 
 class MagentoCustomerMapper implements MagentoCustomerMapperInterface
 {
@@ -27,18 +29,22 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
 
     private $magentoCustomerAddressMapper;
 
+    private $magentoAddressFactory;
+
     public function __construct(
         ConfigInterface $customerConfig,
         MagentoCustomerGroupRepositoryInterface $magentoCustomerGroupRepository,
         CustomerExtensionFactory $customerExtensionFactory,
         StoreManagerInterface $magentoStoreManager,
-        MagentoCustomerAddressMapperInterface $magentoCustomerAddressMapper
+        MagentoCustomerAddressMapperInterface $magentoCustomerAddressMapper,
+        AddressInterfaceFactory $magentoAddressFactory
     ) {
         $this->customerConfig = $customerConfig;
         $this->magentoCustomerGroupRepository = $magentoCustomerGroupRepository;
         $this->customerExtensionFactory = $customerExtensionFactory;
         $this->magentoStoreManager = $magentoStoreManager;
         $this->magentoCustomerAddressMapper = $magentoCustomerAddressMapper;
+        $this->magentoAddressFactory = $magentoAddressFactory;
     }
 
     /**
@@ -70,27 +76,51 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
 
         $this->mapSubscription($magentoCustomer, $skyLinkCustomer);
 
-        $this->magentoCustomerAddressMapper->mapBillingAddress(
-            $magentoBillingAddress,
-            $skyLinkBillingContact
-        );
+        $skyLinkBillingAddress = $skyLinkBillingContact->getAddress();
 
-        // If the customer was created in Magento, likely they have one address for both billing and shipping.
-        // Therefore, we don't need to update the shipping address (as it's a slightly less detailed
-        // version of the billing address)
-        if ($magentoShippingAddress !== $magentoBillingAddress) {
+        if (!$this->skyLinkAddressIsEmpty($skyLinkBillingAddress)) {
+
+            $magentoBillingAddress = $magentoBillingAddress ?: $this->createDefaultBillingAddress();
+
+            $this->magentoCustomerAddressMapper->mapBillingAddress(
+                $magentoBillingAddress,
+                $skyLinkBillingContact
+            );
+
+        }
+
+        $skyLinkShippingAddress = $skyLinkCustomer->getShippingContact()->getAddress();
+
+        if (!$this->skyLinkAddressIsEmpty($skyLinkShippingAddress)) {
+
+            $magentoShippingAddress = $magentoShippingAddress ?: $this->createDefaultShippingAddress();
+
             $this->magentoCustomerAddressMapper->mapShippingAddress(
                 $magentoShippingAddress,
                 $skyLinkCustomer->getShippingContact()
             );
 
-            // Reattach the addresses
-            $magentoCustomer->setAddresses([$magentoBillingAddress, $magentoShippingAddress]);
-
-        // Reattach the new address
-        } else {
-            $magentoCustomer->setAddresses([$magentoBillingAddress]);
         }
+
+        // Reattach the addresses
+        if ($magentoBillingAddress && $magentoShippingAddress) {
+            $magentoCustomer->setAddresses([$magentoBillingAddress, $magentoShippingAddress]);
+        } elseif ($magentoBillingAddress) {
+            $magentoCustomer->setAddresses([$magentoBillingAddress]);
+        } elseif ($magentoShippingAddress) {
+            $magentoCustomer->setAddresses([$magentoShippingAddress]);
+        }
+    }
+
+    private function skyLinkAddressIsEmpty(Address $address)
+    {
+        return empty($address->getPostcode()->toNative())
+            && empty($address->getCity()->toNative())
+            && empty($address->getLine1()->toNative())
+            && empty($address->getLine2()->toNative())
+            && empty($address->getLine3()->toNative())
+            && empty($address->getState()->toNative())
+            && is_null($address->getCountry());
     }
 
     private function mapBasicInfo(CustomerInterface $magentoCustomer, SkyLinkBillingContact $skyLinkBillingContact)
@@ -147,5 +177,21 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
         $extendedAttributes->setIsSubscribed(
             $skyLinkCustomer->getNewsletterSubscription()->toNative()
         );
+    }
+
+    private function createDefaultBillingAddress()
+    {
+        $magentoBillingAddress = $this->magentoAddressFactory->create();
+        $magentoBillingAddress->setIsDefaultBilling(true);
+
+        return $magentoBillingAddress;
+    }
+
+    private function createDefaultShippingAddress()
+    {
+        $magentoShippingAddress = $this->magentoAddressFactory->create();
+        $magentoShippingAddress->setIsDefaultShipping(true);
+
+        return $magentoShippingAddress;
     }
 }

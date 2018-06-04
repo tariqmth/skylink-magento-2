@@ -93,7 +93,10 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
 
         if (!$this->skyLinkAddressIsEmpty($skyLinkShippingAddress)) {
 
-            $magentoShippingAddress = $magentoShippingAddress ?: $this->createDefaultShippingAddress();
+            if (!$magentoShippingAddress || ($magentoBillingAddress === $magentoShippingAddress
+                    && $skyLinkBillingAddress !== $skyLinkShippingAddress)) {
+                $magentoShippingAddress = $this->createDefaultShippingAddress();
+            }
 
             $this->magentoCustomerAddressMapper->mapShippingAddress(
                 $magentoShippingAddress,

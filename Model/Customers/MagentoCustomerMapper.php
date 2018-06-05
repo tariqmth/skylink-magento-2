@@ -52,19 +52,23 @@ class MagentoCustomerMapper implements MagentoCustomerMapperInterface
      */
     public function mapMagentoCustomer(CustomerInterface $magentoCustomer, SkyLinkCustomer $skyLinkCustomer)
     {
-        $magentoBillingAddress = current(array_filter(
-            $magentoCustomer->getAddresses(),
-            function (AddressInterface $address) {
-                return $address->isDefaultBilling();
-            }
-        ));
-
-        $magentoShippingAddress = current(array_filter(
-            $magentoCustomer->getAddresses(),
-            function (AddressInterface $address) use ($magentoCustomer) {
-                return $address->isDefaultShipping();
-            }
-        ));
+        if ($magentoCustomer->getAddresses() !== null) {
+            $magentoBillingAddress = current(array_filter(
+                $magentoCustomer->getAddresses(),
+                function (AddressInterface $address) {
+                    return $address->isDefaultBilling();
+                }
+            ));
+            $magentoShippingAddress = current(array_filter(
+                $magentoCustomer->getAddresses(),
+                function (AddressInterface $address) use ($magentoCustomer) {
+                    return $address->isDefaultShipping();
+                }
+            ));
+        } else {
+            $magentoBillingAddress = null;
+            $magentoShippingAddress = null;
+        }
 
         $skyLinkBillingContact = $skyLinkCustomer->getBillingContact();
 

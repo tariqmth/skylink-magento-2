@@ -1,6 +1,6 @@
 <?php
 
-namespace RetailExpress\SkyLink\Exceptions\Sales\Orders;
+namespace RetailExpress\SkyLink\Exceptions\Sales\Shipments;
 
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Model\Order\Item;

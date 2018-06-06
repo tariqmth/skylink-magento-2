@@ -22,8 +22,6 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
 
     private $magentoCustomerFactory;
 
-    private $magentoAddressFactory;
-
     private $magentoCustomerMapper;
 
     private $registry;
@@ -32,14 +30,12 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
         AccountManagementInterface $magentoAccountManagement,
         CustomerRepositoryInterface $magentoCustomerRepository,
         CustomerInterfaceFactory $magentoCustomerFactory,
-        AddressInterfaceFactory $magentoAddressFactory,
         MagentoCustomerMapperInterface $magentoCustomerMapper,
         Registry $registry
     ) {
         $this->magentoAccountManagement = $magentoAccountManagement;
         $this->magentoCustomerRepository = $magentoCustomerRepository;
         $this->magentoCustomerFactory = $magentoCustomerFactory;
-        $this->magentoAddressFactory = $magentoAddressFactory;
         $this->magentoCustomerMapper = $magentoCustomerMapper;
         $this->registry = $registry;
     }
@@ -57,10 +53,6 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
             $skyLinkCustomer->getId()->toNative()
         );
 
-        $magentoBillingAddress = $this->createDefaultBillingAddress();
-        $magentoShippingAddress = $this->createDefaultShippingAddress();
-        $magentoCustomer->setAddresses([$magentoBillingAddress, $magentoShippingAddress]);
-
         $this->magentoCustomerMapper->mapMagentoCustomer($magentoCustomer, $skyLinkCustomer);
 
         $this->lockSkyLinkToMagento(function () use ($magentoCustomer) {
@@ -77,14 +69,6 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
     {
         $addressesToAdd = [];
 
-        if (null === $magentoCustomer->getDefaultBilling()) {
-            $addressesToAdd[] = $this->createDefaultBillingAddress();
-        }
-
-        if (null === $magentoCustomer->getDefaultShipping()) {
-            $addressesToAdd[] = $this->createDefaultShippingAddress();
-        }
-
         if (count($addressesToAdd) > 0) {
             $magentoCustomer->setAddresses(array_merge($magentoCustomer->getAddresses(), $addressesToAdd));
         }
@@ -94,22 +78,6 @@ class MagentoCustomerService implements MagentoCustomerServiceInterface
         $this->lockSkyLinkToMagento(function () use ($magentoCustomer) {
             $this->magentoCustomerRepository->save($magentoCustomer);
         });
-    }
-
-    private function createDefaultBillingAddress()
-    {
-        $magentoBillingAddress = $this->magentoAddressFactory->create();
-        $magentoBillingAddress->setIsDefaultBilling(true);
-
-        return $magentoBillingAddress;
-    }
-
-    private function createDefaultShippingAddress()
-    {
-        $magentoShippingAddress = $this->magentoAddressFactory->create();
-        $magentoShippingAddress->setIsDefaultShipping(true);
-
-        return $magentoShippingAddress;
     }
 
     private function lockSkyLinkToMagento(callable $callback)

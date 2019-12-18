@@ -50,5 +50,7 @@
   },
   "config": {
     "secure-http": false
-  }
+  },
+  "prefer-stable": true,
+  "minimum-stability": "dev"
 }

@@ -15,8 +15,8 @@
   ],
   "repositories": [
     {
-      "type": "composer",
-      "url": "http://repo.ecom.retailexpress.com.au/"
+      "type": "git",
+      "url": "https://github.com/tariqmth/skylink-magento-2.git"
     },
     {
       "type": "composer",

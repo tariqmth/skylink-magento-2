@@ -48,14 +48,7 @@
     "retail-express/skylink-eds": "^1.9",
     "retail-express/skylink-sdk": "^1.9"
   },
-  "extra": {
-    "branch-alias": {
-      "dev-develop": "1.9.x-dev"
-    }
-  },
   "config": {
     "secure-http": false
   },
-  "minimum-stability": "dev",
-  "prefer-stable": true
 }

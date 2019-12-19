@@ -35,7 +35,7 @@
       "url": "https://github.com/tariqmth/nicolopignatelli-valueobjects.git"
     },
      {
-      "type": "git",
+      "type": "composer",
       "url": "https://repo.ecom.retailexpress.com.au"
     },
     {

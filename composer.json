@@ -18,6 +18,18 @@
       "type": "git",
       "url": "https://github.com/tariqmth/skylink-magento-2.git"
     },
+     {
+      "type": "git",
+      "url": "https://github.com/tariqmth/command-bus-magento-2.git"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/tariqmth/skylink-eds.git"
+    },
+    {
+      "type": "git",
+      "url": "https://github.com/tariqmth/skylink-sdk.git"
+    },
     {
       "type": "composer",
       "url": "https://repo.magento.com"
@@ -44,7 +56,7 @@
     "magento/module-eav": ">=100.0",
     "magento/module-payment": ">=100.0",
     "magento/module-sales": ">=100.0",
-    "tariqmth/command-bus-magento-2": "dev-develop",
+    "tariqmth/command-bus-magento-2": "^2.0",
     "tariqmth/skylink-eds": "^2.0",
     "tariqmth/skylink-sdk": "^2.0"
   },

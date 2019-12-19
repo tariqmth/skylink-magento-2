@@ -51,6 +51,7 @@
   },
   "require": {
     "php": ">=5.5.0",
+    "phpspec/phpspec": "^4.0|^5.0",
     "illuminate/support": ">=5.1 <5.3",
     "league/tactician": "^1.0",
     "league/tactician-bernard": "^0.5.0",
@@ -63,7 +64,6 @@
     "magento/module-eav": ">=100.0",
     "magento/module-payment": ">=100.0",
     "magento/module-sales": ">=100.0",
-     "tariqmth/skylink-eds": "^2.0"
   },
   "config": {
     "secure-http": false

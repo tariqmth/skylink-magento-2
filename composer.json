@@ -50,8 +50,8 @@
     }
   },
   "require": {
-    "php": ">=5.5.0"
-    
+    "php": ">=5.5.0",
+    "phpspec/phpspec": "^2.0|^3.0"
   },
   "config": {
     "secure-http": false
